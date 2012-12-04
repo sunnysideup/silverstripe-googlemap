@@ -1,0 +1,13 @@
+.directionsClassTable {border: none; border-collapse: collapse; }
+.directionsClassTable tr {}
+.directionsClassTable img {border: none; float: left; padding: 0 10px 0 0;}
+.directionsClassTable col.col1 {}
+.directionsClassTable col.col2 {}
+.directionsClassTable th, .directionsClassTable td {padding: 0.3em; vertical-align: top; text-align: left; font-size: 0.9em; font-family: helvetica, arial, verdana, tahoma, sans-serif;}
+.directionsClassTable th {background-color: #ccc; border-top: 1px solid #fff; border-bottom: 1px solid #fff;}
+.directionsClassTable td {text-align: left!important;}
+.directionsClassTable td.dist {text-align: right; width: 8.5em;}
+.directionsClassTable .routeDistance, .directionsClassTable .copyright {text-align: right; border: none;}
+.directionsClassTable .routeDistance {font-weight: bold;}
+.directionsClassTable .copyright {}
+#directionsPrintOptions {padding: 0.2em 0 0.2em 0;}

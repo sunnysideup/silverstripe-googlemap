@@ -1,0 +1,28 @@
+.infoWindowTab {width: 230px; height: 100px;padding: 0; margin:0; overflow: auto; }
+.infoWindowTab div {}
+.infoWindowTab h1{margin-top: 0.3em;}
+
+#map{margin-top: 7px;}
+
+#map a img {border: none;}
+
+/* LIST BELOW MAP */
+.boxy {}
+#mapLayers .iconBulletPoint {float: left; padding: 0 10px 0 0;}
+#mapLayers li {height: 40px; text-align: left;}
+
+#GmapDropSideBarId p{font-weight: bold;}
+
+.staticGoogleMap{filter:alpha(opacity=80);-moz-opacity:0.8;opacity:0.8;}
+	#loadMapNowWithinMap:hover .staticGoogleMap{filter:alpha(opacity=80);-moz-opacity:0.8;opacity:0.8;}
+
+#MapControlsOutsideMap {font-size: 0.8em; margin-bottom: 10px;}
+
+/* Search for Address or Location */
+.searchForAddress{text-transform: capitalize;}
+	.findAddressHtml .middleColumn{width: 100%; margin: 7px 0 0 0;}
+		.findAddressHtml input{display: inline;}
+		.findAddressHtml .submitButton{background: #b7cb93; border: 0; color: #fff; cursor: pointer;}
+			.findAddressHtml .submitButton:hover{background: #b1c68b;}
+
+#googleMapEditLine {border: 2px dotted red; padding: 7px 7px 0;}
