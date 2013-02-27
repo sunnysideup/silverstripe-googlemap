@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/googlemap",
+	"name": "sunnysideup/googlemap",
 	"type": "silverstripe-module",
 	"description": "adds an in-depth application of the google map API (2.0) to your Silverstripe application",
 	"homepage": "http://www.silverstripe-webdevelopment.com",
