@@ -116,7 +116,7 @@ class GoogleMapLocationsDOD extends DataObjectDecorator {
 		}
 		return ($childrenOfType) ? $childrenOfType : new DataObjectSet();
 	}
-	
+
 
 }
 
@@ -177,7 +177,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		}
 		$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title)."/".$lng."/".$lat."/";
 		if($filter) {
-			$linkForData .= "/".urlencode($filter)."/";
+			$linkForData .= urlencode($filter)."/";
 		}
 		$this->googleMap->addLayer($linkForData);
 		if(!Director::is_ajax()) {
@@ -253,7 +253,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 				$this->clearCustomMaps();
 			}
 			else {
-				if(is_array($_SESSION["addCustomGoogleMap"])) {	
+				if(is_array($_SESSION["addCustomGoogleMap"])) {
 					$customMapCount = count($_SESSION["addCustomGoogleMap"]);
 				}
 			}
