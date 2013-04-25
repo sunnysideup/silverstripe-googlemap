@@ -40,15 +40,12 @@ class GoogleMapLocationsDOD extends DataObjectDecorator {
 			if($this->owner->HasGeoInfo) {
 				$dataObject = new GoogleMapLocationsObject();
 				$complexTableFields = $dataObject->complexTableFields();
-				$popUpFields = $dataObject->getCMSFields_forPopup($this->owner->ID);
 				$GeoPointsField = new ComplexTableField(
 					$this->owner,
 					'GeoPoints',
 					'GoogleMapLocationsObject', //Classname
 					$complexTableFields,
-					"getCMSFields_forPopup",
-
-					//'getCMSFields_forPopup',
+					null,
 					"ParentID = ".$this->owner->ID
 				);
 				$GeoPointsField->setParentClass($this->owner->class);
