@@ -151,8 +151,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		$address = Convert::raw2sql($data["Address"]);
 		$className = Convert::raw2sql($data["ClassName"]);
 		$pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
-		$this->address = $pointArray["address"];
-		if(!isset($pointArray[0]) || !isset($pointArray[0])) {
+		$this->address = $pointArray["FullAddress"];
+		if(!isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
 			GoogleMapSearchRecord::create_new($address, $this->owner->ID, false);
 			$form->addErrorMessage('Address', _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND", "Sorry, address could not be found..."), 'warning');
 			Director::redirectBack();
@@ -161,8 +161,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		else {
 			GoogleMapSearchRecord::create_new(Convert::raw2sql($address), $this->owner->ID, true);
 		}
-		$lng = $pointArray[0];
-		$lat = $pointArray[1];
+		$lng = $pointArray["Longitude"];
+		$lat = $pointArray["Latitude"];
 		//$form->Fields()->fieldByName("Address")->setValue($pointArray["address"]); //does not work ....
 		//$this->owner->addMap($action = "showsearchpoint", "Your search",$lng, $lat);
 		$this->owner->addMap($action = "showaroundmexml","Closests to your search", $lng, $lat, $className);

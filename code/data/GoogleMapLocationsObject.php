@@ -9,9 +9,9 @@ class GoogleMapLocationsObject extends DataObject {
 
 	protected static $parent_point_counts = array();
 
-	static $db = array (
+	public static $db = array (
 		'PointType' =>'Enum("none, point, polyline, polygon", "point")',
-		'Accuracy' => 'Int',
+		'Accuracy' => 'Varchar(100)',
 		'Latitude' => 'Double(12,7)',
 		'Longitude' => 'Double(12,7)',
 		'PointString' => 'Text',
@@ -21,7 +21,6 @@ class GoogleMapLocationsObject extends DataObject {
 		'AdministrativeAreaName' => 'Varchar(255)',
 		'SubAdministrativeAreaName' => 'Varchar(255)',
 		'LocalityName' => 'Varchar(255)',
-		'ThoroughfareName' => 'Varchar(255)',
 		'PostalCodeNumber' => 'Varchar(30)',
 		'Manual' => 'Boolean',
 		'CustomPopUpWindowTitle' => "Varchar(50)",
@@ -32,15 +31,7 @@ class GoogleMapLocationsObject extends DataObject {
 	);
 
 	static $summary_fields = array (
-		'PointString',
-		'Address',
-		'FullAddress',
-		'CountryNameCode',
-		'AdministrativeAreaName',
-		'SubAdministrativeAreaName',
-		'LocalityName',
-		'ThoroughfareName',
-		'PostalCodeNumber'
+		'FullAddress' => "FullAddress",
 	);
 
 	static $has_one = array (
@@ -50,22 +41,6 @@ class GoogleMapLocationsObject extends DataObject {
 	static $indexes = array(
 		"Latitude" => true,
 		"Longitude" => true
-	);
-
-	static $has_many = array (
-		//'' => ''
-	);
-
-	/*static $many_many = array (
-
-	);
-
-	static $belongs_many_many = array (
-
-	);*/
-
-	static $defaults = array (
-		// '' => ''
 	);
 
 	static $casting = array(
@@ -92,11 +67,12 @@ class GoogleMapLocationsObject extends DataObject {
 		return "(6378.137 * ACOS( ( SIN( PI( ) * ".$lat." /180 ) * SIN( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) ) + ( COS( PI( ) * ".$lat." /180 ) * cos( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) * COS( (PI( ) * \"".$table."\".\"".$longitudeField."\" / 180 ) - ( PI( ) * $lon / 180 ) ) ) ) ) ";
 	}
 
-	static function pointExists($addressArray) {
-		return DataObject::get_one("GoogleMapLocationsObject", "Longitude = '".$addressArray[0]."' AND Latitude = '".$addressArray[1]."'");
+	static function pointExists($longitude, $latitude) {
+		return DataObject::get_one("GoogleMapLocationsObject", "\"Longitude\" = ".floatva($longitude)." AND \"Latitude\" = ".floatval($latitude)."");
 	}
 
-	function  getCMSFields_forPopup() {
+	function  getCMSFields() {
+		$fields = parent::getCMSFields();
 		$addTitleAndContent = true;
 		$parentPageID = $this->ParentID;
 		if($parentPageID) {
@@ -107,33 +83,45 @@ class GoogleMapLocationsObject extends DataObject {
 				}
 			}
 		}
-		$fieldset = new FieldSet(
-			new TextField('Address', 'Enter Full Address (e.g. 123 Main Street, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed (looked up at Google Maps)'),
-			new HiddenField('ParentID', 'ParentID', $parentPageID)
+		$fields->addFieldToTab("Root.Main",
+			new TextField('Address', 'Enter Full Address (e.g. 123 Main Street, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed (looked up at Google Maps)')
+			//new HiddenField('ParentID', 'ParentID', $parentPageID)
 		);
-		if($addTitleAndContent) {
-			$fieldset->push(new TextField('CustomPopUpWindowTitle', 'Custom Title for Info Pop-Up Window, leave Blank to auto-complete the pop-up information on the map'));
-			$fieldset->push(new TextField('CustomPopUpWindowInfo', 'Custom Description for Info Pop-Up Window, leave Blank to auto-complete the pop-up information on the map'));
-		}
-		$fieldset->push(new CheckboxField('Manual', 'Edit address manually (e.g. enter Longitude and Latitude - check box, save and reload to edit...)'));
+
 		if($this->Manual) {
-			$fieldset->push(new HeaderField('Auto-completed (not required)', 2));
-			$fieldset->push(new TextField('Latitude', 'Latitude'));
-			$fieldset->push(new TextField('Longitude', 'Longitude'));
-			$fieldset->push(new TextField('PointString', 'PointString'));
-			$fieldset->push(new TextField('FullAddress', 'Found Address'));
-			$fieldset->push(new NumericField('Accuracy', 'Accuracy'));
-			$fieldset->push(new TextField('CountryNameCode', 'Country Name Code'));
-			$fieldset->push(new TextField('AdministrativeAreaName', 'Administrative Area Name'));
-			$fieldset->push(new TextField('SubAdministrativeAreaName', 'SubAdministrative Area Name'));
-			$fieldset->push(new TextField('LocalityName', 'Locality Name'));
-			$fieldset->push(new TextField('ThoroughfareName', 'Thoroughfare Name'));
-			$fieldset->push(new TextField('PostalCodeNumber', 'Postal Code Number'));
+			$fields->addFieldToTab("Root.Details", new TextField('Latitude', 'Latitude'));
+			$fields->addFieldToTab("Root.Details", new TextField('Longitude', 'Longitude'));
 		}
-				//'GeoPointField' => 'GeoPoint',
-					//'GeoPolygonField' => 'GeoPolygon',
-					//'GeoLineString' => 'GeoLineString'
-		return $fieldset;
+		else {
+			$fields->addFieldToTab("Root.Details", new ReadonlyField('Latitude', 'Latitude'));
+			$fields->addFieldToTab("Root.Details", new ReadonlyField('Longitude', 'Longitude'));
+		}
+		$fields->addFieldToTab("Root.Main", new CheckboxField('Manual', 'Edit address manually (e.g. enter Longitude and Latitude - check box, save and reload to edit...)'));
+		$fields->addFieldToTab("Root.Main", new ReadonlyField('FullAddress', 'Found Address'));
+		$fields->addFieldToTab("Root.Details", new HeaderField('Auto-completed (not required)', 2));
+
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('CountryNameCode', 'Country Name Code'));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('AdministrativeAreaName', 'Administrative Area Name'));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('SubAdministrativeAreaName', 'SubAdministrative Area Name'));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('LocalityName', 'Locality Name'));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('PostalCodeNumber', 'Postal Code Number'));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('Accuracy'));
+		$fields->addFieldToTab("Root.Type", $fields->dataFieldByName("PointType"));
+		if($this->PointType != "point" && $this->PointType != "none") {
+			$fields->addFieldToTab("Root.Type", new TextField('PointString', 'PointString'));
+		}
+		else {
+			$fields->removeByName("PointString");
+		}
+		if($addTitleAndContent) {
+			$fields->addFieldToTab("Root.Popup", new TextField('CustomPopUpWindowTitle', 'Custom Title for Info Pop-Up Window, leave Blank to auto-complete the pop-up information on the map'));
+			$fields->addFieldToTab("Root.Popup", new TextareaField('CustomPopUpWindowInfo', 'Custom Description for Info Pop-Up Window, leave Blank to auto-complete the pop-up information on the map'));
+		}
+		else {
+			$fields->removeByName("CustomPopUpWindowTitle");
+			$fields->removeByName("CustomPopUpWindowInfo");
+		}
+		return $fields;
 	}
 
 	function getParentData() {
@@ -190,6 +178,7 @@ class GoogleMapLocationsObject extends DataObject {
 		);
 		return $fields;
 	}
+
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		/*
@@ -197,6 +186,9 @@ class GoogleMapLocationsObject extends DataObject {
 		$this->GeoPointField->setX($this->Longitude);
 		parent::onBeforeWrite();
 		*/
+		if($this->PointType == "none"){
+			$this->PointType = "point";
+		}
 		$this->findGooglePoints($doNotWrite = true);
 	}
 
@@ -239,50 +231,21 @@ class GoogleMapLocationsObject extends DataObject {
 
 	function findGooglePoints($doNotWrite) {
 		if($this) {
-			if(!$this->Manual && ( (!$this->Latitude || !$this->Longitude) || ($this->Latitude && $this->Longitude && !$this->Address) ) ) {
-				if($this->Address) {
-					$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
-				}
-				else {
-					$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude);
-				}
+			if($this->Address && !$this->Manual) {
+				$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
+			}
+			elseif($this->Latitude && $this->Longitude && $this->Manual) {
+				$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude);
+			}
+			if(isset($newData) && is_array($newData)) {
 				$this->addDataFromArray($newData, $doNotWrite);
 			}
 		}
 	}
 
-	function addDataFromArray($newData, $doNotWrite = false) {
-		if(isset($newData["address"])) {$this->FullAddress = $newData["address"]; }
-		$option = "";
-		foreach($newData as $key => $value) {
-			if("0" == $key && floatval($value)) {
-				$option .= "A";
-				$this->Longitude = $value;
-			}
-			elseif("1" == $key &&  floatval($value) && "A" == $option) {
-				$option .= "B";
-				$this->Latitude = $value;
-			}
-			elseif("1" == $key && floatval($value) && "A" != $option) {
-				$option .= "C";
-				$this->Longitude = $value;
-			}
-			elseif("2" == $key && floatval($value) && "C" == $option) {
-				$option .= "D";
-				$this->Latitude = $value;
-			}
-		}
-		if(isset($newData["CountryNameCode"])) {$this->CountryNameCode = $newData["CountryNameCode"];}
-		if(isset($newData["AdministrativeAreaName"])) {$this->AdministrativeAreaName = $newData["AdministrativeAreaName"];}
-		if(isset($newData["SubAdministrativeAreaName"])) {$this->SubAdministrativeAreaName = $newData["SubAdministrativeAreaName"];}
-		if(isset($newData["LocalityName"])) {$this->LocalityName = $newData["LocalityName"];}
-		if(isset($newData["ThoroughfareName"])) {$this->ThoroughfareName = $newData["ThoroughfareName"];}
-		if(isset($newData["PostalCodeNumber"])) {$this->PostalCodeNumber = $newData["PostalCodeNumber"];}
-		if(isset($newData["Accuracy"])) {
-			$this->Accuracy = $newData["Accuracy"];
-			if($newData["Accuracy"]> 2) {
-				$this->Address = $newData["address"];
-			}
+	protected function addDataFromArray($newData, $doNotWrite = false) {
+		foreach($newData as $field => $value) {
+			$this->$field = $value;
 		}
 		if(!$doNotWrite) {
 		/* AS THIS IS A onBeforeWrite there is NO POINT in writing!!!!! */

@@ -12,8 +12,8 @@ class AddressFinderField extends TextField {
 		if(!isset(self::$addressArray) && $this->value) {
 			self::$addressArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->value);
 		}
-		if(isset(self::$addressArray[0]) && isset(self::$addressArray[1])) {
-			if(floatval(self::$addressArray[0]) && floatval(self::$addressArray[1])) {
+		if(isset(self::$addressArray["Longitude"]) && isset(self::$addressArray["Latitude"])) {
+			if(floatval(self::$addressArray["Longitude"]) && floatval(self::$addressArray["Latitude"])) {
 				return self::$addressArray;
 			}
 		}

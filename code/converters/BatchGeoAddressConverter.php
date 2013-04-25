@@ -1,6 +1,7 @@
 <?php
 
 class BatchGeoAddressConverter extends Object {
+	/*
 	static function convert($tableName, $fieldName, $idFieldName) {
 		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$data = self::getDataFromTable($tableName, $fieldName, $idFieldName);
@@ -31,5 +32,6 @@ class BatchGeoAddressConverter extends Object {
 		$result = $sqlQuery->execute();
 		return $result;
 	}
-
+*/
 }
+

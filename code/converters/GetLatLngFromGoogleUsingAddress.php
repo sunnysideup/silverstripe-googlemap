@@ -17,43 +17,17 @@
 class GetLatLngFromGoogleUsingAddress extends Object {
 
 
-	public $status;
+	private static $debug = false;
 
-	public $Value;
-
-	public static $geocode_url = "http://maps.google.com/maps/geo?sensor=false&oe=utf8&q=%s&output=json&key=%s";
+	protected static $geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
 
 	 /**
-		* Instead of asking for a selection on multiple matches,
-		* default user to first result thats returned.
+		* default user to first result that is returned.
 		*
 		* @var boolean
 		*/
-	public $defaultToFirstResult = false;
+	protected static $default_to_first_result = true;
 
-
-	 /**
-		* Storing the first result from validate()
-		* for later usage in saveInto().
-		*
-		* @var object
-		*/
-	protected $_cachePlacemark;
-
-	 /**
-		* Store the coordinates on those pair of
-		* fields on the currently used object
-		* in the form (only works if the field-saving
-		* is triggered by $myForm->saveInto($myObject)).
-		*
-		* Unset this array to disable auto-saving to these fields.
-		*
-		* Alternatively, you can use {@link getLat()}
-		* and {@link getLng()}.
-		*
-		* @var array
-		*/
-	protected $dataFields = array('Lat','Lng');
 	 /**
 		*
 		* tells you if CURL / file_get_contents is available
@@ -62,209 +36,114 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		* @var boolean
 		*/
 	protected static $server_side_available = true;
-	 /**
-		* Get geocode from google.
-		*
-		* @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
-		* @param string $q Place name (e.g. 'Portland' or '30th Avenue, New York")
-		* @return Object Multiple Placemarks and status code
-		*/
-
-	public static function get_geocode_obj($q) {
-
-		if(!defined("GoogleMapAPIKey")) {
-			user_error('Please define a valid Google Maps API Key: GoogleMapAPIKey', E_USER_ERROR);
-		}
-
-		if(empty($q)) return false;
-
-		$url = sprintf(self::$geocode_url, urlencode($q), GoogleMapAPIKey);
-		$curl = curl_init($url);
-		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt( $curl, CURLOPT_VERBOSE, true );
-		$response = curl_exec( $curl );
-		if(!$response) {
-			$response = file_get_contents($url);
-			if(!$response) {
-				return false;
-			}
-		}
-		return self::json_decoder($response);
-	}
-
-	/**
-	* Get first placemark from google, or return false.
-	*
-	* @param string $q
-	* @return Object Single placemark
-	*/
-	public static function get_placemark($q, $tryAnyway = 0) {
-		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
-		$q = trim($q);
-		$result = DataObject::get_one("GetLatLngFromGoogleUsingAddressSearchRecord", "{$bt}SearchPhrase{$bt} = '".($q)."'");
-		if($result) {
-			return unserialize($result->ResultArray);
-		}
-		elseif(self::$server_side_available || $tryAnyway) {
-			$responseObj = self::get_geocode_obj($q);
-			if(!$responseObj || $responseObj->Status->code != '200') {
-				return "Could not find address";
-			}
-			else {
-				$object = new GetLatLngFromGoogleUsingAddressSearchRecord();
-				$object->SearchPhrase = $q;
-				$object->ResultArray = serialize($responseObj->Placemark[0]);
-				$object->write();
-				return $responseObj->Placemark[0];
-			}
-		}
-	}
 
 	/**
 	* Get first placemark as flat array
 	*
 	* @param string $q
-	* @return Object Single placemark
+	* @return Array
 	*/
 	public static function get_placemark_as_array($q, $tryAnyway = 0) {
-		$placemark = self::get_placemark($q, $tryAnyway);
-		if(is_object($placemark)) {
-			return self::array_flatten($placemark);
+		$q = trim($q);
+		if($q) {
+			$result = null;
+			$resultDO = DataObject::get_one("GetLatLngFromGoogleUsingAddressSearchRecord", "\"SearchPhrase\" = '".Convert::raw2sql($q)."'");
+			if($resultDO) {
+				if(self::$debug) {
+					debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");
+				}
+				$result = unserialize($resultDO->ResultArray);
+				if(isset($result["FullAddress"]) && isset($result["Longitude"]) && isset($result["Latitude"])) {
+					return $result;
+				}
+				$result = null;
+			}
+			if(!$result) {
+				$result = self::get_placemark($q, $tryAnyway);
+				if(self::$debug) {
+					debug::show(print_r($result, 1));
+				}
+				if(is_object($result)) {
+					$resultArray = self::google_2_ss($result);
+					if(self::$debug) {
+						debug::show(print_r($resultArray, 1));
+					}
+					$searchRecord = new GetLatLngFromGoogleUsingAddressSearchRecord();
+					$searchRecord->SearchPhrase = Convert::raw2sql($q);
+					$searchRecord->ResultArray = serialize($resultArray);
+					$searchRecord->write();
+					return $resultArray;
+				}
+				else {
+					return Array("FullAddress"=> "Could not find address");
+				}
+			}
 		}
 		else {
-			return Array("Address"=> "Could not find address");
+			return Array("FullAddress"=> "No search term provided");
 		}
 	}
+
+
 	/**
 	* Get first placemark from google, or return false.
 	*
 	* @param string $q
 	* @return Object Single placemark
 	*/
-	 public function validate() {
-		if(empty($this->value)) return false;
-		// cache
-		//if($this->_cachePlacemark) return $this->_cachePlacemark;
-
-		// get geocode from google
-		$responseObj = self::get_geocode_obj($this->value());
-
-		$validator = $this->form->getValidator();
-
-		// TODO Better evaluation of status codes
-		if(!$responseObj || $responseObj->status->code != '200') {
-			$validator->validationError(
-				$this->Name(),
-					_t('GetLatLngFromGoogleUsingAddress.LOCATIONNOTFOUND',"Location can't be found - please try again."),
-					"validation",
-				false
-			);
-			return false;
+	protected static function get_placemark($q, $tryAnyway = false) {
+		if(self::$server_side_available || $tryAnyway) {
+			$responseObj = self::get_geocode_obj($q);
+			if(self::$debug) {
+				debug::show(print_r($responseObj, 1));
+			}
+			if($responseObj && $responseObj->status == 'OK' && isset($responseObj->results[0])) {
+				//we just take the first address!
+				if(self::$default_to_first_result || count($responseObj->results) ==1) {
+					$result = $responseObj->results[0];
+					return $result;
+				}
+			}
 		}
+		user_error("Could not find address", E_USER_NOTICE);
+	}
 
-		$isUnique = (count($responseObj->Placemark) == 1);
-		if(!$isUnique && !$this->defaultToFirstResult) {
-		 $validator->validationError(
 
-			$this->Name(),
-			_t('GeocoderField.LOCATIONNOTUNIQUE',"Location is not unique, please be more specific"),
-			"validation",
-			false
-		 );
-		 return false;
+ /**
+	 * Get geocode from google.
+	 *
+	 * @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
+	 * @param string $q Place name (e.g. 'Portland' or '30th Avenue, New York")
+	 * @return Object Multiple Placemarks and status code
+	 */
+	protected static function get_geocode_obj($q) {
+		if(!defined("GoogleMapAPIKey")) {
+			user_error('Please define a valid Google Maps API Key: GoogleMapAPIKey', E_USER_ERROR);
 		}
-		$placemark =  $responseObj->Placemark[0];
-		return ($placemark);
-	 }
-
-	 /**
-		* Sets query-string as normal value,
-		* but also queries the google geocoder
-		* to get the first placemark and caches it.
-		*
-		* @param unknown_type $value
-		*/
-
-	 public function setValue($Value) {
-		$this->value = $Value;
-		if($this->value) {
-		 $placemark = self::get_placemark($this->value);
-		 if($placemark) {
-			$this->_cachePlacemark = $placemark;
-			$this->value = $this->_cachePlacemark->address;
-		 }
+		$q = trim($q);
+		if(self::$debug) {
+			var_dump($q);
 		}
-	 }
-
-
-	 /**
-		* Get address of first result.
-		*
-		* @return string
-		*/
-	 public function getAddress() {
-		if(!isset($this->_cachePlacemark)) $this->_cachePlacemark = self::get_placemark($this->value());
-		return $this->_cachePlacemark->address;
-	 }
-
-	 /**
-		* Get latitude of first result.
-		*
-		* @return float
-		*/
-	 public function getLat() {
-		if(!isset($this->_cachePlacemark)) $this->_cachePlacemark = self::get_placemark($this->value());
-
-		return (float)$this->_cachePlacemark->Point->coordinates[0];
-	 }
-
-	 /**
-		* Get longitude of first result.
-		*
-		* @return float
-		*/
-	 public function getLng() {
-		if(!isset($this->_cachePlacemark)) $this->_cachePlacemark = self::get_placemark($this->value());
-
-		return (float)$this->_cachePlacemark->Point->coordinates[1];
-	 }
-
-	 /**
-		* Set coordinate storage fields.
-		*
-		* @param array $arr
-		*/
-	 public function setDataFields($arr) {
-		$this->dataFields = $arr;
-	 }
-
-	 /**
-		* Get coordinate storage fields.
-		*
-		* @return array
-		*/
-	 public function getDataFields() {
-		return $this->dataFields;
-	 }
-
-	 /**
-		* Clear the Placemark (first result)
-		* that is cached when {@link validate()} or
-		* {@link setValue()} are called.
-		*/
-	 public function clearCache() {
-		unset($this->_cachePlacemark);
-	 }
-
-	 private function checkIfServerSideIsAvailable() {
-		if(self::$server_side_available) {
-		 return true;
+		if(empty($q)) return false;
+		$url = sprintf(self::$geocode_url, urlencode($q));
+		if(self::$debug) {
+			debug::show(print_r($url, 1));
 		}
-		elseif(self::get_placemark("New Zealand", true)) {
-		 return self::$server_side_available = true;
+		$curl = curl_init($url);
+		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt( $curl, CURLOPT_VERBOSE, true );
+		$responseString = curl_exec( $curl );
+		if(!$responseString) {
+			$responseString = file_get_contents($url);
+			if(!$responseString) {
+				return false;
+			}
 		}
-	 }
-
+		if(self::$debug) {
+			debug::show(print_r($responseString, 1));
+		}
+		return self::json_decoder($responseString);
+	}
 
 	private function json_decoder($content, $assoc = false) {
 		if ( !function_exists('json_decode')){
@@ -292,17 +171,107 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 			return json_encode($content);
 		}
 	}
-	static function array_flatten($array, $preserve_keys = 1, &$newArray = Array()) {
-		foreach ($array as $key => $child) {
-			if (is_array($child) || is_object($child)) {
-				$newArray =& self::array_flatten($child, $preserve_keys, $newArray);
-			} elseif ($preserve_keys + is_string($key) > 1) {
-				$newArray[$key] = $child;
-			} else {
-				$newArray[] = $child;
+
+	/**
+	 *
+	 *
+GOOGLE:
+	street_address indicates a precise street address.
+	route indicates a named route (such as "US 101").
+	intersection indicates a major intersection, usually of two major roads.
+	political indicates a political entity. Usually, this type indicates a polygon of some civil administration.
+	country indicates the national political entity, and is typically the highest order type returned by the Geocoder.
+	administrative_area_level_1 indicates a first-order civil entity below the country level. Within the United States, these administrative levels are states. Not all nations exhibit these administrative levels.
+	administrative_area_level_2 indicates a second-order civil entity below the country level. Within the United States, these administrative levels are counties. Not all nations exhibit these administrative levels.
+	administrative_area_level_3 indicates a third-order civil entity below the country level. This type indicates a minor civil division. Not all nations exhibit these administrative levels.
+	colloquial_area indicates a commonly-used alternative name for the entity.
+	locality indicates an incorporated city or town political entity.
+	sublocality indicates an first-order civil entity below a locality
+	neighborhood indicates a named neighborhood
+	premise indicates a named location, usually a building or collection of buildings with a common name
+	subpremise indicates a first-order entity below a named location, usually a singular building within a collection of buildings with a common name
+	postal_code indicates a postal code as used to address postal mail within the country.
+	natural_feature indicates a prominent natural feature.
+	airport indicates an airport.
+	park indicates a named park.
+	point_of_interest indicates a named point of interest. Typically, these "POI"s are prominent local entities that don't easily fit in another category such as "Empire State Building" or "Statue of Liberty."
+
+	post_box indicates a specific postal box.
+	street_number indicates the precise street number.
+	floor indicates the floor of a building address.
+	room indicates the room of a building address.
+
+SS:
+	'Latitude' => 'Double(12,7)',
+	'Longitude' => 'Double(12,7)',
+	'PointString' => 'Text',
+	'Address' => 'Text',
+	'FullAddress' => 'Text',
+	'CountryNameCode' => 'Varchar(3)',
+	'AdministrativeAreaName' => 'Varchar(255)',
+	'SubAdministrativeAreaName' => 'Varchar(255)',
+	'LocalityName' => 'Varchar(255)',
+	'PostalCodeNumber' => 'Varchar(30)',
+	*/
+
+	private static $google_2_ss_translation_array = array(
+		"administrative_area_level_1" => "AdministrativeAreaName",
+		//two into one
+		"locality" => "SubAdministrativeAreaName",
+		"administrative_area_level_2" => "SubAdministrativeAreaName",
+		//two into one!
+		"sublocality" => "LocalityName",
+		"locality" => "LocalityName",
+		//two into one!
+		"street_address" => "FullAddress",
+		"formatted_address" => "FullAddress",
+		//key ones
+		"lng" => "Longitude",
+		"lat" => "Latitude",
+		"country" => "CountryNameCode",
+		"postal_code" => "PostalCodeNumber"
+	);
+
+	/**
+	 * Converts Google Response INTO Silverstripe Google Map Array
+	 * that can be saved into a GoogleMapLocationsObject
+	 * @param GoogleResponseObject (JSON)
+	 * @return Array
+	 */
+	private static function google_2_ss($responseObj) {
+		//get address parts
+		$outputArray = array(
+			"Original"=> $responseObj,
+			"FullAddress"=> "Could not find address"
+		);
+		if(isset($responseObj->address_components) && is_array($responseObj->address_components)) {
+			foreach($responseObj->address_components as $addressItem) {
+				if(
+					is_object($addressItem)
+					&& isset($addressItem->types)
+					&& is_array($addressItem->types)
+					&& count($addressItem->types)
+					&& isset($addressItem->short_name)
+				) {
+					if(isset(self::$google_2_ss_translation_array[$addressItem->types[0]])) {
+						$outputArray[self::$google_2_ss_translation_array[$addressItem->types[0]]] = $addressItem->short_name;
+					}
+					else {
+						$outputArray[$addressItem->types[0]] = $addressItem->short_name;
+					}
+				}
 			}
 		}
-		return $newArray;
+		if(!empty($responseObj->geometry) && !empty($responseObj->geometry->location)) {
+			$outputArray["Longitude"] = $responseObj->geometry->location->lng;
+			$outputArray["Latitude"] = $responseObj->geometry->location->lat;
+			$outputArray["Accuracy"] = $responseObj->geometry->location_type;
+		}
+		//get other data
+		if(!empty($responseObj->formatted_address)) {
+			$outputArray["FullAddress"] = $responseObj->formatted_address;
+		}
+		return $outputArray;
 	}
 }
 
