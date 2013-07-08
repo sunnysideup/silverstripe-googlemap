@@ -4,18 +4,14 @@
  */
 
 
-class GoogleMapSiteConfigDOD extends DataObjectDecorator {
+class GoogleMapSiteConfigDOD extends DataExtension {
 
-	function extraStatics(){
-		return array(
-			'db' => array(
-				"GoogleMapDefaultTitle" => "Varchar(150)"
-			),
-			'default' => array()
-		);
-	}
+	protected static $db = array("GoogleMapDefaultTitle" => "Varchar(150)");
 
-	function updateCMSFields(FieldSet &$fields) {
+	protected static $default = array();
+
+
+	function updateCMSFields(FieldList $fields) {
 		return $fields;
  }
 

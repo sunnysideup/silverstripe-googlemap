@@ -4,7 +4,11 @@
  */
 
 
-class GoogleMapLocationsDOD extends DataObjectDecorator {
+class GoogleMapLocationsDOD extends DataExtension {
+
+	protected static $db = array("HasGeoInfo" => "Boolean");
+	protected static $has_many = array("GeoPoints" => "GoogleMapLocationsObject");
+	protected static $default = array();
 
 	protected static $page_classes_without_map = array();
 		static function get_page_classes_without_map(){return self::$page_classes_without_map;}
@@ -20,37 +24,20 @@ class GoogleMapLocationsDOD extends DataObjectDecorator {
 			self::$page_classes_with_map = $array;
 		}
 
-
-	function extraStatics(){
-		return array(
-			'db' => array(
-				"HasGeoInfo" => "Boolean",
-			),
-			'has_many' => array(
-				"GeoPoints" => "GoogleMapLocationsObject"
-			),
-			'default' => array()
-		);
-	}
-
-	function updateCMSFields(FieldSet &$fields) {
+	function updateCMSFields(FieldList $fields) {
 		if($this->classHasMap()) {
 			$fields->addFieldToTab("Root", new Tab("Map"));
 			$fields->addFieldToTab("Root.Map", new CheckboxField("HasGeoInfo", "Has Address(es)? - save and reload this page to start data-entry"));
 			if($this->owner->HasGeoInfo) {
 				$dataObject = new GoogleMapLocationsObject();
 				$complexTableFields = $dataObject->complexTableFields();
-				$GeoPointsField = new ComplexTableField(
-					$this->owner,
-					'GeoPoints',
-					'GoogleMapLocationsObject', //Classname
-					$complexTableFields,
-					null,
-					"ParentID = ".$this->owner->ID
+				$source = $this->owner->GeoPoints();
+				$GeoPointsField = new GridField(
+					"GeoPoints",
+					"Locations",
+					$source,
+					GridFieldConfig_RelationEditor::create()
 				);
-				$GeoPointsField->setParentClass($this->owner->class);
-				//$GeoPointsField->setAddTitle( 'A Location' );
-				$GeoPointsField->relationAutoSetting = true;
 				$fields->addFieldToTab("Root.Map", $GeoPointsField);
 			}
 		}
@@ -99,7 +86,7 @@ class GoogleMapLocationsDOD extends DataObjectDecorator {
 	function getChildrenOfType($parentPage, $classType = null) {
 		$children = $parentPage->AllChildren();
 		if (!isset($childrenOfType)) {
-			$childrenOfType = new DataObjectSet();
+			$childrenOfType = new ArrayList();
 		}
 		if ($children) {
 			foreach($children as $item ) {
@@ -111,7 +98,7 @@ class GoogleMapLocationsDOD extends DataObjectDecorator {
 				$childrenOfType->push($parentPage);
 			}
 		}
-		return ($childrenOfType) ? $childrenOfType : new DataObjectSet();
+		return ($childrenOfType) ? $childrenOfType : new ArrayList();
 	}
 
 
@@ -135,11 +122,11 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		return new Form(
 			$this->owner,
 			"SearchByAddressForm",
-			new FieldSet(
+			new FieldList(
 				new TextField("Address", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->address),
 				new HiddenField("ClassName", "ClassName", self::$class_name_only)
 			),
-			new FieldSet(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
+			new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
 			new RequiredFields("Address")
 		);
 	}
@@ -152,7 +139,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		if(!isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
 			GoogleMapSearchRecord::create_new($address, $this->owner->ID, false);
 			$form->addErrorMessage('Address', _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND", "Sorry, address could not be found..."), 'warning');
-			Director::redirectBack();
+			$this->redirectBack();
 			return;
 		}
 		else {

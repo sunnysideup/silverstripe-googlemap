@@ -44,7 +44,7 @@ class GoogleMapDataResponse extends Controller {
 		}
 		elseif(isset($_GET["i"])) {
 			$i = intval($_GET["i"]);
-			$point = DataObject::get_by_id("GoogleMapLocationsObject", $i);
+			$point = GoogleMapLocationsObject::get()->byID($i);
 			if(!$point) {
 				//New POINT
 			}
@@ -53,15 +53,17 @@ class GoogleMapDataResponse extends Controller {
 			}
 		}
 		if($id) {
-			$this->owner = DataObject::get_by_id("SiteTree", $id);
+			$this->owner = SiteTree::get()->byID($id);
 		}
 		//HACK
 		elseif(!$this->owner) {
-			$this->owner = DataObject::get_one("SiteTree", "\"Title\" = '".Convert::raw2sql($this->request->param("Title"))."'");
+			$this->owner = SiteTree::get()->filter(array(
+				"Title" => Convert::raw2sql($this->request->param("Title"))
+			))->First();
 		}
 		if(!$this->owner  & !in_array($this->request->param("Action"), self::$actions_without_owner)) {
 			//user_error("no owner has been identified for GoogleMapDataResponse", E_USER_NOTICE);
-			$this->owner = DataObject::get_one("SiteTree");
+			$this->owner = SiteTree::get()->First();
 		}
 		//END HACK
 		$this->title = urldecode($this->request->param("Title"));
@@ -98,8 +100,8 @@ class GoogleMapDataResponse extends Controller {
 	}
 
 	public function showpagepointsmapxml() {
-		$data = DataObject::get("GoogleMapLocationsObject", "ParentID = ".$this->owner->ID);
-		if($data) {
+		$data = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->owner->ID));
+		if($data->count()) {
 			if($data->count() > 1) {
 				$s = "s";
 			}
@@ -129,7 +131,7 @@ class GoogleMapDataResponse extends Controller {
 			$point->CustomPopUpWindowTitle = $this->title;
 			$point->CustomPopUpWindowInfo = $this->address;
 			if($point) {
-				$data = new DataObjectSet();
+				$data = new ArrayList();
 				$data->push($point);
 				return $this->makeXMLData(null, $data, $this->title, $this->title);
 			}
@@ -165,12 +167,14 @@ class GoogleMapDataResponse extends Controller {
 		}
 		//print_r($array);
 		if(is_array($array) && count($array)) {
-			$where = " {$bt}GoogleMapLocationsObject{$bt}.{$bt}ID{$bt} IN (".implode(",",$array).")";
+			$where = array("GoogleMapLocationsObject.ID" => $array);
 		}
 		else {
-			$where = " {$bt}GoogleMapLocationsObject{$bt}.{$bt}ID{$bt} < 0";
+				//3.0TODO check this
+			$where = array("GoogleMapLocationsObject.ID:LessThan" => 0);
+			//$where = " {$bt}GoogleMapLocationsObject{$bt}.{$bt}ID{$bt} < 0";
 		}
-		$googleMapLocationsObjects = DataObject::get("GoogleMapLocationsObject",$where);
+		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter($where);
 		return $this->makeXMLData(null, $googleMapLocationsObjects, $this->title, $this->title);
 	}
 
@@ -184,8 +188,8 @@ class GoogleMapDataResponse extends Controller {
 			$lat = $this->lat;
 		}
 		elseif($this->owner->ID) {
-			$objects = DataObject::get("GoogleMapLocationsObject", "ParentID = ".$this->owner->ID);
-			if($objects && $count = $objects->count()) {
+			$objects = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->owner->ID));
+			if($count = $objects->count()) {
 				foreach($objects as $point) {
 					$lng += $point->Longitude;
 					$lat += $point->Latitude;
@@ -215,8 +219,12 @@ class GoogleMapDataResponse extends Controller {
 				$where .= " AND {$bt}GoogleMapLocationsObject{$bt}.{$bt}ID{$bt} NOT IN (".implode(",",$excludeIDList).") ";
 			}
 			$join = "LEFT JOIN {$bt}SiteTree_Live{$bt} ON {$bt}SiteTree_Live{$bt}.{$bt}ID{$bt} = {$bt}GoogleMapLocationsObject{$bt}.{$bt}ParentID{$bt}";
-			$objects = DataObject::get("GoogleMapLocationsObject", $where, $orderByRadius, $join, GoogleMap::get_number_shown_in_around_me() );
-			if($objects) {
+			$objects = GoogleMapLocationsObject::get()
+				->where($where)
+				->sort($orderByRadius)
+				->leftJoin("SiteTree_Live", "SiteTree_Live.ID = GoogleMapLocationsObject.ParentID")
+				->limit(GoogleMap::get_number_shown_in_around_me());
+			if($objects->count()) {
 				return $this->makeXMLData(null, $objects, $title, GoogleMap::get_number_shown_in_around_me() . " closest points");
 			}
 			else {
@@ -244,7 +252,7 @@ class GoogleMapDataResponse extends Controller {
 						return $point->ID;
 					}
 					elseif($id > 0 && "move" == $action) {
-						$point = DataObject::get_by_id("GoogleMapLocationsObject", $id);
+						$point = GoogleMapLocationsObject::get()->byID($id);
 						if($point) {
 							if($point->ParentID == $this->owner->ID) {
 								$point->Latitude = $lat;
@@ -263,7 +271,7 @@ class GoogleMapDataResponse extends Controller {
 						}
 					}
 					elseif($id && "remove" == $action) {
-						$point = DataObject::get_by_id("GoogleMapLocationsObject", ($id));
+						$point = GoogleMapLocationsObject::get()->byID($id);
 						if($point) {
 							if($point->ParentID == $this->owner->ID) {
 								$point->delete();

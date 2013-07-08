@@ -198,7 +198,7 @@ class GoogleMap extends ViewableData {
 
 	public function addExtraLayersAsLinks($Title, $Link) {
 		if(!$this->ExtraLayersAsLinks) {
-			$this->ExtraLayersAsLinks = new DataObjectSet();
+			$this->ExtraLayersAsLinks = new ArrayList();
 		}
 		$this->ExtraLayersAsLinks->push(new ArrayData(array("Title" => $Title, "Link" => $Link)));
 	}
@@ -209,7 +209,7 @@ class GoogleMap extends ViewableData {
 		}
 	}
 
-	public function canEdit() {
+	public function canEdit($member = null) {
 		if($this->UpdateServerUrlDragend) {
 			return true;
 		}
@@ -219,7 +219,7 @@ class GoogleMap extends ViewableData {
 		if(!$unsortedSet) {
 			$unsortedSet = $this->dataPointsObjectSet;
 		}
-		$sortedSet = new DataObjectSet();
+		$sortedSet = new ArrayList();
 		if($unsortedSet->count()) {
 			foreach($unsortedSet as $item) {
 				$tempArray[$item->Latitude] = $item;
@@ -241,7 +241,7 @@ class GoogleMap extends ViewableData {
 				}
 			}
 			$where .= ') ';
-			$this->GooglePointsDataObject = DataObject::get("GoogleMapLocationsObject", $where);
+			$this->GooglePointsDataObject = GoogleMapLocationsObject::get()->where($where);
 			$PageDataObjectSet = null;
 		}
 	}
@@ -299,7 +299,7 @@ class GoogleMap extends ViewableData {
 		if($this->dataPointsObjectSet) {
 			return $this->dataPointsObjectSet->count();
 		}
-		elseif($this->GooglePointsDataObject){
+		elseif($this->GooglePointsDataObject->count()){
 			return $this->GooglePointsDataObject->count();
 		}
 		elseif(isset($_SESSION["addCustomGoogleMap"])) {
@@ -318,7 +318,7 @@ class GoogleMap extends ViewableData {
 	}
 
 	public function Link() {
-		$page = Director::currentPage();
+		$page = Director::get_current_page();
 		if($page) {
 			return $page->Link();
 		}
@@ -338,7 +338,7 @@ class GoogleMap extends ViewableData {
 	public function createDataPoints() {
 		$this->dataPointsStaticMapHTML = '';
 		$this->dataPointsXML = '';
-		$this->dataPointsObjectSet = New DataObjectSet();
+		$this->dataPointsObjectSet = new ArrayList();
 		$this->loadDefaults();
 		$idArray = array();
 		if(self::$GoogleMapWidth > 512) { $staticMapWidth = 512;	}	else { $staticMapWidth = self::$GoogleMapWidth;	}

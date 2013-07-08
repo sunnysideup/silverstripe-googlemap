@@ -39,7 +39,7 @@ class GoogleMapSearchRecord extends DataObject {
 
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
-		$m = Member::currentMember();
+		$m = Member::currentUser();
 		if($m) {
 			$this->MemberID = $m->ID;
 		}

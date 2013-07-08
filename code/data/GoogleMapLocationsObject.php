@@ -68,7 +68,10 @@ class GoogleMapLocationsObject extends DataObject {
 	}
 
 	static function pointExists($longitude, $latitude) {
-		return DataObject::get_one("GoogleMapLocationsObject", "\"Longitude\" = ".floatva($longitude)." AND \"Latitude\" = ".floatval($latitude)."");
+		return GoogleMapLocationsObject::get()->filter(array(
+			"Longitude" => floatval($longitude),
+			"Latitude" => floatval($latitude)
+		))->First();
 	}
 
 	function  getCMSFields() {
@@ -76,7 +79,7 @@ class GoogleMapLocationsObject extends DataObject {
 		$addTitleAndContent = true;
 		$parentPageID = $this->ParentID;
 		if($parentPageID) {
-			$parent = DataObject::get_by_id("SiteTree", $parentPageID);
+			$parent = SiteTree::get()->byID($parentPageID);
 			if($parent) {
 				if($parent->hasMethod("CustomAjaxInfoWindow")) {
 					$addTitleAndContent = false;
@@ -152,8 +155,7 @@ class GoogleMapLocationsObject extends DataObject {
 		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$parentData = $this->getParentData();
 		if(!isset(self::$parent_point_counts[$this->ParentID + 0]) && $this->getParentData()) {
-			$result = DB::query("Select Count(*) from {$bt}GoogleMapLocationsObject{$bt} where ParentID = ".$this->ParentID);
-			$count = $result->value();
+			$count = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->ParentID))->count();
 			self::$parent_point_counts[$this->ParentID] = $count;
 		}
 		if(isset(self::$parent_point_counts[$this->ParentID + 0]) && self::$parent_point_counts[$this->ParentID + 0] == 1 && $this->getParentData()) {
@@ -194,7 +196,7 @@ class GoogleMapLocationsObject extends DataObject {
 
 	function completePoints() {
 		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
-		$uncompletedPoints = DataObject::get("GoogleMapLocationsObject", "
+		$uncompletedPoints = GoogleMapLocationsObject::get()->where("
 			(
 				({$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} <> {$bt}GoogleMapLocationsObject{$bt}.{$bt}FullAddress{$bt})
 				OR (
@@ -211,9 +213,8 @@ class GoogleMapLocationsObject extends DataObject {
 					{$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} = ''
 					OR {$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} = IsNull
 				)
-			)"
-		);
-		if($uncompletedPoints) {
+			)");
+		if($uncompletedPoints->count()) {
 			foreach($uncompletedPoints as $point) {
 				$point->findGooglePoints(false);
 			}
