@@ -1,6 +1,6 @@
 <% if hasMap %>
 <div class="googleMapHolder">
-<% control GoogleMapController %>
+<% with GoogleMapController %>
 <% if getShowStaticMapFirst %>
 <div class="loadInteractiveMap">
 	<a href="#" onclick="loadMapScripts(); return false;">load interactive map</a>
@@ -41,9 +41,9 @@
 	<div id="GoogleMapExtraLayersAsList" class="MapExtraInformation">
 		<h2>Add to the map</h2>
 		<ul>
-	<% control AllExtraLayersAsLinks %>
+	<% loop AllExtraLayersAsLinks %>
 			<li><a href="#map" onclick="return !addLayer('{$Link}');">$Title</a></li>
-	<% end_control %>
+	<% end_loop %>
 		</ul>
 	</div>
 	<% end_if %>
@@ -52,9 +52,9 @@
 	<div id="$getSideBarDivId" class="MapExtraInformation <% if EnoughPointsForAList %><% else %>hideMe<% end_if %>" >
 		<% if dataPointsObjectSet %>
 		<ul>
-			<% control orderItemsByLatitude %>
+			<% loop orderItemsByLatitude %>
 			<li>$Title $AjaxInfoWindowLink</li>
-			<% end_control %>
+			<% end_loop %>
 		</ul>
 		<% end_if %>
 	</div>
@@ -63,6 +63,6 @@
 	<% if getDirectionsDivId %><div id="$getDirectionsDivId" class="MapExtraInformation"></div><% end_if %>
 	<% if getStatusDivId %><div id="$getStatusDivId" class="MapExtraInformation"></div><% end_if %>
 </div>
-<% end_control %>
+<% end_with %>
 </div>
 <% end_if %>

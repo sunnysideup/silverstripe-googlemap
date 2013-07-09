@@ -10,7 +10,7 @@
 
 
 
-Director::addRules(40, array(
+Director::addRules(100, array(
 	'googlemap/$Action/$OwnerID/$Title/$Longitude/$Latitude/$Filter' => 'GoogleMapDataResponse'
 ));
 

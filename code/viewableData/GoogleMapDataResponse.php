@@ -81,7 +81,7 @@ class GoogleMapDataResponse extends Controller {
 	function setLat($lat) {$this->lat = $lat;}
 	function setFilter($filter) {$this->filter = $filter;}
 
-
+	//3.0TODO check that this 
 	function GoogleMapController() {
 		return $this->map;
 	}
