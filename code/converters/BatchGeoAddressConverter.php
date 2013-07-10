@@ -3,7 +3,6 @@
 class BatchGeoAddressConverter extends Object {
 	/*
 	static function convert($tableName, $fieldName, $idFieldName) {
-		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$data = self::getDataFromTable($tableName, $fieldName, $idFieldName);
 		foreach($data as $row) {
 			print_r($row);
@@ -12,12 +11,12 @@ class BatchGeoAddressConverter extends Object {
 				echo "checking ".$address."<hr />";
 				$newAddress = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address, true);
 				if($newAddress["1"] || $newAddress[0] || $newAddress["address"]) {
-					$sql = 'UPDATE {$bt}'.$tableName.'{$bt} SET {$bt}'.$fieldName.'{$bt} = "'.addslashes($newAddress["address"]).'" WHERE {$bt}'.$idFieldName.'{$bt} = "'.$row[$idFieldName].'" LIMIT 1;';
+					$sql = 'UPDATE \"'.$tableName.'\" SET \"'.$fieldName.'\" = "'.addslashes($newAddress["address"]).'" WHERE \"'.$idFieldName.'\" = "'.$row[$idFieldName].'" LIMIT 1;';
 					mysql_query($sql);
 					echo "<hr />".$sql."<hr />";
 				}
 				echo "**********************<BR />";
-				$sql = "UPDATE {$bt}".$tableName."{$bt} SET {$bt}DONE{$bt} = 1 WHERE {$bt}".$idFieldName."{$bt} = '".$row[$idFieldName]."' LIMIT 1;";
+				$sql = "UPDATE \"".$tableName."\" SET \"DONE\" = 1 WHERE \"".$idFieldName."\" = '".$row[$idFieldName]."' LIMIT 1;";
 				mysql_query($sql);
 			}
 		}

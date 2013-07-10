@@ -81,7 +81,7 @@ class GoogleMapDataResponse extends Controller {
 	function setLat($lat) {$this->lat = $lat;}
 	function setFilter($filter) {$this->filter = $filter;}
 
-	//3.0TODO check that this 
+	//3.0TODO check that this
 	function GoogleMapController() {
 		return $this->map;
 	}
@@ -143,24 +143,22 @@ class GoogleMapDataResponse extends Controller {
 	}
 
 	public function showcustompagesmapxml() {
-		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$array = Array(-1);
 		if(isset($_SESSION["addCustomGoogleMap"][$this->title])) {
 			$array = $_SESSION["addCustomGoogleMap"][$this->title];
 		}
 		//print_r($array);
 		if(is_array($array) && count($array)) {
-			$where = " {$bt}SiteTree_Live{$bt}.{$bt}ID{$bt} IN (".implode(",",$array).")";
+			$where = " \"SiteTree_Live\".\"ID\" IN (".implode(",",$array).")";
 		}
 		else {
-			$where = " {$bt}SiteTree_Live{$bt}.{$bt}ID{$bt} < 0";
+			$where = " \"SiteTree_Live\".\"ID\" < 0";
 		}
 		$pages = Versioned::get_by_stage("SiteTree", "Live", $where);
 		return $this->makeXMLData($pages, null, $this->title, $this->title);
 	}
-	
+
 	public function showcustomdosmapxml() {
-		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$array = Array(-1);
 		if(isset($_SESSION["addCustomGoogleMap"][$this->title])) {
 			$array = $_SESSION["addCustomGoogleMap"][$this->title];
@@ -172,14 +170,13 @@ class GoogleMapDataResponse extends Controller {
 		else {
 				//3.0TODO check this
 			$where = array("GoogleMapLocationsObject.ID:LessThan" => 0);
-			//$where = " {$bt}GoogleMapLocationsObject{$bt}.{$bt}ID{$bt} < 0";
+			//$where = " \"GoogleMapLocationsObject\".\"ID\" < 0";
 		}
 		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter($where);
 		return $this->makeXMLData(null, $googleMapLocationsObjects, $this->title, $this->title);
 	}
 
 	public function showaroundmexml() {
-		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$lng = 0;
 		$lat = 0;
 		$excludeIDList = array();
@@ -211,14 +208,14 @@ class GoogleMapDataResponse extends Controller {
 		}
 		if($lng && $lat) {
 			$orderByRadius = GoogleMapLocationsObject::radiusDefinition($lng, $lat);
-			$where = "(".$orderByRadius.") > 0 AND {$bt}GoogleMapLocationsObject{$bt}.{$bt}Latitude{$bt} <> 0 AND {$bt}GoogleMapLocationsObject{$bt}.{$bt}Longitude{$bt} <> 0";
+			$where = "(".$orderByRadius.") > 0 AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
 			if($classNameForParent && !is_object($classNameForParent)) {
-				$where .= " AND {$bt}SiteTree_Live{$bt}.{$bt}ClassName{$bt} = '".$classNameForParent."'";
+				$where .= " AND \"SiteTree_Live\".\"ClassName\" = '".$classNameForParent."'";
 			}
 			if(count($excludeIDList)) {
-				$where .= " AND {$bt}GoogleMapLocationsObject{$bt}.{$bt}ID{$bt} NOT IN (".implode(",",$excludeIDList).") ";
+				$where .= " AND \"GoogleMapLocationsObject\".\"ID\" NOT IN (".implode(",",$excludeIDList).") ";
 			}
-			$join = "LEFT JOIN {$bt}SiteTree_Live{$bt} ON {$bt}SiteTree_Live{$bt}.{$bt}ID{$bt} = {$bt}GoogleMapLocationsObject{$bt}.{$bt}ParentID{$bt}";
+			$join = "LEFT JOIN \"SiteTree_Live\" ON \"SiteTree_Live\".\"ID\" = \"GoogleMapLocationsObject\".\"ParentID\"";
 			$objects = GoogleMapLocationsObject::get()
 				->where($where)
 				->sort($orderByRadius)

@@ -152,7 +152,6 @@ class GoogleMapLocationsObject extends DataObject {
 	}
 
 	function addParentData() {
-		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$parentData = $this->getParentData();
 		if(!isset(self::$parent_point_counts[$this->ParentID + 0]) && $this->getParentData()) {
 			$count = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->ParentID))->count();
@@ -195,23 +194,22 @@ class GoogleMapLocationsObject extends DataObject {
 	}
 
 	function completePoints() {
-		$bt = defined('DB::USE_ANSI_SQL') ? "\"" : "`";
 		$uncompletedPoints = GoogleMapLocationsObject::get()->where("
 			(
-				({$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} <> {$bt}GoogleMapLocationsObject{$bt}.{$bt}FullAddress{$bt})
+				(\"GoogleMapLocationsObject\".\"Address\" <> \"GoogleMapLocationsObject\".\"FullAddress\")
 				OR (
-					{$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} = IsNull
-					OR {$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} = ''
+					\"GoogleMapLocationsObject\".\"Address\" = IsNull
+					OR \"GoogleMapLocationsObject\".\"Address\" = ''
 				)
 			)
 			AND
-				{$bt}GoogleMapLocationsObject{$bt}.{$bt}Manual{$bt} <> 1
-				AND {$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} <> IsNull
-				AND (({$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt}) <> '' OR ({$bt}GoogleMapLocationsObject{$bt}.{$bt}Longitude{$bt}<> 0
-				AND {$bt}GoogleMapLocationsObject{$bt}.{$bt}Latitude{$bt} <> 0
+				\"GoogleMapLocationsObject\".\"Manual\" <> 1
+				AND \"GoogleMapLocationsObject\".\"Address\" <> IsNull
+				AND ((\"GoogleMapLocationsObject\".\"Address\") <> '' OR (\"GoogleMapLocationsObject\".\"Longitude\"<> 0
+				AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0
 				AND (
-					{$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} = ''
-					OR {$bt}GoogleMapLocationsObject{$bt}.{$bt}Address{$bt} = IsNull
+					\"GoogleMapLocationsObject\".\"Address\" = ''
+					OR \"GoogleMapLocationsObject\".\"Address\" = IsNull
 				)
 			)");
 		if($uncompletedPoints->count()) {
