@@ -6,9 +6,9 @@
 
 class GoogleMapSiteConfigDOD extends DataExtension {
 
-	protected static $db = array("GoogleMapDefaultTitle" => "Varchar(150)");
+	private static $db = array("GoogleMapDefaultTitle" => "Varchar(150)");
 
-	protected static $default = array();
+	private static $default = array();
 
 
 	function updateCMSFields(FieldList $fields) {

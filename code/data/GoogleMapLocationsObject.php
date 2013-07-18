@@ -7,9 +7,9 @@
 
 class GoogleMapLocationsObject extends DataObject {
 
-	protected static $parent_point_counts = array();
+	private static $parent_point_counts = array();
 
-	public static $db = array (
+	private static $db = array (
 		'PointType' =>'Enum("none, point, polyline, polygon", "point")',
 		'Accuracy' => 'Varchar(100)',
 		'Latitude' => 'Double(12,7)',
@@ -30,20 +30,20 @@ class GoogleMapLocationsObject extends DataObject {
 		//'GeoLineString' => 'GeoLineString'
 	);
 
-	static $summary_fields = array (
+	private static $summary_fields = array (
 		'FullAddress' => "FullAddress",
 	);
 
-	static $has_one = array (
+	private static $has_one = array (
 		'Parent' => 'SiteTree'
 	);
 
-	static $indexes = array(
+	private static $indexes = array(
 		"Latitude" => true,
 		"Longitude" => true
 	);
 
-	static $casting = array(
+	private static $casting = array(
 		"ParentData" => "SiteTree",
 		"AjaxInfoWindowLink" => "HTMLText",
 		"ParentClassName" => "Varchar",

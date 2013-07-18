@@ -6,7 +6,7 @@
  */
 class AddressFinderField extends TextField {
 
-	static $addressArray = null;
+	private static $addressArray = null;
 
 	function getAddressArray() {
 		if(!isset(self::$addressArray) && $this->value) {

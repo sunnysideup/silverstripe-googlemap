@@ -6,23 +6,13 @@
 
 class GoogleMapLocationsDOD extends DataExtension {
 
-	protected static $db = array("HasGeoInfo" => "Boolean");
-	protected static $has_many = array("GeoPoints" => "GoogleMapLocationsObject");
-	protected static $default = array();
+	private static $db = array("HasGeoInfo" => "Boolean");
+	private static $has_many = array("GeoPoints" => "GoogleMapLocationsObject");
+	private static $default = array();
 
-	protected static $page_classes_without_map = array();
-		static function get_page_classes_without_map(){return self::$page_classes_without_map;}
-		static function set_page_classes_without_map(array $array){
-			if(!is_array($array)) {debug::show("argument needs to be an array in GoogleMapLocationsDOD::set_page_classes_without_map()");}
-			self::$page_classes_without_map = $array;
-		}
+	private static $page_classes_without_map = array();
 
-	protected static $page_classes_with_map = array();
-		static function get_page_classes_with_map(){return self::$page_classes_with_map;}
-		static function set_page_classes_with_map(array $array){
-			if(!is_array($array)) {debug::show("argument needs to be an array in GoogleMapLocationsDOD::set_page_classes_with_map()");}
-			self::$page_classes_with_map = $array;
-		}
+	private static $page_classes_with_map = array();
 
 	function updateCMSFields(FieldList $fields) {
 		if($this->classHasMap()) {
@@ -49,7 +39,7 @@ class GoogleMapLocationsDOD extends DataExtension {
 			return $this->owner->CustomAjaxInfoWindow();
 		}
 		if($this->owner->hasMethod("ajaxinfowindowreturn")) {
-			return '<div class="viewMoreInformationHolder"><a href="'.$this->owner->Link().'" onclick="return !loadAjaxInfoWindow(this,\''.$this->owner->Link().'ajaxinfowindowreturn/\');">'.GoogleMap::get_ajax_info_window_text().'</a><div class="loadAjaxInfoWindowSpan"></div></div>';
+			return '<div class="viewMoreInformationHolder"><a href="'.$this->owner->Link().'" onclick="return !loadAjaxInfoWindow(this,\''.$this->owner->Link().'ajaxinfowindowreturn/\');">'. Config::inst()->get("GoogleMap", "ajax_info_window_text") .'</a><div class="loadAjaxInfoWindowSpan"></div></div>';
 		}
 	}
 
@@ -60,8 +50,8 @@ class GoogleMapLocationsDOD extends DataExtension {
 		//2. if list of WITH is shown then it must be in that
 		//3. otherwise check if it is specifically excluded (WITHOUT)
 		$result = true;
-		$inc =  self::get_page_classes_with_map();
-		$exc =  self::get_page_classes_without_map();
+		$inc =  Config::inst()->get("GoogleMapLocationsDOD", "page_classes_with_map");
+		$exc =  Config::inst()->get("GoogleMapLocationsDOD", "page_classes_without_map");
 		if(is_array($inc) && count($inc)) {
 			$result = false;
 			if(in_array($this->owner->ClassName,$inc)) {
@@ -106,7 +96,7 @@ class GoogleMapLocationsDOD extends DataExtension {
 
 class GoogleMapLocationsDOD_Controller extends Extension {
 
-	static $allowed_actions = array("SearchByAddressForm");
+	private static $allowed_actions = array("SearchByAddressForm");
 
 	protected $address = false;
 
@@ -115,8 +105,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	protected $isAjax = false;
 
 
-	protected static $class_name_only = '';
-		static function set_class_name_only($v) {self::$class_name_only = $v;}
+	private static $class_name_only = '';
 
 	function SearchByAddressForm($className = '') {
 		return new Form(

@@ -1,0 +1,11 @@
+SiteTree:
+  extensions:
+    - GoogleMapLocationsDOD
+ContentController:
+  extensions:
+    - GoogleMapLocationsDOD_Controller
+GoogleMapLocationsDOD:
+  page_classes_with_map:
+    - HomePage
+  page_classes_without_map:
+    - UserDefinedForms

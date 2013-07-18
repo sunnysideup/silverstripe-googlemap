@@ -19,14 +19,14 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 
 	private static $debug = false;
 
-	protected static $geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
+	private static $geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
 
 	 /**
 		* default user to first result that is returned.
 		*
 		* @var boolean
 		*/
-	protected static $default_to_first_result = true;
+	private static $default_to_first_result = true;
 
 	 /**
 		*
@@ -35,7 +35,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		*
 		* @var boolean
 		*/
-	protected static $server_side_available = true;
+	private static $server_side_available = true;
 
 	/**
 	* Get first placemark as flat array
@@ -119,7 +119,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 * @return Object Multiple Placemarks and status code
 	 */
 	protected static function get_geocode_obj($q) {
-		if(!defined("GoogleMapAPIKey")) {
+		if(!Config::inst()->get("GoogleMap", "GoogleMapAPIKey")) {
 			user_error('Please define a valid Google Maps API Key: GoogleMapAPIKey', E_USER_ERROR);
 		}
 		$q = trim($q);

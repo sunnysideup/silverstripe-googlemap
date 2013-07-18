@@ -12,13 +12,11 @@ STEP-BY-STEP (by alex.guez [at] gmail dot com)
 
 2.	Put the googlemap folder into the base installation folder (attention : the folder name is case sensitive)
 
-3.	Add 2 lines in the mysite/_config.php :
+3.	Modify settings as you wish in googlemap.yml.example :
 
-	a.	DataObject::add_extension('SiteTree', 'GoogleMapLocationsDOD');
+	a.	GoogleMapAPIKey: "abc"  ///here the abc stands for the key you obtained at step 1.
 
-	b.	define("GoogleMapAPIKey", "abc"); ///here the abc stands for the key you obtained at step 1.
-
-	c.	Copy all the commented code from googlemap/_config.php to mysite/_config.php and set values according to your needs
+	b.	Copy the parts from googlemap.yml.example in to your mysite config.yml that you want
 
 4.	Run a dev/build
 

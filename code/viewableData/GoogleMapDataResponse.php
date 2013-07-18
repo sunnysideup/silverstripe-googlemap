@@ -2,7 +2,7 @@
 
 class GoogleMapDataResponse extends Controller {
 
-	static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'turnonstaticmaps',
 		'turnoffstaticmaps',
 		'showpagepointsmapxml',
@@ -17,7 +17,7 @@ class GoogleMapDataResponse extends Controller {
 		'showpointbyid'
 	);
 
-	protected static $actions_without_owner = array(
+	private static $actions_without_owner = array(
 		'turnonstaticmaps',
 		'turnoffstaticmaps',
 		'showemptymap'

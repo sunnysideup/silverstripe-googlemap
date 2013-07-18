@@ -3,12 +3,12 @@
 
 class GoogleMapSearchRecord extends DataObject {
 
-	static $db = array(
+	private static $db = array(
 		"IPAddres" => "Varchar(32)",
 		"SearchedFor" => "Text"
 	);
 
-	static $has_one = array(
+	private static $has_one = array(
 		"Member" => "Member",
 		"Parent" => "SiteTee",
 		"GoogleMapLocationsObject" => "GoogleMapLocationsObject"
