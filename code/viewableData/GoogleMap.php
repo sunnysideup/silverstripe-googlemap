@@ -22,14 +22,19 @@ class GoogleMap extends ViewableData {
 	/* DIVS */
 	private static $TitleDivId = "";
 		public function getTitleDivID() {return Config::inst()->get("GoogleMap", "TitleDivId");}
+
 	private static $SideBarDivId = "";
 		public function getSideBarDivId() {return Config::inst()->get("GoogleMap", "SideBarDivId");}
+
 	private static $DropDownDivId	="";
 		public function getDropDownDivId() {return Config::inst()->get("GoogleMap", "DropDownDivId");}
+
 	private static $LayerListDivId = "";
 		public function getLayerListDivId() {return Config::inst()->get("GoogleMap", "LayerListDivId");}
+
 	private static $DirectionsDivId = "";
 		public function getDirectionsDivId() {return Config::inst()->get("GoogleMap", "DirectionsDivId");}
+
 	private static $StatusDivId = "";
 		public function getStatusDivId() {return Config::inst()->get("GoogleMap", "StatusDivId");}
 
@@ -51,7 +56,7 @@ class GoogleMap extends ViewableData {
 	private static $AllowMarkerDragAndDrop = false;
 	private static $MarkerOptions = "{bouncy:true,title: \"click me\"}";
 	private static $PreloadImages = false;
-		
+
 	/* ICONS */
 	private static $DefaultIconUrl = "";
 	private static $IconFolder = "/googlemap/images/icons/";
@@ -85,7 +90,6 @@ class GoogleMap extends ViewableData {
 	private static $ShowStaticMapFirst = 0; //MOVE TO SITECONFIG
 		public function getShowStaticMapFirst() {(!Config::inst()->get("GoogleMap", "ShowStaticMapFirst") || Session::get("StaticMapsOff"))? false : true;}
 	private static $number_shown_in_around_me = 7; //MOVE TO SITECONFIG
-		static function get_number_shown_in_around_me() {return Config::inst()->get("GoogleMap", "number_shown_in_around_me");}
 
 	/* STATIC MAP */
 	private static $StaticMapSettings = "maptype=roadmap";
@@ -257,7 +261,7 @@ class GoogleMap extends ViewableData {
 	}
 
 	public function Link() {
-		$page = Director::get_current_page();
+		$page = Controller::curr();
 		if($page) {
 			return $page->Link();
 		}

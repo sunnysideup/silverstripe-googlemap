@@ -222,7 +222,7 @@ class GoogleMapDataResponse extends Controller {
 				->leftJoin("SiteTree_Live", "SiteTree_Live.ID = GoogleMapLocationsObject.ParentID")
 				->limit(GoogleMap::get_number_shown_in_around_me());
 			if($objects->count()) {
-				return $this->makeXMLData(null, $objects, $title, GoogleMap::get_number_shown_in_around_me() . " closest points");
+				return $this->makeXMLData(null, $objects, $title, Config::inst()->get("GoogleMap", "number_shown_in_around_me") . " closest points");
 			}
 			else {
 				return "no data 1";//return false;
