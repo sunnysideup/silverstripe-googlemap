@@ -215,10 +215,11 @@ class GoogleMap extends ViewableData {
 	public function loadGoogleMap() {
 		$js = '';
 		$this->loadDefaults();
+
 		if(!self::$includes_are_done) {
 			Requirements::themedCSS("googleMap");
 			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-			Requirements::javascript('googlemap/javascript/googleMapStatic.js');
+			Requirements::javascript("googlemap/javascript/googleMapStatic.js");
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
 			if(!$this->getShowStaticMapFirst()) {
