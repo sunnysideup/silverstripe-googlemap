@@ -59,15 +59,15 @@ class GoogleMapLocationsObject extends DataObject {
 	 * @param Double $lat - latitude of location
 	 * @return String
 	 */
-	static function radiusDefinition($lon, $lat) {
+	public static function radiusDefinition($lon, $lat) {
 		return "(6378.137 * ACOS( ( SIN( PI( ) * ".$lat." /180 ) * SIN( PI( ) * \"GoogleMapLocationsObject\".\"Latitude\" /180 ) ) + ( COS( PI( ) * ".$lat." /180 ) * cos( PI( ) * \"GoogleMapLocationsObject\".\"Latitude\" /180 ) * COS( (PI( ) * \"GoogleMapLocationsObject\".\"Longitude\" /180 ) - ( PI( ) * $lon / 180 ) ) ) ) )";
 	}
 
-	static function radiusDefinitionOtherTable($lon, $lat, $table, $latitudeField, $longitudeField) {
+	public static function radiusDefinitionOtherTable($lon, $lat, $table, $latitudeField, $longitudeField) {
 		return "(6378.137 * ACOS( ( SIN( PI( ) * ".$lat." /180 ) * SIN( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) ) + ( COS( PI( ) * ".$lat." /180 ) * cos( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) * COS( (PI( ) * \"".$table."\".\"".$longitudeField."\" / 180 ) - ( PI( ) * $lon / 180 ) ) ) ) ) ";
 	}
 
-	static function pointExists($longitude, $latitude) {
+	public static function pointExists($longitude, $latitude) {
 		return GoogleMapLocationsObject::get()->filter(array(
 			"Longitude" => floatval($longitude),
 			"Latitude" => floatval($latitude)

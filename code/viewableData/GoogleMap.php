@@ -373,7 +373,7 @@ class GoogleMap extends ViewableData {
 	* Marker is optional
 	*/
 
-	static function quick_static_map($ArrayOfLatitudeAndLongitude, $title) {
+	public static function quick_static_map($ArrayOfLatitudeAndLongitude, $title) {
 		$staticMapURL = '';
 		$count = 0;
 		if(self::$GoogleMapWidth > 512) { $staticMapWidth = 512;	}	else { $staticMapWidth = self::$GoogleMapWidth;	}

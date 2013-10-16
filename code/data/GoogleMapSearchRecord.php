@@ -14,7 +14,7 @@ class GoogleMapSearchRecord extends DataObject {
 		"GoogleMapLocationsObject" => "GoogleMapLocationsObject"
 	);
 
-	static function create_new($searchedFor, $parentID = 0, $addGoogleMapLocationsObjectOrItsID = false){
+	public static function create_new($searchedFor, $parentID = 0, $addGoogleMapLocationsObjectOrItsID = false){
 		$obj = new GoogleMapSearchRecord();
 		$obj->SearchedFor = $searchedFor;
 		$obj->ParentID = $parentID;

@@ -257,7 +257,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	}
 
 
-	static function hasStaticMapsStaticFunction() {
+	public static function hasStaticMapsStaticFunction() {
   	return (!Session::get("StaticMapsOff") && $this->googleMap->getShowStaticMapFirst()) ? true : false;
 	}
 
