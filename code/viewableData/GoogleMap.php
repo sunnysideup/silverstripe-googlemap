@@ -88,7 +88,12 @@ class GoogleMap extends ViewableData {
 	private static $DefaultLongitude = 0.0000000001; //MOVE TO SITECONFIG
 	private static $DefaultZoom = 0; //MOVE TO SITECONFIG
 	private static $ShowStaticMapFirst = 0; //MOVE TO SITECONFIG
-		public function getShowStaticMapFirst() {(!Config::inst()->get("GoogleMap", "ShowStaticMapFirst") || Session::get("StaticMapsOff"))? false : true;}
+		public function getShowStaticMapFirst() {
+			return (
+				!Config::inst()->get("GoogleMap", "ShowStaticMapFirst") ||
+				Session::get("StaticMapsOff")
+			) ? false : true;
+		}
 	private static $number_shown_in_around_me = 7; //MOVE TO SITECONFIG
 
 	/* STATIC MAP */
@@ -215,7 +220,6 @@ class GoogleMap extends ViewableData {
 	public function loadGoogleMap() {
 		$js = '';
 		$this->loadDefaults();
-
 		if(!self::$includes_are_done) {
 			Requirements::themedCSS("googleMap");
 			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
@@ -223,13 +227,13 @@ class GoogleMap extends ViewableData {
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
 			if(!$this->getShowStaticMapFirst()) {
-				Requirements::javascript("http://maps.google.com/maps?file=api&amp;v=2.x&amp;&amp;sensor".$this->showFalseOrTrue(self::$uses_sensor)."&amp;key=". Config::inst()->get("GoogleMap", "GoogleMapAPIKey"));
+				Requirements::javascript("http://maps.google.com/maps?file=api&v=2.x&sensor".$this->showFalseOrTrue(self::$uses_sensor)."&key=". Config::inst()->get("GoogleMap", "GoogleMapAPIKey"));
 				Requirements::javascript("googlemap/javascript/googleMaps.js");
 				$js .= 'var scriptsLoaded = true; jQuery(document).ready( function() { initiateGoogleMap();} );';
 			}
 			else {
 				$js .= 'var scriptsLoaded = false;';
-				Requirements::javascript('http://www.google.com/jsapi?key='.Config::inst()->get("GoogleMap", "GoogleMapAPIKey"));
+				Requirements::javascript('http://www.google.com/jsapi?key='.Config::inst()->get("GoogleMap", "GoogleMapAPIKey"));//
 			}
 			$js .= 'var absoluteBaseURL = "'. Director::absoluteBaseURL() .'";';
 			$js .= $this->createJavascript();
@@ -414,7 +418,7 @@ class GoogleMap extends ViewableData {
 		if(self::$uses_sensor) {
 			$uses_sensor = "true";
 		}
-		$fullStaticMapURL = 'http://maps.google.com/maps/api/staticmap?sensor='.$uses_sensor.'&amp;'.self::$StaticMapSettings.'&amp;'.$staticMapURL.'&amp;key='.Config::inst()->get("GoogleMap", "GoogleMapAPIKey");
+		$fullStaticMapURL = 'http://maps.google.com/maps/api/staticmap?sensor='.$uses_sensor.'&amp;'.self::$StaticMapSettings.'&amp;'.$staticMapURL.'&amp;key='.Config::inst()->get("GoogleMap", "GoogleMapAPIKey"); //key goes here...GoogleMapAPIKey
 		if(self::$save_static_map_locally) {
 			$fileName = str_replace(array('&', '|', ',', '=', ';'), array('', '', '', '', ''), $staticMapURL);
 			$length = strlen($fileName);

@@ -265,6 +265,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		if(!$this->googleMap) {
 			$this->googleMap = new GoogleMap();
 		}
+		$this->googleMap->loadGoogleMap();
 	}
 
 

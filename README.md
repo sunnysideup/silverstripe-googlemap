@@ -20,7 +20,7 @@ STEP-BY-STEP (by alex.guez [at] gmail dot com)
 
 4.	Run a dev/build
 
-5.	The page type (lets call it “TestPage”)for which you want to add a location must contain in the controller class:
+5.	The page type (lets call it Â“TestPageÂ”)for which you want to add a location must contain in the controller class:
 
 	a.	static $allowed_actions = array('showPagePointsMapXML');
 
@@ -35,7 +35,7 @@ STEP-BY-STEP (by alex.guez [at] gmail dot com)
 
 7.	Create a new page in the TestPage type
 
-8.	Go tho the menu “Map”, add a full address, save&publish
+8.	Go tho the menu Â“MapÂ”, add a full address, save&publish
 
 9.	Add in mysite/code/Page.php in the init function the code (for SS 2.3.1, as prototype is loaded by default, we need to load jquery):
 
