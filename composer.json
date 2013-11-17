@@ -3,14 +3,14 @@
 	"type": "silverstripe-module",
 	"description": "adds an in-depth application of the google map API (2.0) to your Silverstripe application",
 	"homepage": "http://www.silverstripe-webdevelopment.com",
-	"keywords": ["googlemap", "silverstripe"],
+	"keywords": ["googlemap", "googlemaps", "google map", "maps, "map", "google", "directions", "geo", "geospatial", "silverstripe"],
 	"license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
 	"authors":[
 		{
 			"name": "Nicolaas Francken",
 			"homepage": "https://github.com/sunnysideup",
-			"email" : "modules@sunnysideup.co.nz",
 			"role" : "lead developer"
+			"email" : "modules@sunnysideup.co.nz",
 		}
 	],
 	"require":{
