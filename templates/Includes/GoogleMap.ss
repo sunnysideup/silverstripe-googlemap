@@ -1,4 +1,4 @@
-<% if hasMap %>
+<% if hasGoogleMap %>
 <div class="googleMapHolder">
 <% with GoogleMapController %>
 <% if getShowStaticMapFirst %>

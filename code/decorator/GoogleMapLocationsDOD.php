@@ -15,7 +15,7 @@ class GoogleMapLocationsDOD extends DataExtension {
 	private static $page_classes_with_map = array();
 
 	function updateCMSFields(FieldList $fields) {
-		if($this->classHasMap()) {
+		if($this->classHasGoogleMap()) {
 			$fields->addFieldToTab("Root", new Tab("Map"));
 			$fields->addFieldToTab("Root.Map", new CheckboxField("HasGeoInfo", "Has Address(es)? - save and reload this page to start data-entry"));
 			if($this->owner->HasGeoInfo) {
@@ -44,7 +44,7 @@ class GoogleMapLocationsDOD extends DataExtension {
 	}
 
 
-	public function classHasMap() {
+	public function classHasGoogleMap() {
 		//assumptions:
 		//1. in general YES
 		//2. if list of WITH is shown then it must be in that
@@ -218,6 +218,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	}
 
 	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '') {
+		$this->initiateMap();
 		$sessionTitle = preg_replace('/[^a-zA-Z0-9]/', '', $title);
 		$isGoogleMapLocationsObject = true;
 		if($pagesOrGoogleMapLocationsObjects) {
@@ -265,7 +266,6 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		if(!$this->googleMap) {
 			$this->googleMap = new GoogleMap();
 		}
-		$this->googleMap->loadGoogleMap();
 	}
 
 
@@ -279,8 +279,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		return $this->googleMap;
 	}
 
-	public function hasMap() {
-		if($this->googleMap && $this->owner->classHasMap()) {
+	public function hasGoogleMap() {
+		if($this->googleMap && $this->owner->classHasGoogleMap()) {
 			return true;
 		}
 		else {
