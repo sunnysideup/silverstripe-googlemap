@@ -213,7 +213,6 @@ class GoogleMap extends ViewableData {
 	}
 
 	function addLayer($linkForData) {
-		echo $linkForData;
 		$this->linksForData[] = $linkForData;
 	}
 
