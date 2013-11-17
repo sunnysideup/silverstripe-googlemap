@@ -20,9 +20,9 @@ STEP-BY-STEP (by alex.guez [at] gmail dot com)
 
 4.	Run a dev/build
 
-5.	The page type (lets call it TestPage)for which you want to add a location must contain in the controller class:
+5.	The page type (lets call it TestPage for which you want to add a location must contain in the controller class:
 
-	a.	static $allowed_actions = array('showPagePointsMapXML');
+	a.	private static $allowed_actions = array('showPagePointsMapXML');
 
 	b.	public function init() {
 					parent::init();
@@ -35,13 +35,11 @@ STEP-BY-STEP (by alex.guez [at] gmail dot com)
 
 7.	Create a new page in the TestPage type
 
-8.	Go tho the menu Map, add a full address, save&publish
+8.	Go tho the Map tab in the CMS for the test page, add a full address, save and publish
 
-9.	Add in mysite/code/Page.php in the init function the code (for SS 2.3.1, as prototype is loaded by default, we need to load jquery):
+9.	Find your template file and add the following: <% include GoogleMap %>
 
-10.	Find your template file and add the following: <% include GoogleMap %>
-
-11. to customise information in pop-ups, add the following function to your pages with map: CustomAjaxInfoWindow
+10. to customise information in pop-ups, add the following function to your pages with map: CustomAjaxInfoWindow
 
 
 ___________________________________

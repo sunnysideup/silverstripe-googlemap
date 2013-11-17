@@ -113,7 +113,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 			"SearchByAddressForm",
 			new FieldList(
 				new TextField("Address", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->address),
-				new HiddenField("ClassName", "ClassName", self::$class_name_only)
+				new HiddenField("ClassName", "ClassName", $className)
 			),
 			new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
 			new RequiredFields("Address")

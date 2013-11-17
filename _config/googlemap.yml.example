@@ -9,8 +9,6 @@ GoogleMapLocationsDOD:
   page_classes_without_map:
     - UserDefinedForms
 
-GoogleMapLocationsDOD_Controller:
-  class_name_only: "MyPage"
 
 GoogleMap:
   # IMPORTANT ####################
