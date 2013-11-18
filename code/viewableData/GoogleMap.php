@@ -353,8 +353,8 @@ class GoogleMap extends ViewableData {
 			}
 			$this->dataPointsXML =
 						'<mapinfo>'.'<title>'.$this->dataObjectTitle.'</title>'
-						.'<longitude>'.self::$DefaultLatitude.'</longitude>'
-						.'<latitude>'.self::$DefaultLongitude.'</latitude>'
+						.'<longitude>'.round(self::$DefaultLatitude, 7).'</longitude>'
+						.'<latitude>'.round(self::$DefaultLongitude, 7).'</latitude>'
 						.'<zoom>'.self::$DefaultZoom.'</zoom>'
 						.'<pointcount>'.$count.'</pointcount>'
 						.'<info>'.$this->whereStatementDescription.'</info>'
@@ -363,7 +363,7 @@ class GoogleMap extends ViewableData {
 		}
 		else {
 			$this->dataPointsStaticMapHTML .=
-				"&amp;center=".self::$DefaultLatitude.",".self::$DefaultLongitude.
+				"&amp;center=".round(self::$DefaultLatitude, 7).",".round(self::$DefaultLongitude, 7).
 				"&amp;zoom=".self::$DefaultZoom;
 		}
 		$this->dataPointsStaticMapHTML = self::make_static_map_url_into_image($this->dataPointsStaticMapHTML, $this->dataObjectTitle);
