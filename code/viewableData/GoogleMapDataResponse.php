@@ -142,10 +142,11 @@ class GoogleMapDataResponse extends Controller {
 
 	}
 
-	public function showcustompagesmapxml() {
+	public function showcustompagesmapxml($request) {
 		$array = Array(-1);
-		if(isset($_SESSION["addCustomGoogleMap"][$this->title])) {
-			$array = $_SESSION["addCustomGoogleMap"][$this->title];
+		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
+		if(isset($addCustomGoogleMapArray[$this->title])) {
+			$array = $addCustomGoogleMapArray[$this->title];
 		}
 		//print_r($array);
 		if(is_array($array) && count($array)) {
@@ -160,8 +161,9 @@ class GoogleMapDataResponse extends Controller {
 
 	public function showcustomdosmapxml() {
 		$array = Array(-1);
-		if(isset($_SESSION["addCustomGoogleMap"][$this->title])) {
-			$array = $_SESSION["addCustomGoogleMap"][$this->title];
+		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
+		if(isset($addCustomGoogleMapArray[$this->title])) {
+			$array = $addCustomGoogleMapArray[$this->title];
 		}
 		//print_r($array);
 		if(is_array($array) && count($array)) {
@@ -329,5 +331,44 @@ class GoogleMapDataResponse extends Controller {
 		}
 	}
 
+	/**
+	 *
+	 * @param Array $addCustomGoogleMapArrayNEW
+	 */
+	public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW){
+		$addCustomGoogleMapArrayNEW = array_merge($addCustomGoogleMapArrayOLD, $addCustomGoogleMapArrayNEW);
+		Session::set("addCustomGoogleMap", serialize($addCustomGoogleMapArrayNEW));
+	}
+
+	/**
+	 *
+	 * @param Array $addCustomGoogleMapArray
+	 */
+	public static function set_custom_google_map_session_data($addCustomGoogleMapArray){
+		if(!is_array($addCustomGoogleMapArray)) {
+			user_error("addCustomGoogleMapArray should be an array!");
+		}
+		Session::set("addCustomGoogleMap", serialize($addCustomGoogleMapArray));
+	}
+
+	/**
+	 *
+	 * @return Array
+	 */
+	public static function get_custom_google_map_session_data(){
+		$data = Session::get("addCustomGoogleMap");
+		if(is_array($data)) {
+			$addCustomGoogleMapArray = $data;
+		}
+		else {
+			try {
+				$addCustomGoogleMapArray = unserialize($data);
+			}
+			catch (Exception $e) {
+				$addCustomGoogleMapArray = array();
+			}
+		}
+		return $addCustomGoogleMapArray;
+	}
 
 }

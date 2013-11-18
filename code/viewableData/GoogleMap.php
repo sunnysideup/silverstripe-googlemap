@@ -244,17 +244,15 @@ class GoogleMap extends ViewableData {
 
 
 	public function getDataPointCount() {
+		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
 		if($this->dataPointsObjectSet) {
 			return $this->dataPointsObjectSet->count();
 		}
 		elseif($this->GooglePointsDataObject->count()){
 			return $this->GooglePointsDataObject->count();
 		}
-		elseif(isset($_SESSION["addCustomGoogleMap"])) {
-			return count($_SESSION["addCustomGoogleMap"]);
-		}
-		elseif($a = Session::get("addCustomGoogleMap")) {
-			return count($a);
+		elseif(is_array($addCustomGoogleMapArray)) {
+			return count($addCustomGoogleMapArray);
 		}
 		return 0;
 	}

@@ -148,7 +148,12 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		if(!$title) {
 			$title = $this->owner->Title;
 		}
-		$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title)."/".$lng."/".$lat."/";
+		if($lng && $lat) {
+			$linkForData = "googlemapextensive/".$action."/".$this->owner->ID."/".urlencode($title)."/".$lng."/".$lat."/";
+		}
+		else {
+			$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title);
+		}
 		if($filter) {
 			$linkForData .= urlencode($filter)."/";
 		}
@@ -170,7 +175,12 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	}
 
 	public function addExtraLayersAsAction($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
-		$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title)."/".$lng."/".$lat."/";
+		if($lng && $lat) {
+			$linkForData = "googlemapextensive/".$action."/".$this->owner->ID."/".urlencode($title)."/".$lng."/".$lat."/";
+		}
+		else {
+			$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title);
+		}
 		if($filter) {
 			$linkForData .= "/".urlencode($filter)."/";
 		}
@@ -213,34 +223,40 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	}
 
 	function clearCustomMaps() {
-		$_SESSION["addCustomGoogleMap"] =  null;
-		$_SESSION["addCustomGoogleMap"] =  array();
+		Session::clear("addCustomGoogleMap");
+		Session::set("addCustomGoogleMap", serialize(array()));
+		Session::save();
 	}
 
 	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '') {
 		$this->initiateMap();
 		$sessionTitle = preg_replace('/[^a-zA-Z0-9]/', '', $title);
 		$isGoogleMapLocationsObject = true;
+		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
 		if($pagesOrGoogleMapLocationsObjects) {
-			//Session::clear("addCustomGoogleMap");
 			if(!$retainOldSessionData) {
 				$this->clearCustomMaps();
 			}
 			else {
-				if(is_array($_SESSION["addCustomGoogleMap"])) {
-					$customMapCount = count($_SESSION["addCustomGoogleMap"]);
+				if(is_array($addCustomGoogleMapArray)) {
+					$customMapCount = count($addCustomGoogleMapArray);
 				}
 			}
 			foreach($pagesOrGoogleMapLocationsObjects as $obj) {
-				if($obj instanceOf SiteTree) {
+				if($obj instanceof SiteTree) {
 					$isGoogleMapLocationsObject = false;
 				}
 				if(!$obj->ID) {
 					user_error("Page provided to addCustomMap that does not have an ID", E_USER_ERROR);
 				}
-				$_SESSION["addCustomGoogleMap"][$title][] = $obj->ID;
+				if(!isset($addCustomGoogleMapArray[$title])) {
+					$addCustomGoogleMapArray[$title] = array();
+				}
+				$addCustomGoogleMapArray[$title][] = $obj->ID;
 			}
 		}
+
+		GoogleMapDataResponse::set_custom_google_map_session_data($addCustomGoogleMapArray);
 		Session::save();
 		if($isGoogleMapLocationsObject) {
 			$fn = "showcustomdosmapxml";
