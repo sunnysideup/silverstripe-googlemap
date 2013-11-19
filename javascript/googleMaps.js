@@ -183,29 +183,10 @@ GMC.prototype.setupMap = function (mapDivName) {
 	google.maps.event.addListener(
 		map,
 		"rightclick",
-		function(point, image, marker) {
-			alert("gggg");
-			if(marker) {
-				alert("bbb");
-				marker.hide();
-				map.closeInfoWindow();
-				GMO.updateLists();
-				if(GMO.opts.updateServerUrlDragend) {
-					//delete marker from database....
-					var lng = marker.getPoint().lng();
-					var lat = marker.getPoint().lat();
-					var id = marker.serverId;
-					jQuery.get(
-						GMO.opts.updateServerUrlDragend,
-						{ x: lng, y: lat, i: id, a: "remove" },
-						function(response){
-							GMO.updateStatus('<p>' + response + '</p>');
-						}
-					);
-				}
-			}
-			else {
-				point = map.fromContainerPixelToLatLng(point);
+		function(point, image) {
+				var latLng = new google.maps.LatLng(point.latLng.ob, point.latLng.pb, true);
+				//point = map.fromContainerPixelToLatLng(point);
+				point = new google.maps.Point(point.pixel.x, point.pixel.y);
 				if(GMO.opts.addPointsToMap) {
 					var nameString = "Longitude (" + Math.round(point.lng()*10000)/10000 + ") and Latitude (" + Math.round(point.lat()*10000)/10000 + ")";
 					var pointLngLat = point.lng() + "," + point.lat();
@@ -214,10 +195,8 @@ GMC.prototype.setupMap = function (mapDivName) {
 					GMO.processXml(xmlString);
 				}
 				else {
-					var latLng = new google.maps.LatLng(point.lat(), point.lng(), true);
 					GMO.zoomTo(latLng, map.getZoom()-1);
 				}
-			}
 		}
 	);
 	if(this.opts.viewFinderSize > 0) {
@@ -259,9 +238,11 @@ GMC.prototype.zoomTo = function (latitudeAndlongitude, zoom) {
 		map.setCenter(new google.maps.LatLng(latitudeAndlongitude, true));
 	}
 }
+
 GMC.prototype.savePosition = function(map) {
 	GMC.previousPosition = map.getCenter();
 }
+
 GMC.prototype.returnToSavedPosition = function(map) {
 	if (GMC.previousPosition) {
 		map.panTo(GMC.previousPosition); // or setCenter
@@ -359,22 +340,43 @@ GMC.prototype.createMarker = function(point,name,desc, serverId, iconUrl) {// Cr
 		markerOpts.draggable = false;
 		m.draggable = false;
 	}
+	var contentString = GMO.retrieveInfoWindowContent(m);
+	var infowindow = new google.maps.InfoWindow(
+		{
+			content: contentString
+		}
+	);
 	google.maps.event.addListener(
 		m,
 		"click",
 		function() {
-			var contentString = GMO.retrieveInfoWindowContent(m);
-			var infowindow = new google.maps.InfoWindow(
-				{
-					content: contentString
-				}
-			);
-			infowindow.open(map, marker);
+			infowindow.open(map, m);
 			GMO.lastMarker = m;
-			//GMO.openMarkerInfoTabs(m);
 		}
 	);
-	//map.addOverlay(m);
+	google.maps.event.addListener(
+		m,
+		"rightclick",
+		function() {
+				m.setMap(null);
+				//infowindow.close();
+				GMO.updateLists();
+				if(GMO.opts.updateServerUrlDragend) {
+					//delete marker from database....
+					var lng = marker.getPoint().lng();
+					var lat = marker.getPoint().lat();
+					var id = marker.serverId;
+					jQuery.get(
+						GMO.opts.updateServerUrlDragend,
+						{ x: lng, y: lat, i: id, a: "remove" },
+						function(response){
+							GMO.updateStatus('<p>' + response + '</p>');
+						}
+					);
+				}
+			
+		}
+	);
 	marker.setMap(map);
 	this.gmarkers.push(m);
 	this.gmarkers.push(m);
@@ -509,7 +511,7 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 		m.showMapBlowup();//zoom into marker
 	});
 	google.maps.event.addListener(m, "clickRemoveMe", function() {
-		marker.setMap(null);
+		m.setMap(null);
 		//google.maps.event.addlistener(marker, "rightclick");
 	});
 	//var tabsHtml = [new GInfoWindowTab("info", html)];
