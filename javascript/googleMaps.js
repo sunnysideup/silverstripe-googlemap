@@ -85,8 +85,8 @@ function GMC(mapDivName, url, opts) {
 	this.zoomTo(latLng, this.opts.defaultZoom);
 	map.clearOverlays();
 	if(this.opts.mapTypeDefaultZeroToTwo) {
-		mapTypeArray = map.getMapTypes();
-		map.setMapType(mapTypeArray[this.opts.mapTypeDefaultZeroToTwo+0]);
+		var mapType = this.mapTypesArray(this.opts.mapTypeDefaultZeroToTwo-0);
+		//map.setMapTypeId();
 	}
 	if(this.defaultUrl) {
 		this.downloadXml(this.defaultUrl);
@@ -97,13 +97,27 @@ function GMC(mapDivName, url, opts) {
 }
 
 
+GMC.prototype.mapTypesArray = function(i){
+	var a = new Array();
+	a[0] = google.maps.MapTypeId.HYBRID;
+	a[1] = google.maps.MapTypeId.ROADMAP;
+	a[2] = google.maps.MapTypeId.SATELLITE;
+	a[3] = google.maps.MapTypeId.TERRAIN;
+	return a[i];
+}
+
+GMC.prototype.zoomControlStyleArray = function(i){
+	var a = new Array();
+	a[1] = google.maps.ZoomControlStyle.SMALL;
+	a[2] = google.maps.ZoomControlStyle.SMALL;
+	a[3] = google.maps.ZoomControlStyle.LARGE;
+	return a[i];
+}
+
 /* map setup and map changes (e.g. zoom) */
 GMC.prototype.setupMap = function (mapDivName) {
-	var zoomControlStyleArray = new Array();
-	zoomControlStyleArray[1] = google.maps.ZoomControlStyle.SMALL,
-	zoomControlStyleArray[2] = google.maps.ZoomControlStyle.SMALL,
-	zoomControlStyleArray[3] = google.maps.ZoomControlStyle.LARGE
-	this.opts.mapControlSizeOneToThree = zoomControlStyleArray[this.opts.mapControlSizeOneToThree];
+
+	this.opts.mapControlSizeOneToThree = this.zoomControlStyleArray(this.opts.mapControlSizeOneToThree-0);
 	var mapOptions = {
 		center: new google.maps.LatLng(this.opts.defaultLatitude, this.opts.defaultLongitude),
 		zoom: this.opts.defaultZoom,
@@ -151,16 +165,20 @@ GMC.prototype.setupMap = function (mapDivName) {
 	if(this.opts.statusDivId == "statusDivOnMap" && !this.opts.noStatusAtAll) {
 		//map.addControl(new this.statusDivControl);
 	}
+	console.debug(this.opts.addDirections);
 	if(this.opts.addDirections) {
-		directions = new GDirections(map);
+		directions = new google.maps.DirectionsService();
 		google.maps.event.addListener(directions, "load",  function() {
+				console.debug("loading");
 				GMO.directionsOnLoad();
 		});
 		google.maps.event.addListener(directions, "error", this.directionsHandleErrors);
-		G_START_ICON.iconSize = new GSize(0, 0);
+		G_START_ICON = "";
+		G_START_ICON.iconSize = new google.maps.Size(0, 0);
 		G_START_ICON.image="";
 		G_START_ICON.shadow = "";
-		G_END_ICON.iconSize = new GSize(0, 0);
+		G_END_ICON = "";""
+		G_END_ICON.iconSize = new google.maps.Size(0, 0);
 		G_END_ICON.image="";
 		G_END_ICON.shadow = "";
 	}
@@ -203,7 +221,7 @@ GMC.prototype.setupMap = function (mapDivName) {
 
 		window.setTimeout(
 			function() {
-				GMO.viewFinderSize = GMO.opts.viewFinderSize;
+				//GMO.viewFinderSize = GMC.opts.viewFinderSize;
 				//Call commented out for now, readd later
 				//GMO.addViewFinder(GMO.opts.viewFinderSize, GMO.opts.viewFinderSize);
 			}, 2000
@@ -1258,7 +1276,7 @@ GMC.prototype.directionsOnLoad = function (){
 		html += ''
 			+ '<tr>'
 			+' <th colspan="2">'
-			+'  <a href="javascript:void(0);" onclick="map.showMapBlowup(new GLatLng('+point.toUrlValue(6)+')); return false;">'
+			+'  <a href="javascript:void(0);" onclick="map.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">'
 			+'   <img src="http://www.google.com/intl/en_ALL/mapfiles/icon-dd-' +type+ '-trans.png" alt="marker">'
 			+'  </a>'
 			+   pointName + " (" + address + ")"
@@ -1277,7 +1295,7 @@ GMC.prototype.directionsOnLoad = function (){
 		html += ''
 			+ '<tr>'
 			+' <td>'
-			+'  <a href="javascript:void(0);" onclick="map.showMapBlowup(new GLatLng('+point.toUrlValue(6)+'));">'+num+'.</a> '
+			+'  <a href="javascript:void(0);" onclick="map.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+'));">'+num+'.</a> '
 			+   description
 			+' </td>'
 			+' <td class="dist">'
@@ -1448,7 +1466,7 @@ GMC.prototype.antipodeanPointer = function (lat, lng) {
 	}
 	lat = lat * -1;
 	this.updateStatus("Hole Drilled!");
-	point = new GLatLng(lat, lng, true)
+	point = new google.maps.LatLng(lat, lng, true)
 	return point;
 }
 GMC.prototype.checkLatitude = function(latitude) {
