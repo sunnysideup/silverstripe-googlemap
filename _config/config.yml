@@ -1,6 +1,7 @@
 SiteTree:
   extensions:
     - GoogleMapLocationsDOD
+
 ContentController:
   extensions:
     - GoogleMapLocationsDOD_Controller

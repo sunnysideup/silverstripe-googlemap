@@ -12,7 +12,7 @@ GoogleMapLocationsDOD:
 
 GoogleMap:
   # IMPORTANT ####################
-  GoogleMapAPIKey: "abc" # CHANGE ME
+  GoogleMapAPIKey: "" # CHANGE ME
   ################################
 
   uses_sensor: true

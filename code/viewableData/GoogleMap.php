@@ -40,11 +40,11 @@ class GoogleMap extends ViewableData {
 
 
 	/* INFOWINDOW*/
-	private static $InfoWindowOptions = "{maxWidth:280, zoomLevel:17, mapType:G_HYBRID_MAP}";
+	private static $InfoWindowOptions = "{maxWidth:280, zoomLevel:17, mapTypeId: google.maps.MapTypeId.HYBRID}";
 	private static $AddAntipodean = false; //MOVE TO SITECONFIG
 	private static $AddDirections = false; //MOVE TO SITECONFIG
 	private static $AddCurrentAddressFinder = false; //MOVE TO SITECONFIG
-	private static $AddZoomInButton = false; //MOVE TO SITECONFIG
+	private static $AddZoomInButton = true; //MOVE TO SITECONFIG
 	private static $AddCloseUpButton = false; //MOVE TO SITECONFIG
 	private static $AddCloseWindowButton = false; //MOVE TO SITECONFIG
 	private static $ajax_info_window_text = "View Details"; //MOVE TO SITECONFIG
@@ -99,8 +99,7 @@ class GoogleMap extends ViewableData {
 	/* STATIC MAP */
 	private static $StaticMapSettings = "maptype=roadmap";
 	private static $StaticIcon = "";
-	private static $LatFormFieldId = "";
-	private static $LngFormFieldId = "";
+	private static $LatLngFormFieldId = "";
 	private static $save_static_map_locally = false;
 
 /* ADDRESS FINDER */
@@ -227,7 +226,7 @@ class GoogleMap extends ViewableData {
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
 			if(!$this->getShowStaticMapFirst()) {
-				Requirements::javascript("http://maps.google.com/maps?file=api&v=2.x&sensor".$this->showFalseOrTrue(self::$uses_sensor)."&key=". Config::inst()->get("GoogleMap", "GoogleMapAPIKey"));
+				Requirements::javascript("https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
 				Requirements::javascript("googlemap/javascript/googleMaps.js");
 				$js .= 'var scriptsLoaded = true; jQuery(document).ready( function() { initiateGoogleMap();} );';
 			}
@@ -244,15 +243,17 @@ class GoogleMap extends ViewableData {
 
 
 	public function getDataPointCount() {
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
 		if($this->dataPointsObjectSet) {
 			return $this->dataPointsObjectSet->count();
 		}
 		elseif($this->GooglePointsDataObject->count()){
 			return $this->GooglePointsDataObject->count();
 		}
-		elseif(is_array($addCustomGoogleMapArray)) {
-			return count($addCustomGoogleMapArray);
+		elseif(isset($_SESSION["addCustomGoogleMap"])) {
+			return count($_SESSION["addCustomGoogleMap"]);
+		}
+		elseif($a = Session::get("addCustomGoogleMap")) {
+			return count($a);
 		}
 		return 0;
 	}
@@ -353,8 +354,8 @@ class GoogleMap extends ViewableData {
 			}
 			$this->dataPointsXML =
 						'<mapinfo>'.'<title>'.$this->dataObjectTitle.'</title>'
-						.'<longitude>'.round(self::$DefaultLatitude, 7).'</longitude>'
-						.'<latitude>'.round(self::$DefaultLongitude, 7).'</latitude>'
+						.'<longitude>'.self::$DefaultLatitude.'</longitude>'
+						.'<latitude>'.self::$DefaultLongitude.'</latitude>'
 						.'<zoom>'.self::$DefaultZoom.'</zoom>'
 						.'<pointcount>'.$count.'</pointcount>'
 						.'<info>'.$this->whereStatementDescription.'</info>'
@@ -363,7 +364,7 @@ class GoogleMap extends ViewableData {
 		}
 		else {
 			$this->dataPointsStaticMapHTML .=
-				"&amp;center=".round(self::$DefaultLatitude, 7).",".round(self::$DefaultLongitude, 7).
+				"&amp;center=".self::$DefaultLatitude.",".self::$DefaultLongitude.
 				"&amp;zoom=".self::$DefaultZoom;
 		}
 		$this->dataPointsStaticMapHTML = self::make_static_map_url_into_image($this->dataPointsStaticMapHTML, $this->dataObjectTitle);
@@ -430,76 +431,85 @@ class GoogleMap extends ViewableData {
 	private function createJavascript() {
 		$js = '
 		function loadSunnySideUpMap() {
-		 if (GBrowserIsCompatible()) {
-			GMO = new GMC("map", null,
-			 {
-		/* HELPDIVS */
-				sideBarId:"'.self::$SideBarDivId.'",
-				dropBoxId:"'.self::$DropDownDivId.'",
-				titleId:"'.self::$TitleDivId.'",
-				layerListId:"'.self::$LayerListDivId.'",
-				directionsDivId:"'.self::$DirectionsDivId.'",
-				statusDivId:"'.self::$StatusDivId.'",
-				noStatusAtAll:'.$this->showFalseOrTrue(self::$NoStatusAtAll).',
-				addKmlLink:'.$this->showFalseOrTrue(self::$AddKmlLink).',
-				hiddenLayersRemovedFromList:'.$this->showFalseOrTrue(self::$HiddenLayersRemovedFromList).',
-		/* PAGE*/
-				changePageTitle:'.$this->showFalseOrTrue(self::$ChangePageTitle).',
-				defaultTitle:"'.self::$DefaultTitle.'",
-		/* INFOWINDOW*/
-				infoWindowOptions:'.self::$InfoWindowOptions.',
-				addAntipodean:'.$this->showFalseOrTrue(self::$AddAntipodean).',
-				addDirections:'.$this->showFalseOrTrue(self::$AddDirections).',
-				addCurrentAddressFinder:'.$this->showFalseOrTrue(self::$AddCurrentAddressFinder).',
-				addZoomInButton:"'.self::$AddZoomInButton.'",
-				addCloseUpButton:"'.self::$AddCloseUpButton.'",
-				addCloseWindowButton:"'.self::$AddCloseWindowButton.'",
-		/* MARKER */
-				addPointsToMap:'.$this->showFalseOrTrue(self::$AddPointsToMap).',
-				addDeleteMarkerButton:"'.self::$AddDeleteMarkerButton.'",
-				allowMarkerDragAndDrop:"'.$this->showFalseOrTrue(self::$AllowMarkerDragAndDrop).'",
-				markerOptions: '.self::$MarkerOptions.',
-				preloadImages:'.$this->showFalseOrTrue(self::$PreloadImages).',
-		/* ICONS */
-				defaultIconUrl: "'.self::$DefaultIconUrl.'",
-				iconFolder: "'.self::$IconFolder.'",
-				iconWidth:'.self::$IconWidth.',
-				iconHeight:'.self::$IconHeight.',
-				iconImageMap:'.self::$IconImageMap.',
-				iconExtension:"'.self::$IconExtension.'",
-				iconMaxCount:'.self::$IconMaxCount.',
-		/* POLYS */
-				lineColour: "'.self::$LineColour.'",
-				lineWidth: "'.self::$LineWidth.'",
-				lineOpacity: "'.self::$LineOpacity.'",
-				fillColour: "'.self::$FillColour.'",
-				fillOpacity: "'.self::$FillOpacity.'",
-				polyIcon: "'.self::$PolyIcon.'",
-		/* MAP*/
-				mapTypeDefaultZeroToTwo: '.intval(self::$MapTypeDefaultZeroToTwo+0).',
-				viewFinderSize:'.intval(self::$ViewFinderSize + 0).',
-				mapAddTypeControl:'.$this->showFalseOrTrue(self::$MapAddTypeControl).',
-				mapControlSizeOneToThree:'.self::$MapControlSizeOneToThree.',
-				mapScaleInfoSizeInPixels:'.intval(self::$MapScaleInfoSizeInPixels + 0).',
-		/* START POSITION*/
-				defaultLatitude:'.floatval(self::$DefaultLatitude+0).',
-				defaultLongitude:'.floatval(self::$DefaultLongitude+0).',
-				defaultZoom:'.intval(self::$DefaultZoom+0).',
-		/* SERVER INTERACTION */
-				updateServerUrlAddressSearchPoint: "'.$this->getUpdateServerUrlAddressSearchPoint().'",
-				updateServerUrlDragend: "'.$this->getupdateServerUrlDragend().'",
-				latFormFieldId:"'.self::$LatFormFieldId.'",
-				lngFormFieldId:"'.self::$LngFormFieldId.'",
-		/* ADDRESS FORM */
-				addAddressFinder:'.$this->showFalseOrTrue(self::$AddAddressFinder).',
-				defaultCountryCode:"'.self::$DefaultCountryCode.'",
-				defaultAddressText:"'.self::$DefaultAddressText.'",
-		/* DIRECTIONS */
-				styleSheetUrl: "'.self::$StyleSheetUrl.'",
-				localeForResults: "'.self::$LocaleForResults.'"
-			 }
+			GMO = new GMC(
+				"map",
+				null,
+				 {
+					/* HELPDIVS */
+					sideBarId:"'.$this->config()->get("SideBarDivId").'",
+					dropBoxId:"'.$this->config()->get("DropDownDivId").'",
+					titleId:"'.$this->config()->get("TitleDivId").'",
+					layerListId:"'.$this->config()->get("LayerListDivId").'",
+					directionsDivId:"'.$this->config()->get("DirectionsDivId").'",
+					statusDivId:"'.$this->config()->get("StatusDivId").'",
+					noStatusAtAll:'.$this->showFalseOrTrue($this->config()->get("NoStatusAtAll")).',
+					addKmlLink:'.$this->showFalseOrTrue($this->config()->get("AddKmlLink")).',
+					hiddenLayersRemovedFromList:'.$this->showFalseOrTrue($this->config()->get("HiddenLayersRemovedFromList")).',
+
+					/* PAGE*/
+					changePageTitle:'.$this->showFalseOrTrue($this->config()->get("ChangePageTitle")).',
+					defaultTitle:"'.$this->config()->get("DefaultTitle").'",
+
+					/* INFOWINDOW*/
+					infoWindowOptions:'.$this->config()->get("InfoWindowOptions").',
+					addAntipodean:'.$this->showFalseOrTrue($this->config()->get("AddAntipodean")).',
+					addDirections:'.$this->showFalseOrTrue($this->config()->get("AddDirections")).',
+					addCurrentAddressFinder:'.$this->showFalseOrTrue($this->config()->get("AddCurrentAddressFinder")).',
+					addZoomInButton:"'.$this->config()->get("AddZoomInButton").'",
+					addCloseUpButton:"'.$this->config()->get("AddCloseUpButton").'",
+					addCloseWindowButton:"'.$this->config()->get("AddCloseWindowButton").'",
+
+					/* MARKER */
+					addPointsToMap:'.$this->showFalseOrTrue($this->config()->get("AddPointsToMap")).',
+					addDeleteMarkerButton:"'.$this->config()->get("AddDeleteMarkerButton").'",
+					allowMarkerDragAndDrop:"'.$this->showFalseOrTrue($this->config()->get("AllowMarkerDragAndDrop")).'",
+					markerOptions: '.$this->config()->get("MarkerOptions").',
+					preloadImages:'.$this->showFalseOrTrue($this->config()->get("PreloadImages")).',
+
+					/* ICONS */
+					defaultIconUrl: "'.$this->config()->get("DefaultIconUrl").'",
+					iconFolder: "'.$this->config()->get("IconFolder").'",
+					iconWidth:'.$this->config()->get("IconWidth").',
+					iconHeight:'.$this->config()->get("IconHeight").',
+					iconImageMap:'.$this->config()->get("IconImageMap").',
+					iconExtension:"'.$this->config()->get("IconExtension").'",
+					iconMaxCount:'.$this->config()->get("IconMaxCount").',
+
+					/* POLYS */
+					lineColour: "'.$this->config()->get("LineColour").'",
+					lineWidth: "'.$this->config()->get("LineWidth").'",
+					lineOpacity: "'.$this->config()->get("LineOpacity").'",
+					fillColour: "'.$this->config()->get("FillColour").'",
+					fillOpacity: "'.$this->config()->get("FillOpacity").'",
+					polyIcon: "'.$this->config()->get("PolyIcon").'",
+
+					/* MAP*/
+					mapTypeDefaultZeroToTwo: '.intval($this->config()->get("MapTypeDefaultZeroToTwo")-0).',
+					viewFinderSize:'.intval($this->config()->get("ViewFinderSize") - 0).',
+					mapAddTypeControl:'.$this->showFalseOrTrue($this->config()->get("MapAddTypeControl")).',
+					mapControlSizeOneToThree:'.$this->config()->get("MapControlSizeOneToThree").',
+					mapScaleInfoSizeInPixels:'.intval($this->config()->get("MapScaleInfoSizeInPixels") - 0).',
+
+					/* START POSITION*/
+					defaultLatitude:'.floatval($this->config()->get("DefaultLatitude") - 0 ).',
+					defaultLongitude:'.floatval($this->config()->get("DefaultLongitude") - 0).',
+					defaultZoom:'.intval($this->config()->get("DefaultZoom")  - 0).',
+
+					/* SERVER INTERACTION */
+					updateServerUrlAddressSearchPoint: "'.$this->getUpdateServerUrlAddressSearchPoint(). '",
+					updateServerUrlDragend: "'.$this->getupdateServerUrlDragend().'",
+					latLngFormFieldId:"'.$this->config()->get("LatLngFormFieldId").'",
+
+					/* ADDRESS FORM */
+					addAddressFinder:'.$this->showFalseOrTrue($this->config()->get("AddAddressFinder")).',
+					defaultCountryCode:"'.$this->config()->get("DefaultCountryCode").'",
+					defaultAddressText:"'.$this->config()->get("DefaultAddressText").'",
+
+					/* DIRECTIONS */
+					styleSheetUrl: "'.$this->config()->get("StyleSheetUrl").'",
+					localeForResults: "'.$this->config()->get("LocaleForResults").'"
+				 }
 			);
-		 }
 		}
 		function initiateGoogleMap() {
 			if(!scriptsLoaded) {

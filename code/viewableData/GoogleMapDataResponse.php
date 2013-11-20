@@ -102,12 +102,6 @@ class GoogleMapDataResponse extends Controller {
 	public function showpagepointsmapxml() {
 		$data = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->owner->ID));
 		if($data->count()) {
-			if($data->count() > 1) {
-				$s = "s";
-			}
-			else {
-			 $s = "";
-			}
 			return $this->makeXMLData(null, $data, $this->title, $this->title);
 		}
 	}
