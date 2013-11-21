@@ -9,8 +9,8 @@
 		{
 			"name": "Nicolaas Francken",
 			"homepage": "https://github.com/sunnysideup",
-			"role" : "lead developer"
-			"email" : "modules@sunnysideup.co.nz",
+			"role" : "lead developer",
+			"email" : "modules@sunnysideup.co.nz"
 		}
 	],
 	"require":{
