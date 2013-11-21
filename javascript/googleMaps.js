@@ -92,7 +92,7 @@ function GMC(mapDivName, url, opts) {
 		this.downloadXml(this.defaultUrl);
 	}
 	//this.mapOriginalSize = map.getSize();
-	this.mapOriginalSize = {width: map.getDiv().offsetWidth, height: map.getDiv().offsetHeight}; 
+	this.mapOriginalSize = {width: map.getDiv().offsetWidth, height: map.getDiv().offsetHeight};
 	this.updateStatus("Map Ready");
 }
 
@@ -143,7 +143,6 @@ GMC.prototype.setupMap = function (mapDivName) {
 		}
 	};
 	map = new google.maps.Map(document.getElementById(mapDivName), mapOptions);
-	console.debug(mapDivName);
 	//standard
 	//new GKeyboardHandler(map);
 	//map.enableContinuousZoom();
@@ -165,11 +164,9 @@ GMC.prototype.setupMap = function (mapDivName) {
 	if(this.opts.statusDivId == "statusDivOnMap" && !this.opts.noStatusAtAll) {
 		//map.addControl(new this.statusDivControl);
 	}
-	console.debug(this.opts.addDirections);
 	if(this.opts.addDirections) {
 		directions = new google.maps.DirectionsService();
 		google.maps.event.addListener(directions, "load",  function() {
-				console.debug("loading");
 				GMO.directionsOnLoad();
 		});
 		google.maps.event.addListener(directions, "error", this.directionsHandleErrors);
@@ -284,7 +281,7 @@ GMC.prototype.statusDivControl = function(map) {
 	});
 	map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(statusControlDiv);
 	map.getContainer().appendChild(el);
-	
+
 	return el;
 }
 /* add and delete layers */
@@ -392,7 +389,7 @@ GMC.prototype.createMarker = function(point,name,desc, serverId, iconUrl) {// Cr
 						}
 					);
 				}
-			
+
 		}
 	);
 	marker.setMap(map);
@@ -586,7 +583,7 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 		html = html + '<div id="infoWindowTab2" class="infoWindowTab">' + findDirections + '</div>';
 		//tabsHtml.push(new GInfoWindowTab("directions", '<div id="infoWindowTab2" class="infoWindowTab">' + findDirections + '</div>' ));
 	}
-	
+
 	if(this.opts.addCurrentAddressFinder) {
 		html = html + '<div id="infoWindowTab3" class="infoWindowTab"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>';
 		//tabsHtml.push(new GInfoWindowTab("address", '<div id="infoWindowTab3" class="infoWindowTab"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>'));
@@ -752,13 +749,12 @@ GMC.prototype.downloadXml = function(url) {
 }
 
 
-GMC.prototype.processXml = function(doc) { 
+GMC.prototype.processXml = function(doc) {
 	this.bounds = new google.maps.LatLngBounds();
-	console.debug(doc);
 	var pointCount = parseInt(doc.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue);
 	this.tooManyPointsWarning(pointCount + 1);
 	if(pointCount > 0) {
-		
+
 		var currentLayerId = this.layerInfo.length;
 		var groupInfo = {};
 		iconUrlCollection = [];
@@ -876,7 +872,7 @@ GMC.prototype.processXml = function(doc) {
 		}
 		this.updateLists();
 		//this.zoomTo(groupInfo.a, groupInfo.o, groupInfo.z);
-		//if(!map.getInfoWindow().isHidden()) {
+		//if(!map.getInfoWindow().getVisible()) {
 		if(!marker.getVisible) {
 			//map.closeInfoWindow();
 			marker.infowindow.close();
@@ -928,7 +924,7 @@ GMC.prototype.updateLists = function() {
 			this.layerInfo[i].show = 0;
 		}
 		for (var i = 0; i < this.gmarkers.length; i++) {
-			if (!this.gmarkers[i].isHidden()) {
+			if (this.gmarkers[i].getVisible()) {
 				this.layerInfo[this.gmarkers[i].layerId].show = 1;
 				if(!a.inArray(this.gmarkers[i].markerName)) {
 					sideBarArray.push(this.gmarkers[i].markerName + "$$$" + i);
@@ -977,8 +973,10 @@ GMC.prototype.createSideBar = function(sideBarArray) {
 			for (var j = 0; j < sideBarArray.length; j++) {
 				sideBarElements = sideBarArray[j].split("$$$", 2);
 				i = sideBarElements[1];
-				layerName = this.gmarkers[i].layerId;				
-				if(!strpos(this.gmarkers[i].serverId, "manuallyAdded", 0)) {
+				layerName = this.gmarkers[i].layerId;
+				var serverID = String(this.gmarkers[i].serverId);
+				var isManuallyAdded = serverID.indexOf( "manuallyAdded", 0 ); // returns -1
+				if(isManuallyAdded == -1) {
 					html += '<li class="forLayer'+layerName+' icon'+i+'"><a href="'+ this.currentPageURL + '#map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a> <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div></li>';
 				}
 				else {
@@ -1643,6 +1641,7 @@ function mapFunctionIsDefined(variable) {
 
 
 function strpos( haystack, needle, offset){
+	return false;
 	// http://kevin.vanzonneveld.net
 	// +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
 	// *     example 1: strpos('Kevin van Zonneveld', 'e', 5);
