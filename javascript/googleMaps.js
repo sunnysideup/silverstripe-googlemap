@@ -1,11 +1,40 @@
 /**
 	many thanks to : http://econym.googlepages.com/index.htm
+	*
+	* @todo:
+	* - make GMO into generic object that can have any name! (e.g. replace GMO with "this")
+	* - replace variables below with encapsulated values
+	* - http://net.tutsplus.com/tutorials/javascript-ajax/the-basics-of-object-oriented-javascript/
+	*
+	*
+	*
+var GoogleMapOject = {
+
+	variable1 : " xxx" ,
+
+	variable2 : 11.11,
+
+	method1: function(a,b,c) {
+		return "boo";
+	}
+}
+
+myObject = new GoogleMapObject(); ????
+
+GoogleMapObject.variable1;
+GoogleMapObject.variable2;
+GoogleMapObject.method1();
+
+
+
+
 **/
 
 
 var map = null;
 var geocoder = null;
 var directions = null;
+var directionsDisplay;
 var NZLongitude = '0.0001';//173.2210
 var NZLatitude = '0.0001';//-41.2943
 var NZZoom = 2;//5
@@ -13,29 +42,63 @@ var GMO;
 var addedPoint = 0;
 var markersArray = [];
 
+/**
+ * adds layer to map with with points
+ * @param URL url
+ * @todo: encapsulate
+ */ 
 function addLayer(url) {
 	GMO.downloadXml(url);
 	return true;
 }
-function addPoint(lat, lng, nameString, description) {
-	var pointLngLat = lng + "," + lat;
-	//name, pointLngLat, description, latitude, longitude, zoom, info
-	GMO.processXml(GMO.createPointXml(nameString, pointLngLat, description));
+/**
+ * add a point to the map
+ * @todo: encapsulate, check that it works...
+ * @todo: change processXML to something else...
+ * @todo: move xmlParse to createPointXml method
+ * @param LatLng latLng
+ * @param String nameString - name for marker
+ * @param String description - description for marker
+ */ 
+function addPoint(latLng, nameString, description) {
+	var xmlSheet = GMO.createPointXml(nameString, latLng, description);
+	GMO.processXml(xmlSheet);
 }
+
+/**
+ * finds an address on the map, similar to the opening page of maps.google.com
+ * @param String address 
+ * @todo: encapsulate
+ */ 
 function findAddress(address) {
 	GMO.showAddress(address);
 	return true;
 }
+
+/**
+ * shows a route for pre-selected locations
+ * @todo: encapsulate
+ */ 
 function findRoute() {
 	GMO.showRoute();
 	return true;
 }
+
+/**
+ * saves your current location on the map
+ * @todo: encapsulate
+ */ 
 function savePosition() {
 	//map.savePosition();
 	GMO.savePosition(map);
 	GMO.updateStatus("Position saved.");
 	return true;
 }
+
+/**
+ * resets the map to last saved position 
+ * @todo: encapsulate
+ */ 
 function goToSavedPosition() {
 	//map.returnToSavedPosition();
 	GMO.returnToSavedPosition(map);
@@ -44,6 +107,14 @@ function goToSavedPosition() {
 }
 
 
+/**
+ * main METHOD to encapsulate a map
+ * You use this as follows:
+ * var GMO = new GMC()
+ * @param String mapDivName
+ * @param String url - url that provides points as XML
+ * @param Object opts - list of options
+ */ 
 function GMC(mapDivName, url, opts) {
 	// store the parameters
 	this.opts = opts || {};
@@ -72,7 +143,14 @@ function GMC(mapDivName, url, opts) {
 	if(this.opts.sideBarId) { if(el = document.getElementById(this.opts.sideBarId)) {el.innerHTML = "";} else {this.opts.sideBarId = "";}}
 	if(this.opts.dropBoxId) { if(el = document.getElementById(this.opts.dropBoxId)) {el.innerHTML = "";} else {this.opts.dropBoxId = "";}}
 	if(this.opts.statusDivId) { if( el = document.getElementById(this.opts.statusDivId)) {el.innerHTML = "loading map . . .";} else {this.opts.statusDivId = "statusDivOnMap";}} else {this.opts.statusDivId = "statusDivOnMap";}
-	if(this.opts.directionsDivId) { if(el = document.getElementById(this.opts.directionsDivId)) {el.innerHTML = "";} else {this.opts.directionsDivId = "";}}
+	if(this.opts.directionsDivId) {
+		if(el = document.getElementById(this.opts.directionsDivId)) {
+			el.innerHTML = "";
+		}
+		else {
+			this.opts.directionsDivId = "";
+		}
+	}
 
 	this.clearRouteVariables();
 	this.mapAddress = "";
@@ -96,7 +174,11 @@ function GMC(mapDivName, url, opts) {
 	this.updateStatus("Map Ready");
 }
 
-
+/**
+ * provides a map type
+ * @param Int i = type of map
+ * @return Google Map Type
+ */ 
 GMC.prototype.mapTypesArray = function(i){
 	var a = new Array();
 	a[0] = google.maps.MapTypeId.HYBRID;
@@ -106,6 +188,12 @@ GMC.prototype.mapTypesArray = function(i){
 	return a[i];
 }
 
+/**
+ * provides a map type
+ * @param Int i = type of map
+ * @return Google Map Type
+ * @todo Private
+ */ 
 GMC.prototype.zoomControlStyleArray = function(i){
 	var a = new Array();
 	a[1] = google.maps.ZoomControlStyle.SMALL;
@@ -114,7 +202,10 @@ GMC.prototype.zoomControlStyleArray = function(i){
 	return a[i];
 }
 
-/* map setup and map changes (e.g. zoom) */
+/**
+ * basic setup of map
+ * @param String mapDivName
+ */
 GMC.prototype.setupMap = function (mapDivName) {
 
 	this.opts.mapControlSizeOneToThree = this.zoomControlStyleArray(this.opts.mapControlSizeOneToThree-0);
@@ -166,6 +257,8 @@ GMC.prototype.setupMap = function (mapDivName) {
 	}
 	if(this.opts.addDirections) {
 		directions = new google.maps.DirectionsService();
+		directionsDisplay = new google.maps.DirectionsRenderer();
+		directionsDisplay.setMap(map);
 		google.maps.event.addListener(directions, "load",  function() {
 				GMO.directionsOnLoad();
 		});
@@ -206,8 +299,8 @@ GMC.prototype.setupMap = function (mapDivName) {
 					var nameString = "Longitude (" + Math.round(point.lng()*10000)/10000 + ") and Latitude (" + Math.round(point.lat()*10000)/10000 + ")";
 					var pointLngLat = point.lng() + "," + point.lat();
 					var description = "Manually added point.";
-					xmlString = GMO.createPointXml(nameString,pointLngLat,description);
-					GMO.processXml(xmlString);
+					xmlSheet = GMO.createPointXml(nameString,pointLngLat,description);
+					GMO.processXml(xmlSheet);
 				}
 				else {
 					GMO.zoomTo(latLng, map.getZoom()-1);
@@ -225,13 +318,24 @@ GMC.prototype.setupMap = function (mapDivName) {
 		);
 	}
 }
+
+
+/**
+ * resets map
+ */
 GMC.prototype.basicResetMap = function () {
 	//map.checkResize();
 	map.setCenter(this.opts.defaultLatitude, this.opts.defaultLongitude);
 	map.setZoom(this.opts.defaultZoom);
 }
 
-//to be completed later, call has been commented out for now, see line 223
+/**
+ * add view fiender
+ * @param Int width
+ * @param Int height
+ * @todo //to be completed later, call has been commented out for now, see line 223
+ * @todo make private?
+ */
 GMC.prototype.addViewFinder = function (width, height) {
 	var ovSize = new google.maps.Size(width, height);
 	var ovMap = new GOverviewMapControl(ovSize);
@@ -244,6 +348,12 @@ GMC.prototype.addViewFinder = function (width, height) {
 	);
 }
 
+/**
+ * zoom into a particular point
+ * @param latitudeAndlongitude 
+ * @param Int zoom
+ * @todo make public
+ */
 GMC.prototype.zoomTo = function (latitudeAndlongitude, zoom) {
 	if(zoom && latitudeAndlongitude) {
 		map.setZoom(zoom);
@@ -254,10 +364,21 @@ GMC.prototype.zoomTo = function (latitudeAndlongitude, zoom) {
 	}
 }
 
+
+/**
+ * saves map position
+ * @param Google Map Object
+ * @todo make public
+ */
 GMC.prototype.savePosition = function(map) {
 	GMC.previousPosition = map.getCenter();
 }
 
+/**
+ * returns to last saved map position
+ * @param Google Map Object
+ * @todo make public
+ */
 GMC.prototype.returnToSavedPosition = function(map) {
 	if (GMC.previousPosition) {
 		map.panTo(GMC.previousPosition); // or setCenter
@@ -265,7 +386,12 @@ GMC.prototype.returnToSavedPosition = function(map) {
 }
 
 
-//to be completed, not currently called
+/**
+ * adds a status and map control DIV
+ * @param Google Map Object
+ * @todo make private
+ * @todo //to be completed, not currently called
+ */
 GMC.prototype.statusDivControl = function(map) {
 	var el = document.createElement("div");
 	var statusControl = new StatusControl(statusControlDiv, map);
@@ -284,7 +410,14 @@ GMC.prototype.statusDivControl = function(map) {
 
 	return el;
 }
-/* add and delete layers */
+
+/**
+ * change layer visibility
+ * @param String ID of layer.
+ * @todo make public
+ * @todo add and delete layers
+ */
+
 GMC.prototype.changeLayerVisibility = function(selectedLayerId){//remove layer
 	var newStatus = 1;
 	var newStatusName;
@@ -310,7 +443,16 @@ GMC.prototype.changeLayerVisibility = function(selectedLayerId){//remove layer
 	this.updateLists();
 	this.updateStatus("Points (" + count + ") " + newStatusName + ".");
 }
-/* add and delete markers / polylines / polygons */
+
+/**
+ * adds marker to map
+ * @param LatLng point
+ * @param String name
+ * @param String desc
+ * @param String serverID
+ * @param URL iconUrl
+ * @todo make private
+ */
 GMC.prototype.createMarker = function(point,name,desc, serverId, iconUrl) {// Create Marker
 	var currentLayerId = this.layerInfo.length - 1;
 	//marker options
@@ -397,6 +539,17 @@ GMC.prototype.createMarker = function(point,name,desc, serverId, iconUrl) {// Cr
 	this.gmarkers.push(m);
 	return m;
 }
+
+/**
+ * adds polyline to map
+ * @param LatLng point
+ * @param String color
+ * @param Int width
+ * @param Int opacity
+ * @param String name
+ * @param String desc
+ * @todo delete?
+ */
 GMC.prototype.createPolyline = function(points,color,width,opacity,name,desc) {
 	var currentLayerId = this.layerInfo.length - 1;
 	//marker options
@@ -420,6 +573,19 @@ GMC.prototype.createPolyline = function(points,color,width,opacity,name,desc) {
 	this.gmarkers.push(p);
 	return p;
 }
+/**
+ * adds polyl to map
+ * @param Array points
+ * @param String color
+ * @param Int width
+ * @param Int opacity
+ * @param String fillcolor
+ * @param Int fillopacity
+ * @param google.maps.LatLngBounds pbounds
+ * @param String name
+ * @param String desc
+ * @todo delete?
+ */
 GMC.prototype.createPolygon = function(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc) {
 	var currentLayerId = this.layerInfo.length - 1;
 	//marker options
@@ -444,6 +610,11 @@ GMC.prototype.createPolygon = function(points,color,width,opacity,fillcolor,fill
 	return p;
 }
 
+/**
+ * retrieves html content to display above marker inside and infowindow
+ * @param google.maps.Map Map
+ * @todo ???
+ */
 GMC.prototype.retrieveInfoWindowContent = function(m) {
 	var hiddenMarkerArray = GMO.checkForHiddenMarkers(m);
 	var name = m.markerName;
@@ -472,7 +643,8 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 			var pointLngLat = longitude+","+latitude;
 			var description = "Exact opposite point on earth - goodluck finding your way back...";
 			var zoom = 3;
-			GMO.processXml(GMO.createPointXml(nameString, pointLngLat, description, latitude, longitude, zoom));
+			var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description, latitude, longitude, zoom)
+			GMO.processXml(xmlSheet);
 		});
 	}
 	if(m.draggable) {
@@ -532,9 +704,10 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 	//var tabsHtml = [new GInfoWindowTab("info", html)];
 	//directions and address finder
 	if(this.opts.addDirections) {
-		var lonLatString = point.toUrlValue();
+		//var lonLatString = point.toUrlValue();
 		var findDirections = '';
 		if(this.opts.addDirections) {
+			var currentFrom = this.currentFromLocation();
 			findDirections = ''
 				+ '<p class="infoTabFromOption"><b>From:</b></p><p id="fromHereLink"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickFromHere\')">select this point</a>' + this.currentFromLocation() + '</p>'
 				+ '<p class="infoTabToOption"><b>To:</b></p><p id="toHereLink"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickToHere\')">select this point</a>' + this.currentToLocation() + '</p>'
@@ -556,19 +729,19 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 			//join the dots
 			google.maps.event.addListener(m, "joinTheDots", function() {
 				GMO.createRouteFromLayer(m.layerId);
-				map.closeInfoWindow();
+				//infowindow.close();
 			});
 			//current start point
 			google.maps.event.addListener(m, "clickFromHere", function() {
 				GMO.from = name;
-				GMO.floatFrom = lonLatString;
+				GMO.floatFrom = new google.maps.LatLng(point.ob, point.pb);
 				document.getElementById("fromHereLink").innerHTML = "This point";
-			});
+			});t
 			//current end point
 			google.maps.event.addListener(m, "clickToHere", function() {
 				document.getElementById("toHereLink").innerHTML = "This point";
 				GMO.to = name;
-				GMO.floatTo = lonLatString;
+				GMO.floatTo = new google.maps.LatLng(point.ob, point.pb);
 			});
 			//add route
 			google.maps.event.addListener(m, "clickFindRoute", function() {
@@ -612,6 +785,12 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 	}
 	return html;
 }
+/**
+ * opens an info window for a a polyline
+ * @param google.maps.Map Map
+ * @param google.maps.LatLngBounds pbounds
+ * @todo delete along with ployline function???
+ */
 GMC.prototype.openPolyInfoTabs = function( m, pbounds) {
 	//if pbounds then it must be a polygon rather than a polyline
 	var name = m.markerName;
@@ -649,8 +828,11 @@ GMC.prototype.openPolyInfoTabs = function( m, pbounds) {
 		map.openInfoWindowHtml(m.getVertex(Math.floor(m.getVertexCount()/2)),html,options);
 	}
 }
-
-
+/**
+ * preloads the marker images
+ * @param String desc
+ * @todo test???
+ */
 GMC.prototype.preLoadMarkerImages = function(desc) {
 	var text = desc;
 	var pattern = /<\s*img/ig;
@@ -672,10 +854,14 @@ GMC.prototype.preLoadMarkerImages = function(desc) {
 		}
 	}
 }
+/**
+ * creates a marker icon given a url to the image/icon
+ * @param URL iconUrl
+ * @todo fix this.updateStatus(iconUrl),
+ */
 GMC.prototype.createStandardIcon = function(iconUrl) {
 	// create icon
 	var icon = {
-		//causes error, fix later
 		//this.updateStatus(iconUrl),
 		url : iconUrl,
 		size: new google.maps.Size(this.opts.iconWidth,this.opts.iconHeight),
@@ -684,23 +870,38 @@ GMC.prototype.createStandardIcon = function(iconUrl) {
 	return icon;
 }
 /* process XML sheets */
+/**
+ * creates a XML point and attempts to add it to the database
+ * @param String name
+ * @param google.maps.LatLng pointLngLat 
+ *@param String description
+ * @param Int latitude
+ * @param Int longitude
+ * @param Int zoom
+ * @param String info
+ * @return XML
+ * @todo test if(GMO.opts.updateServerUrlDragend),
+ */
 GMC.prototype.createPointXml = function (name, pointLngLat, description, latitude, longitude, zoom, info) {//creates XML for one point only
-	//change first three to arrays
+
+	if(!longitude) {longitude = pointLngLat.lng();}
+	if(!latitude) {latitude = pointLngLat.lat();}
+	if(!zoom) {zoom = 5;}
 
 	var serverId = "Marker_manuallyAdded" + GMO.layerInfo.length;
 	var string = '<?xml version="1.0" encoding="UTF-8"?>'
-	+ '<kml xmlns="http://earth.google.com/kml/2.1"><Document>'
+	+ '<kml xmlns="http://earth.google.com/kml/2.1"><Document><mapinfo>'
 	+ '<title>' + name + '</title>'
 	+ '<longitude>' + longitude + '</longitude>'
 	+ '<latitude>' + latitude + '</latitude>'
 	+ '<zoom>' + zoom + '</zoom>'
 	+ '<pointcount>1</pointcount>'
 	+ '<info>' + info + '</info>'
-	+ '<Placemark>'
+	+ '</mapinfo><Placemark>'
 	+ ' <id>' + serverId + '</id>'
 	+ ' <name>' + name + '</name>'
-	+ ' <Point><coordinates>' + pointLngLat + '</coordinates></Point>'
-	+ ' <description>' + description +'</description>'
+	+ ' <Point><coordinates>' + pointLngLat.lng() + "," + pointLngLat.lat() + '</coordinates></Point>'
+	+ ' <description><![CDATA[ <p>' + description +'</p>]]></description>'
 	+ '</Placemark>'
 	+ '</Document>'
 	+'</kml>';
@@ -722,9 +923,14 @@ GMC.prototype.createPointXml = function (name, pointLngLat, description, latitud
 			}
 		);
 	}
-	return string;
+	var xmlSheet = xmlParse(string);
+	return xmlSheet;
 }
-
+/**
+ * downloads the XML file containing map coordinates and then processes
+ * @param URL url
+ * @todo ???
+ */
 GMC.prototype.downloadXml = function(url) {
 	var previouslyLoaded;
 	if(previouslyLoaded = this.layerInfo.inSubArray("url", url)) {
@@ -737,7 +943,6 @@ GMC.prototype.downloadXml = function(url) {
 	else {
 		this.updateStatus("Downloading data from server . . . ");
 		this.latestUrl = url;
-		//GDownloadUrl(url, function(doc) { GMO.processXml(doc);} );
 		downloadUrl(
 			url,
 			function(doc) {
@@ -748,8 +953,13 @@ GMC.prototype.downloadXml = function(url) {
 	}
 }
 
-
+/**
+ * processes the downloaded XML file into the points required to create a marker for the location
+ * @param DOM doc
+ * @todo ???
+ */
 GMC.prototype.processXml = function(doc) {
+	console.debug(doc);
 	this.bounds = new google.maps.LatLngBounds();
 	var pointCount = parseInt(doc.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue);
 	this.tooManyPointsWarning(pointCount + 1);
@@ -905,6 +1115,11 @@ GMC.prototype.processXml = function(doc) {
 	}
 }
 
+/**
+ * if the are more than points to add to the map user receives a warning it could take a while 
+ * @param Int pointCount
+ * @todo ???
+ */
 GMC.prototype.tooManyPointsWarning = function(pointCount) {
 	if(pointCount > 100) {
 		this.updateStatus("In total, " + pointCount + " location are being loaded. It may take a while for all the locations to show on the map, please be patient.");
@@ -913,8 +1128,11 @@ GMC.prototype.tooManyPointsWarning = function(pointCount) {
 		this.updateStatus("No locations could be found.");
 	}
 }
-
 /* update lists */
+/**
+ * updates lists
+ * @todo test???
+ */
 GMC.prototype.updateLists = function() {
 	this.updateStatus("Updating lists . . .");
 	if(this.opts.sideBarId || this.opts.dropBoxId || this.opts.layerListId) {
@@ -963,6 +1181,11 @@ GMC.prototype.updateLists = function() {
 	}
 	this.updateStatus("Map Ready");
 }
+/**
+ * creates and displays a sidebar
+ * @param Array sideBarArray
+ * @todo ???
+ */
 GMC.prototype.createSideBar = function(sideBarArray) {
 	if(this.opts.sideBarId) {
 		var el;
@@ -991,6 +1214,11 @@ GMC.prototype.createSideBar = function(sideBarArray) {
 		}
 	}
 }
+/**
+ * creates and displays a drop down list of selectable locations
+ * @param Array sideBarArray
+ * @todo ???
+ */
 GMC.prototype.createDropDown = function(sideBarArray) {
 	if(this.opts.dropBoxId) {
 		var el;
@@ -1009,6 +1237,10 @@ GMC.prototype.createDropDown = function(sideBarArray) {
 		}
 	}
 }
+/**
+ * updates layer list
+ * @todo ???
+ */
 GMC.prototype.updateLayerList = function() {
 	if(this.opts.layerListId) {
 		var el = null;
@@ -1058,6 +1290,10 @@ GMC.prototype.updateLayerList = function() {
 		}
 	}
 }
+/**
+ * updates titles
+ * @todo ???
+ */
 GMC.prototype.updateTitles = function() {
 	var title = this.opts.defaultTitle;
 	for (var i = (this.layerInfo.length - 1); i > -1; i--) {
@@ -1076,18 +1312,19 @@ GMC.prototype.updateTitles = function() {
 		document.title = title;
 	}
 }
-
-
+/**
+ * updates status
+ * @todo test???
+ */
 GMC.prototype.updateStatus = function(html, add) {
 	var el = null;
-	/* depreciated...
+	//depreciated...
 	if(this.opts.addAddressFinder || add == "find") {
 		if(html) {
 			html += "<hr />";
 		}
 		html += this.findAddressForm() + "";
 	}
-	*/
 	if(add == "help") {
 		if(html) {
 			html += "<hr />";
@@ -1107,17 +1344,15 @@ GMC.prototype.updateStatus = function(html, add) {
 			var hideAction = '| <a href="javascript:void(0)" onclick="GMO.hideStatus();">hide [x]</a>';
 		}
 	}
-	var fullHtml = ''
-		+ '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
-		/* depreciated
-		if(this.opts.addAddressFinder) {
-			fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">find address</a> |'
-		}
-		*/
-		fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');">show help</a> |'
-		+ ' <a href="javascript:void(0)" onclick="GMO.enlargeMap();" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
-		+ hideAction
-		+ '</p>'+ html;
+	var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
+	// depreciated
+	if(this.opts.addAddressFinder) {
+		fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">find address</a> |'
+	}
+	fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');">show help</a> |'
+	+ ' <a href="javascript:void(0)" onclick="GMO.enlargeMap();" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
+	+ hideAction
+	+ '</p>'+ html;
 	if(this.opts.statusDivId) {
 		if(el = document.getElementById(this.opts.statusDivId)) {
 			el.innerHTML = fullHtml;
@@ -1125,6 +1360,10 @@ GMC.prototype.updateStatus = function(html, add) {
 		}
 	}
 }
+/**
+ * hides status
+ * @todo test???
+ */
 GMC.prototype.hideStatus = function() {
 	if(this.opts.statusDivId) {
 		if(el = document.getElementById(this.opts.statusDivId)  && !this.mapIsZoomed) {
@@ -1138,25 +1377,47 @@ GMC.prototype.hideStatus = function() {
 }
 
 /* special searches: find address */
+/**
+ * searchs for address and displays on screen or a reason why it was not successful
+ * @param String address
+ */
 GMC.prototype.showAddress = function(address) {
-	geocoder = new GClientGeocoder();
+	var countryCode = "";
 	if(this.opts.defaultCountryCode) {
-		geocoder.setBaseCountryCode(this.opts.defaultCountryCode);
+		countryCode = this.opts.defaultCountryCode;
 	}
+	console.debug(countryCode);
+	geocoder = new google.maps.Geocoder();
 	if (geocoder) {
 		this.updateStatus("Searching for Address . . .");
 		this.mapAddress = address;
 		if(this.opts.defaultAddressText) {
 			address += this.opts.defaultAddressText;
 		}
-		geocoder.setViewport(geocoder.getViewport());
-		geocoder.getLocations(address, this.addAddressToMap);
+		geocoder.geocode( { 'address': address, 'region': countryCode}, function(results, status) {
+			if (status == google.maps.GeocoderStatus.OK) {
+				var result = results[0];
+				map.setCenter(result.geometry.location);
+				var marker = addPoint(
+					result.geometry.location, //latLng
+					result.formatted_address, //address string
+					"added position" //description
+				);
+			} else {
+				alert("Geocode was not successful for the following reason: " + status);
+			}
+		});
 		return false;
 	}
 	else {
 		this.updateStatus("Address Finder Not Loaded");
 	}
 }
+/**
+ * if address can be found create a point and add a layer to the map
+ * @param HTTP Response response
+ * @todo test???
+ */
 GMC.prototype.addAddressToMap = function (response) {
 	if (!response || response.Status.code != 200) {
 		GMO.updateStatus("Sorry, we were unable to find that address.");
@@ -1166,13 +1427,19 @@ GMC.prototype.addAddressToMap = function (response) {
 		var pointLngLat = place.Point.coordinates[0] + "," + place.Point.coordinates[1];
 		var nameString = "Address Search: " + GMO.mapAddress;
 		var description = place.address;
-		GMO.processXml(GMO.createPointXml(nameString, pointLngLat, description));
+		var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description);
+		GMO.processXml(xmlSheet);
 		GMO.updateStatus("Address found: " + description);
 		var serverURL = GMO.opts.updateServerUrlAddPoint+"&x=" + place.Point.coordinates[0] + "&y=" + place.Point.coordinates[1]
 		addLayer(serverURL);
 		return true;
 	}
 }
+/**
+ * update address form fields
+ * @param google.maps.LatLng latLng
+ * @todo test???
+ */
 GMC.prototype.updateAddressFormFields = function(latLng) {
 	if(GMO.opts.latFormFieldId) {
 		if(el = document.getElementById(GMO.opts.latFormFieldId)) {
@@ -1181,6 +1448,10 @@ GMC.prototype.updateAddressFormFields = function(latLng) {
 	}
 }
 /* special searches: find route */
+/**
+ * finds route between a start and end location
+ * @todo not currently working, fix!!
+ */
 GMC.prototype.showRoute = function() {
 	if(!this.floatFrom) {
 		this.updateStatus("No valid start location has been selected.");
@@ -1196,7 +1467,11 @@ GMC.prototype.showRoute = function() {
 		directions.load(fromTo, directionOptions);
 	}
 }
-
+/**
+ * finds route between all points displayed in a layer
+ * @param Int layerId
+ * @todo not currently working, fix!!
+ */
 GMC.prototype.createRouteFromLayer = function(layerId) {
 	var wayPointArray = Array();
 	var k = 0;
@@ -1207,20 +1482,32 @@ GMC.prototype.createRouteFromLayer = function(layerId) {
 	}
 	for (var i = 0; i < this.gmarkers.length; i++) {
 		if(this.gmarkers[i].layerId == layerId || doAllMarkers) {
-			wayPointArray[k] = (k+1) + ": " + this.gmarkers[i].markerName + "@" + this.gmarkers[i].getPoint().lat() + "," + this.gmarkers[i].getPoint().lng();
+			wayPointArray[k] = (k+1) + ": " + this.gmarkers[i].markerName + "@" + this.gmarkers[i].getPosition().lat() + "," + this.gmarkers[i].getPosition().lng();
 			k++;
 		}
 	}
 	if(wayPointArray.length) {
 		GMO.routeShown = true;
 		this.updateStatus("Searching for Route . . .");
-		var directionOptions = { locale: this.opts.localeForResults, getSteps: true};
-		directions.loadFromWaypoints(wayPointArray, directionOptions);
+		var request = {
+			origin:GMO.floatFrom,
+			destination:GMO.floatTo,
+			travelMode: google.maps.TravelMode.TRANSIT 
+			};
+		directions.route(request, function(result, status) {
+			if (status == google.maps.DirectionsStatus.OK) {
+				directionsDisplay.setDirections(result);
+			}
+		});
 	}
 	else {
 		this.updateStatus("No Route Could Be Found . . .");
 	}
 }
+/**
+ * returns a string of from/start location
+ * @todo test
+ */
 GMC.prototype.currentFromLocation = function() {
 	var string = '';
 	if(this.from ) {
@@ -1231,6 +1518,10 @@ GMC.prototype.currentFromLocation = function() {
 	}
 	return string;
 }
+/**
+ * returns a string of to/end location
+ * @todo test
+ */
 GMC.prototype.currentToLocation = function() {
 	var string = '';
 	if(this.to ) {
@@ -1241,6 +1532,10 @@ GMC.prototype.currentToLocation = function() {
 	}
 	return string;
 }
+/**
+ * clears elements containing "from" and "to" location/s
+ * @todo test
+ */
 GMC.prototype.clearRouteVariables = function () {
 	this.to = '';
 	this.floatTo = 0;
@@ -1250,6 +1545,10 @@ GMC.prototype.clearRouteVariables = function () {
 	if(el = document.getElementById("currentlySetToFrom")) {el.innerHTML = '';}
 	if(el = document.getElementById("currentlySetToTo")) {el.innerHTML = '';}
 }
+/**
+ * clears elements containing "directions"
+ * @todo test and fix
+ */
 GMC.prototype.clearRouteAll = function () {
 	var el = null;
 	if(el = document.getElementById(GMO.opts.directionsDivId)) {el.innerHTML = '';}
@@ -1258,6 +1557,10 @@ GMC.prototype.clearRouteAll = function () {
 	directions.clear();
 	GMO.updateStatus("Route Cleared");
 }
+/**
+ * handles errors relating to the displaying of directions
+ * @todo test
+ */
 GMC.prototype.directionsHandleErrors = function (){
 	if (directions.getStatus().code == G_GEO_UNKNOWN_ADDRESS) GMO.updateStatus("No corresponding geographic location could be found for one of the specified addresses. This may be due to the fact that the address is relatively new, or it may be incorrect.\nError code: " + directions.getStatus().code);
 	else if (directions.getStatus().code == G_GEO_SERVER_ERROR) GMO.updateStatus("A geocoding or directions request could not be successfully processed, yet the exact reason for the failure is not known.\n Error code: " + directions.getStatus().code);
@@ -1267,6 +1570,10 @@ GMC.prototype.directionsHandleErrors = function (){
 	else if (directions.getStatus().code == G_GEO_BAD_REQUEST) GMO.updateStatus("A directions request could not be successfully parsed.\n Error code: " + directions.getStatus().code);
 	else GMO.updateStatus("An unknown error occurred - Maybe the start or end address could not be found?");
 }
+/**
+ * displays directions upon loading
+ * @todo test
+ */
 GMC.prototype.directionsOnLoad = function (){
 	GMO.updateStatus("Route Found - Details Loading . . .");
 	var html = '';
@@ -1362,6 +1669,10 @@ GMC.prototype.directionsOnLoad = function (){
 	GMO.attachStyleDirections(document);
 	//setTimeout(GMO.printDirections, 1000);
 }
+/**
+ * enlarges the map
+ * @todo test
+ */
 GMC.prototype.enlargeMap = function() {
 	var el = document.getElementById(this.mapDivName);
 	var elLabel = document.getElementById("mapZoomLinkLabel");
@@ -1392,6 +1703,10 @@ GMC.prototype.enlargeMap = function() {
 		window.scrollTo(0, 0);
 	}
 }
+/**
+ * opens a pop up box to print directions
+ * @todo test
+ */
 GMC.prototype.printDirections = function() {
 	var el = null;
 	if(el = document.getElementById("directionsInnerDiv")) {
@@ -1402,6 +1717,10 @@ GMC.prototype.printDirections = function() {
 		GMO.updateStatus("Could not find directions.");
 	}
 }
+/**
+ * attacheds a style sheet, is this for the printing of directions?
+ * @todo test
+ */
 GMC.prototype.attachStyleDirections = function(selectedDocument) {
 	var styleSheetUrl = GMO.opts.styleSheetUrl;
 	if(selectedDocument.createStyleSheet) {
@@ -1415,6 +1734,10 @@ GMC.prototype.attachStyleDirections = function(selectedDocument) {
 		selectedDocument.getElementsByTagName("head")[0].appendChild(newSS);
 	}
 }
+/**
+ * opens a pop up box containg html to allow user to print directions
+ * @todo test
+ */
 GMC.prototype.openDirectionsPopup = function (innerHTML) {
 	if(innerHTML) {
 		var html = ''
@@ -1446,14 +1769,27 @@ GMC.prototype.openDirectionsPopup = function (innerHTML) {
 	}
 }
 /* marker interaction and computations */
+
+/**
+ * returns the LtnLng of the last marker
+ * @todo fix, object has no method getPoint())
+ */
 GMC.prototype.getlastMarkerLonLat = function() {
 	return this.lastMarker.getPoint();
 }
+/**
+ * shows marker from list, when marker is clicked on?
+ * @todo test
+ */
 GMC.prototype.showMarkerFromList = function (selectedId) {
 	if(selectedId > -1){
 		google.maps.event.trigger(this.gmarkers[selectedId],'click');
 	}
 }
+/**
+ * drills hole to the other side of the world from marker clicked on
+ * @todo test
+ */
 GMC.prototype.antipodeanPointer = function (lat, lng) {
 	var point = {}
 	if(lng > 0) {
@@ -1467,22 +1803,59 @@ GMC.prototype.antipodeanPointer = function (lat, lng) {
 	point = new google.maps.LatLng(lat, lng, true)
 	return point;
 }
+/**
+ * check that latitude is a valid latitude
+ * @param Int latitude
+ */
 GMC.prototype.checkLatitude = function(latitude) {
-	if(latitude && latitude != 0 && latitude >= -90 && latitude <= 90) {return latitude;} else {return false;}
+	if(latitude && latitude != 0 && latitude >= -90 && latitude <= 90){
+		return latitude;
+	}
+	else {
+		return false;
+	}
 }
+/**
+ * check that longitude is a valid longitude
+ * @param Int longitude
+ */
 GMC.prototype.checkLongitude = function(longitude) {
-	if(longitude && longitude != 0 && longitude >= -180 && longitude <= 180) {return longitude;} else {return false;}
+	if(longitude && longitude != 0 && longitude >= -180 && longitude <= 180) {
+		return longitude;
+	}
+	else {
+		return false;
+	}
 }
+/**
+ * check that zoom is a valid zoom (greater than 1, less than 50)
+ * @param Int zoom
+ */
 GMC.prototype.checkZoom = function(zoom) {
-	if(zoom > 0 && zoom < 50) {return zoom;} else {return 0;}
+	if(zoom > 0 && zoom < 50) {
+		return zoom;
+	}
+	else {
+		return 0;
+	}
 }
 /* marker distances */
+/**
+ * return distance in pixels from new point to current point
+ * @param Int latLngPoint
+ * @todo update to V3 functionality
+ */
 GMC.prototype.distancePerPixel = function (latLngPoint) {
 	var pixelCoordinates = map.fromLatLngToDivPixel(latLngPoint);
 	var newPoint = new GPoint(pixelCoordinates.x + 10, pixelCoordinates.y);
 	var newlatLngPoint = map.fromDivPixelToLatLng(newPoint);
 	return distance = latLngPoint.distanceFrom(newlatLngPoint)/10;
 }
+/**
+ * checks fro hidden markers
+ * @param google.maps.Marker marker
+ * @todo test
+ */
 GMC.prototype.checkForHiddenMarkers = function(marker) {
 	var a = [];
 	if(this.gmarkers.length > 1) {
@@ -1505,6 +1878,13 @@ GMC.prototype.checkForHiddenMarkers = function(marker) {
 	}
 	return a;
 }
+/**
+ * returns true if bounds intersect
+ * @param Array GA
+ * @param Array GB
+ * @return boolean
+ * @todo test
+ */
 GMC.prototype.GBoundIntersection = function (GA, GB) {
 	if((GA[0] >= GB[0] && GA[0] <= GB[2]) || (GA[2] >= GB[0] && GA[2] <= GB[2]) || (GA[0] <= GB[0] && GA[2] >= GB[2])){
 		if((GA[1] >= GB[1] && GA[1] <= GB[3]) || (GA[3] >= GB[1] && GA[3] <= GB[3]) || (GA[1] <= GB[1] && GA[3] >= GB[3])){
@@ -1513,6 +1893,12 @@ GMC.prototype.GBoundIntersection = function (GA, GB) {
 	}
 	return false;
 }
+/**
+ * returns array of points/markers obscured by infowindow div
+ * @param google.maps.Marker marker
+ * @return Array
+ * @todo test
+ */
 GMC.prototype.obscuringPixelDiv = function (marker) {
 	//get pixel point from LatLng
 	var icon = marker.getIcon();
@@ -1527,11 +1913,26 @@ GMC.prototype.obscuringPixelDiv = function (marker) {
 	return a = new Array(NWx, NWy, SEx, SEy);
 }
 /* update server */
+/**
+ * updates status of server
+ * @param String v
+ * @todo test
+ */
 GMC.prototype.updateServerDone = function (v) {
 	GMO.updateStatus(v);
 	GMO.updateStatus("done");
 }
+/**
+ * returns array of points/markers obscured by infowindow div
+ * @param google.maps.Marker marker
+ * @return Array
+ * @todo test
+ */
 /* address finder form */
+/**
+ * returns a search form for user to do an addresss search
+ * @return String
+ */
 GMC.prototype.findAddressForm = function () {
 		var findAddressHtml = ''
 			findAddressHtml = ''
@@ -1544,6 +1945,11 @@ GMC.prototype.findAddressForm = function () {
 	return findAddressHtml
 }
 /* help */
+/**
+ * displays help information for user
+ * @return String
+ * @todo test
+ */
 GMC.prototype.helpHtml = function () {
 	var string = ''
 		+ '<ul>'
@@ -1582,6 +1988,11 @@ GMC.prototype.helpHtml = function () {
 		+ '</ul>'
 	return string;
 }
+/**
+ * calculates the width of the viewport
+ * @return Int
+ * @todo test
+ */
 GMC.prototype.viewPortWidth = function () {
 	var viewportwidth;
 	// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
@@ -1597,7 +2008,11 @@ GMC.prototype.viewPortWidth = function () {
 	}
 	return viewportwidth;
 }
-
+/**
+ * calculates the height of the viewport
+ * @return Int
+ * @todo test
+ */
 GMC.prototype.viewPortHeight = function () {
 	var viewportheight;
 	// the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerHeight and window.innerHeight
@@ -1614,8 +2029,12 @@ GMC.prototype.viewPortHeight = function () {
 	return viewportheight;
 }
 
-
 /* additional functions */
+/**
+ * searchs for object in array
+ * @return Int
+ * @todo test
+ */
 Array.prototype.inArray = function (v) {
 	for (var i=0; i < this.length; i++) {
 		if (this[i] === v) {
@@ -1624,7 +2043,11 @@ Array.prototype.inArray = function (v) {
 	}
 	return false;
 }
-
+/**
+ * searchs for object in sub array
+ * @return Int
+ * @todo test
+ */
 Array.prototype.inSubArray = function(variableName, v) {
 	var a = []
 	for (var i=0; i < this.length; i++) {
@@ -1633,19 +2056,20 @@ Array.prototype.inSubArray = function(variableName, v) {
 	}
 	return a.inArray(v);
 }
-
-
+/**
+ * tests to see if map function is defined
+ * @return boolen
+ * @todo test
+ */
 function mapFunctionIsDefined(variable) {
 	return (typeof(window[variable]) == "undefined")?  false: true;
 }
 
 
 
-
-
-
-
-//clear overlays function to replace deprecated function from google maps api v2
+/**
+ * clear overlays function to replace deprecated function from google maps api v2
+ */
 google.maps.Map.prototype.clearOverlays = function() {
 	for (var i = 0; i < markersArray.length; i++ ) {
 		markersArray[i].setMap(null);
@@ -1683,31 +2107,32 @@ function createXmlHttpRequest() {
 * @param {Function} callback The function to call once retrieved.
 */
 function downloadUrl(url, callback) {
- var status = -1;
- var request = createXmlHttpRequest();
- if (!request) {
-   return false;
- }
-
- request.onreadystatechange = function() {
-   if (request.readyState == 4) {
-     try {
-       status = request.status;
-     } catch (e) {
-       // Usually indicates request timed out in FF.
-     }
-     if (status == 200) {
-       callback(xmlParse(request.response), request.status);
-       request.onreadystatechange = function() {};
-     }
-   }
- }
- request.open('GET', url, true);
- try {
-   request.send(null);
- } catch (e) {
-   changeStatus(e);
- }
+	var status = -1;
+	var request = createXmlHttpRequest();
+	if (!request) {
+		return false;
+	}
+	request.onreadystatechange = function() {
+	if (request.readyState == 4) {
+		try {
+			status = request.status;
+			}
+			catch (e) {
+				// Usually indicates request timed out in FF.
+			}
+			if (status == 200) {
+				callback(xmlParse(request.response), request.status);
+				request.onreadystatechange = function() {};
+			}
+		}
+	}
+	request.open('GET', url, true);
+	try {
+		request.send(null);
+	}
+	catch (e) {
+		changeStatus(e);
+	}
 };
 
 /**
@@ -1718,26 +2143,13 @@ function downloadUrl(url, callback) {
  * @return {Element|Document} DOM.
  */
 function xmlParse(str) {
-  if (typeof ActiveXObject != 'undefined' && typeof GetObject != 'undefined') {
-    var doc = new ActiveXObject('Microsoft.XMLDOM');
-    doc.loadXML(str);
-    return doc;
-  }
-
-  if (typeof DOMParser != 'undefined') {
-    return (new DOMParser()).parseFromString(str, 'text/xml');
-  }
-
-  return createElement('div', null);
-}
-
-function xinspect(o,i){
-    if(typeof i=='undefined')i='';
-    if(i.length>50)return '[MAX ITERATIONS]';
-    var r=[];
-    for(var p in o){
-        var t=typeof o[p];
-        r.push(i+'"'+p+'" ('+t+') => '+(t=='object' ? 'object:'+xinspect(o[p],i+'  ') : o[p]+''));
-    }
-    return r.join(i+'\n');
+	if (typeof ActiveXObject != 'undefined' && typeof GetObject != 'undefined') {
+		var doc = new ActiveXObject('Microsoft.XMLDOM');
+		doc.loadXML(str);
+		return doc;
+	}
+	if (typeof DOMParser != 'undefined') {
+		return (new DOMParser()).parseFromString(str, 'text/xml');
+	}
+	return createElement('div', null);
 }
