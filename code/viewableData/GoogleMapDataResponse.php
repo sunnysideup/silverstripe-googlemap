@@ -316,6 +316,7 @@ class GoogleMapDataResponse extends Controller {
 		if(Director::is_ajax() || $this->owner->ID) {
 			//$this->dataPointsXML = $data[1];
 			$this->turnoffstaticmaps();
+			$this->response->addHeader("Content-Type", "text/xml; charset=\"utf-8\"");
 			return $this->renderWith("GoogleMapXml");
 		}
 		else {

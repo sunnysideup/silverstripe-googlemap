@@ -1016,7 +1016,7 @@ GMC.prototype.processXml = function(doc) {
 			}
 			// Attempt to preload images
 			if (this.opts.preloadImages) {
-				this.preLoadMarkerImages(desc);
+				//this.preLoadMarkerImages(desc);
 			}
 			var coords = placemarks[i].getElementsByTagName("coordinates")[0].childNodes[0].nodeValue;
 			coords=coords.replace(/\s+/g," "); // tidy the whitespace
@@ -1196,6 +1196,8 @@ GMC.prototype.createSideBar = function(sideBarArray) {
 			for (var j = 0; j < sideBarArray.length; j++) {
 				sideBarElements = sideBarArray[j].split("$$$", 2);
 				i = sideBarElements[1];
+				layerName = this.gmarkers[i].layerId;
+				if(!strpos(this.gmarkers[i].serverId, "manuallyAdded", 0)) {
 				layerName = this.gmarkers[i].layerId;
 				var serverID = String(this.gmarkers[i].serverId);
 				var isManuallyAdded = serverID.indexOf( "manuallyAdded", 0 ); // returns -1
