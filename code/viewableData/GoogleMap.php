@@ -383,25 +383,12 @@ class GoogleMap extends ViewableData {
 		if(self::$GoogleMapHeight > 512) { $staticMapHeight = 512;	}	else { $staticMapHeight = self::$GoogleMapHeight;	}
 		$staticMapURL = "size=".$staticMapWidth."x".$staticMapHeight;
 		if(count($ArrayOfLatitudeAndLongitude)) {
-			$staticMapURL .= '&amp;markers=';
-			if(self::$DefaultIconUrl) {
-				$staticMapURL .= "icon".urlencode(self::$DefaultIconUrl)."|";
-			}
+			//http://maps.google.com/maps/api/staticmap?sensor=true&maptype=map&size=209x310&
+			//markers=color:green%7Clabel:A%7C-45.0302,168.663
+			//&markers=color:red%7Clabel:Q%7C-36.8667,174.767&key=ABQIAAAAzfHfmgAlqXWVcxmSxSSiWBQzY_N6_OTuGrSA0OEmFCsQmwDubBQBukqhr_x7O4VxAGUGMTwvS7P3-w
 			foreach($ArrayOfLatitudeAndLongitude as $row) {
-				if($count) {
-				 $staticMapURL .= '|';
-				}
-				$center = round($row["Latitude"], 6).",".round($row["Longitude"], 6);
-				if(!$count) {
-					$defaultCenter = $center;
-				}
-				$staticMapURL .= $center.",";
-				if(isset($row["Marker"])) {
-					$staticMapURL .= ",".$row["Marker"];
-				}
-				elseif(self::$StaticIcon) {
-					$staticMapURL .= ",".self::$StaticIcon;
-				}
+				$staticMapURL .= '&amp;markers=color:'.$row["Colour"].'%7Clabel:'.$row["Label"].'%7C';
+				$staticMapURL .= round($row["Latitude"], 6).",".round($row["Longitude"], 6);
 				$count++;
 			}
 			if($count == 1) {
