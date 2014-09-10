@@ -226,7 +226,7 @@ class GoogleMap extends ViewableData {
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
 			if(!$this->getShowStaticMapFirst()) {
-				Requirements::javascript("http://maps.googleapis.com/maps/api/js?v=3.exp&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
+				Requirements::javascript("http://maps.googleapis.com/maps/api/js?v=3.16&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
 				Requirements::javascript("googlemap/javascript/googleMaps.js");
 				$js .= 'var scriptsLoaded = true; jQuery(document).ready( function() { initiateGoogleMap();} );';
 			}
