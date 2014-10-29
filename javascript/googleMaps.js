@@ -46,7 +46,7 @@ var markersArray = [];
  * adds layer to map with with points
  * @param URL url
  * @todo: encapsulate
- */ 
+ */
 function addLayer(url) {
 	GMO.downloadXml(url);
 	return true;
@@ -59,7 +59,7 @@ function addLayer(url) {
  * @param LatLng latLng
  * @param String nameString - name for marker
  * @param String description - description for marker
- */ 
+ */
 function addPoint(latLng, nameString, description) {
 	var xmlSheet = GMO.createPointXml(nameString, latLng, description);
 	GMO.processXml(xmlSheet);
@@ -67,9 +67,9 @@ function addPoint(latLng, nameString, description) {
 
 /**
  * finds an address on the map, similar to the opening page of maps.google.com
- * @param String address 
+ * @param String address
  * @todo: encapsulate
- */ 
+ */
 function findAddress(address) {
 	GMO.showAddress(address);
 	return true;
@@ -78,7 +78,7 @@ function findAddress(address) {
 /**
  * shows a route for pre-selected locations
  * @todo: encapsulate
- */ 
+ */
 function findRoute() {
 	GMO.showRoute();
 	return true;
@@ -87,7 +87,7 @@ function findRoute() {
 /**
  * saves your current location on the map
  * @todo: encapsulate
- */ 
+ */
 function savePosition() {
 	//map.savePosition();
 	GMO.savePosition(map);
@@ -96,9 +96,9 @@ function savePosition() {
 }
 
 /**
- * resets the map to last saved position 
+ * resets the map to last saved position
  * @todo: encapsulate
- */ 
+ */
 function goToSavedPosition() {
 	//map.returnToSavedPosition();
 	GMO.returnToSavedPosition(map);
@@ -114,7 +114,7 @@ function goToSavedPosition() {
  * @param String mapDivName
  * @param String url - url that provides points as XML
  * @param Object opts - list of options
- */ 
+ */
 function GMC(mapDivName, url, opts) {
 	// store the parameters
 	this.opts = opts || {};
@@ -178,7 +178,7 @@ function GMC(mapDivName, url, opts) {
  * provides a map type
  * @param Int i = type of map
  * @return Google Map Type
- */ 
+ */
 GMC.prototype.mapTypesArray = function(i){
 	var a = new Array();
 	a[0] = google.maps.MapTypeId.HYBRID;
@@ -193,7 +193,7 @@ GMC.prototype.mapTypesArray = function(i){
  * @param Int i = type of map
  * @return Google Map Type
  * @todo Private
- */ 
+ */
 GMC.prototype.zoomControlStyleArray = function(i){
 	var a = new Array();
 	a[1] = google.maps.ZoomControlStyle.SMALL;
@@ -220,6 +220,8 @@ GMC.prototype.setupMap = function (mapDivName) {
 				style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
 				position: google.maps.ControlPosition.TOP_LEFT
 		},
+		//turn off annoying map zoom with scrollwheel
+		scrollwheel: false,
 		// Add pan
 		panControl: true,
 		// Add zoom
@@ -350,7 +352,7 @@ GMC.prototype.addViewFinder = function (width, height) {
 
 /**
  * zoom into a particular point
- * @param latitudeAndlongitude 
+ * @param latitudeAndlongitude
  * @param Int zoom
  * @todo make public
  */
@@ -873,7 +875,7 @@ GMC.prototype.createStandardIcon = function(iconUrl) {
 /**
  * creates a XML point and attempts to add it to the database
  * @param String name
- * @param google.maps.LatLng pointLngLat 
+ * @param google.maps.LatLng pointLngLat
  *@param String description
  * @param Int latitude
  * @param Int longitude
@@ -1116,7 +1118,7 @@ GMC.prototype.processXml = function(doc) {
 }
 
 /**
- * if the are more than points to add to the map user receives a warning it could take a while 
+ * if the are more than points to add to the map user receives a warning it could take a while
  * @param Int pointCount
  * @todo ???
  */
@@ -1494,7 +1496,7 @@ GMC.prototype.createRouteFromLayer = function(layerId) {
 		var request = {
 			origin:GMO.floatFrom,
 			destination:GMO.floatTo,
-			travelMode: google.maps.TravelMode.TRANSIT 
+			travelMode: google.maps.TravelMode.TRANSIT
 			};
 		directions.route(request, function(result, status) {
 			if (status == google.maps.DirectionsStatus.OK) {
