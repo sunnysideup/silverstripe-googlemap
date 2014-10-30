@@ -108,16 +108,18 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	private static $class_name_only = '';
 
 	function SearchByAddressForm($className = '') {
-		return new Form(
+		$form = new Form(
 			$this->owner,
 			"SearchByAddressForm",
 			new FieldList(
-				new TextField("Address", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->address),
+				$addressField = new TextField("Address", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->address),
 				new HiddenField("ClassName", "ClassName", $className)
 			),
 			new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
 			new RequiredFields("Address")
 		);
+		$addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your address or zip code here.")) ;
+		return $form;
 	}
 
 	function findnearaddress($data, $form) {
