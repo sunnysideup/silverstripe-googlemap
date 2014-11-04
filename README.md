@@ -1,9 +1,9 @@
-
 Google Map
-================================================================================
+====================
+
+Adds an in-depth application of the google map API to your Silverstripe application
 
 
-___________________________________
 STEP-BY-STEP (by alex.guez [at] gmail dot com)
 -----------------------------------
 
