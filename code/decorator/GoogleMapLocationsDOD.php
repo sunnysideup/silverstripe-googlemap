@@ -163,7 +163,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		if(!Director::is_ajax()) {
 			if($this->hasStaticMaps()) {
 				$controller = new GoogleMapDataResponse();
-				if(method_exists($controller, $action)) {
+				if($controller->hasMethod($action)) {
 					$controller->setOwner($this->owner);
 					$controller->setTitle($title);
 					$controller->setLng($lng);
