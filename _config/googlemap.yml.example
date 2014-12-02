@@ -9,6 +9,8 @@ GoogleMapLocationsDOD:
   page_classes_without_map:
     - UserDefinedForms
 
+GoogleMapLocationsDOD_Controller:
+  form_prefix: "RandomString"
 
 GoogleMap:
   # IMPORTANT ####################

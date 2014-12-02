@@ -112,24 +112,24 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 			$this->owner,
 			"SearchByAddressForm",
 			new FieldList(
-				$addressField = new TextField("Address", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->address),
-				new HiddenField("ClassName", "ClassName", $className)
+				$addressField = new TextField("FindNearAddress", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->address),
+				new HiddenField("FindNearClassName", "ClassName", $className)
 			),
 			new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
-			new RequiredFields("Address")
+			new RequiredFields("FindNearAddress")
 		);
 		$addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your address or zip code here.")) ;
 		return $form;
 	}
 
 	function findnearaddress($data, $form) {
-		$address = Convert::raw2sql($data["Address"]);
-		$className = Convert::raw2sql($data["ClassName"]);
+		$address = Convert::raw2sql($data["FindNearAddress"]);
+		$className = Convert::raw2sql($data["FindNearClassName"]);
 		$pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
 		$this->address = $pointArray["FullAddress"];
 		if(!isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
 			GoogleMapSearchRecord::create_new($address, $this->owner->ID, false);
-			$form->addErrorMessage('Address', _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND", "Sorry, address could not be found..."), 'warning');
+			$form->addErrorMessage('FindNearAddress', _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND", "Sorry, address could not be found..."), 'warning');
 			$this->redirectBack();
 			return;
 		}
