@@ -16,9 +16,21 @@
 	 */
 class GetLatLngFromGoogleUsingAddress extends Object {
 
-
+	/**
+	 * For debugging.
+	 * needs to be static because we use static methods
+	 * in this class
+	 * @var Boolean for debugging
+	 */
 	private static $debug = false;
 
+
+
+	/**
+	 * location for API
+	 *
+	 * @var String
+	 */
 	private static $geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
 
 	 /**
@@ -28,33 +40,39 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		*/
 	private static $default_to_first_result = true;
 
-	 /**
-		*
-		* tells you if CURL / file_get_contents is available
-		* set to true , unless it is not sure if CURL is available
-		*
-		* @var boolean
-		*/
+	/**
+	 *
+	 * tells you if CURL / file_get_contents is available
+	 * set to true , unless it is not sure if CURL is available
+	 *
+	 * @var boolean
+	 */
 	private static $server_side_available = true;
 
 	/**
-	* Get first placemark as flat array
-	*
-	* @param string $q
-	* @return Array
-	*/
+	 * Get first placemark as flat array
+	 *
+	 * @param string $q
+	 * @return Array
+	 */
 	public static function get_placemark_as_array($q, $tryAnyway = 0) {
+		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
 		$q = trim($q);
 		if($q) {
 			$result = null;
-			$resultDO = GetLatLngFromGoogleUsingAddressSearchRecord::get()->filter(array(
+			$searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::get()->filter(array(
 				"SearchPhrase" => Convert::raw2sql($q)
 			))->First();
-			if($resultDO) {
-				if(self::$debug) {
+			if($searchRecord && $searchRecord->ResultArray) {
+				if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 					debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");
 				}
-				$result = unserialize($resultDO->ResultArray);
+				//@ is important here!
+				$result = @unserialize($searchRecord->ResultArray);
+				if($result === null) {
+					$searchRecord->ResultArray = "";
+					$searchRecord->write();
+				}
 				if(isset($result["FullAddress"]) && isset($result["Longitude"]) && isset($result["Latitude"])) {
 					return $result;
 				}
@@ -62,16 +80,18 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 			}
 			if(!$result) {
 				$result = self::get_placemark($q, $tryAnyway);
-				if(self::$debug) {
+				if($debug) {
 					debug::show(print_r($result, 1));
 				}
 				if(is_object($result)) {
 					$resultArray = self::google_2_ss($result);
-					if(self::$debug) {
+					if($debug) {
 						debug::show(print_r($resultArray, 1));
 					}
-					$searchRecord = new GetLatLngFromGoogleUsingAddressSearchRecord();
-					$searchRecord->SearchPhrase = Convert::raw2sql($q);
+					if(!isset($searchRecord) || !$searchRecord) {
+						$searchRecord = new GetLatLngFromGoogleUsingAddressSearchRecord();
+						$searchRecord->SearchPhrase = Convert::raw2sql($q);
+					}
 					$searchRecord->ResultArray = serialize($resultArray);
 					$searchRecord->write();
 					return $resultArray;
@@ -94,14 +114,14 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	* @return Object Single placemark
 	*/
 	protected static function get_placemark($q, $tryAnyway = false) {
-		if(self::$server_side_available || $tryAnyway) {
+		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","server_side_available") || $tryAnyway) {
 			$responseObj = self::get_geocode_obj($q);
-			if(self::$debug) {
+			if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 				debug::show(print_r($responseObj, 1));
 			}
 			if($responseObj && $responseObj->status == 'OK' && isset($responseObj->results[0])) {
 				//we just take the first address!
-				if(self::$default_to_first_result || count($responseObj->results) ==1) {
+				if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","default_to_first_result") || count($responseObj->results) ==1) {
 					$result = $responseObj->results[0];
 					return $result;
 				}
@@ -119,16 +139,17 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 * @return Object Multiple Placemarks and status code
 	 */
 	protected static function get_geocode_obj($q) {
+		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
 		if(!Config::inst()->get("GoogleMap", "GoogleMapAPIKey")) {
 			user_error('Please define a valid Google Maps API Key: GoogleMapAPIKey', E_USER_ERROR);
 		}
 		$q = trim($q);
-		if(self::$debug) {
+		if($debug) {
 			var_dump($q);
 		}
 		if(empty($q)) return false;
-		$url = sprintf(self::$geocode_url, urlencode($q));
-		if(self::$debug) {
+		$url = sprintf(Config::inst()->get("GetLatLngFromGoogleUsingAddress","geocode_url"), urlencode($q));
+		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 			debug::show(print_r($url, 1));
 		}
 		$curl = curl_init($url);
@@ -141,37 +162,18 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 				return false;
 			}
 		}
-		if(self::$debug) {
+		if($debug) {
 			debug::show(print_r($responseString, 1));
 		}
 		return self::json_decoder($responseString);
 	}
 
 	private function json_decoder($content, $assoc = false) {
-		if ( !function_exists('json_decode')){
-			include_once(Director::baseFolder().".googlemap/code/converters/thirdparty/Services_JSON.php");
-			if ( $assoc ){
-				$json = new Services_JSON(SERVICES_JSON_LOOSE_TYPE);
-			}
-			else {
-				$json = new Services_JSON;
-			}
-			return $json->decode($content);
-		}
-		else {
-			return json_decode($content);
-		}
+		return @json_decode($content);
 	}
 
 	private function json_encoder($content) {
-		if ( !function_exists('json_encode') ){
-			include_once(Director::baseFolder().".googlemap/code/converters/thirdparty/Services_JSON.php");
-			$json = new Services_JSON;
-			return $json->encode($content);
-		}
-		else {
-			return json_encode($content);
-		}
+		return json_encode($content);
 	}
 
 	/**
@@ -216,7 +218,7 @@ SS:
 	'PostalCodeNumber' => 'Varchar(30)',
 	*/
 
-	private static $google_2_ss_translation_array = array(
+	protected static $google_2_ss_translation_array = array(
 		"administrative_area_level_1" => "AdministrativeAreaName",
 		//two into one
 		"locality" => "SubAdministrativeAreaName",
@@ -240,12 +242,13 @@ SS:
 	 * @param GoogleResponseObject (JSON)
 	 * @return Array
 	 */
-	private static function google_2_ss($responseObj) {
+	protected static function google_2_ss($responseObj) {
 		//get address parts
 		$outputArray = array(
 			"Original"=> $responseObj,
 			"FullAddress"=> "Could not find address"
 		);
+		$translationArray = Config::inst()->get("GetLatLngFromGoogleUsingAddress","google_2_ss_translation_array");
 		if(isset($responseObj->address_components) && is_array($responseObj->address_components)) {
 			foreach($responseObj->address_components as $addressItem) {
 				if(
@@ -255,8 +258,8 @@ SS:
 					&& count($addressItem->types)
 					&& isset($addressItem->short_name)
 				) {
-					if(isset(self::$google_2_ss_translation_array[$addressItem->types[0]])) {
-						$outputArray[self::$google_2_ss_translation_array[$addressItem->types[0]]] = $addressItem->short_name;
+					if(isset($translationArray[$addressItem->types[0]])) {
+						$outputArray[$translationArray[$addressItem->types[0]]] = $addressItem->short_name;
 					}
 					else {
 						$outputArray[$addressItem->types[0]] = $addressItem->short_name;
