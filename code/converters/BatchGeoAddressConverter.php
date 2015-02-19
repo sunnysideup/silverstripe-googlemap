@@ -1,5 +1,11 @@
 <?php
 
+
+/**
+ * here is some old code that maybe of use.
+ *
+ *
+ */
 class BatchGeoAddressConverter extends Object {
 	/*
 	static function convert($tableName, $fieldName, $idFieldName) {

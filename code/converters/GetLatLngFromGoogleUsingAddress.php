@@ -8,11 +8,13 @@
 	 * CHECKS IF CURL / file_get_contents is available
 	 * Requirements: allow_url_fopen = on
 	 *
-	 * @author Ingo Schommer, Silverstripe Ltd. (<firstname>@silverstripe.com), Nicolaas Francken
-	 * @version 0.1
+	 * @author Ingo Schomme and Nicolaas Francken
 	 * @todo Implement CURL with fopen fallback
 	 * @todo Implement client-side selection when multiple results are found (through validation-errors and javasript)
 	 * @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
+	 *
+	 * you can use
+	 * GetLatLngFromGoogleUsingAddress::get_placemark_as_array()
 	 */
 class GetLatLngFromGoogleUsingAddress extends Object {
 
@@ -23,8 +25,6 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 * @var Boolean for debugging
 	 */
 	private static $debug = false;
-
-
 
 	/**
 	 * location for API
@@ -53,6 +53,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 * Get first placemark as flat array
 	 *
 	 * @param string $q
+	 * @param Boolean $tryAnyway
 	 * @return Array
 	 */
 	public static function get_placemark_as_array($q, $tryAnyway = 0) {
@@ -111,6 +112,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	* Get first placemark from google, or return false.
 	*
 	* @param string $q
+	* @param Boolean $tryAnyway
 	* @return Object Single placemark
 	*/
 	protected static function get_placemark($q, $tryAnyway = false) {
@@ -140,8 +142,8 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 */
 	protected static function get_geocode_obj($q) {
 		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
-		if(!Config::inst()->get("GoogleMap", "GoogleMapAPIKey")) {
-			user_error('Please define a valid Google Maps API Key: GoogleMapAPIKey', E_USER_ERROR);
+		if(!Config::inst()->get("GoogleMap", "google_map_api_key")) {
+			user_error('Please define a valid Google Maps API Key: google_map_api_key', E_USER_ERROR);
 		}
 		$q = trim($q);
 		if($debug) {
@@ -168,11 +170,24 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		return self::json_decoder($responseString);
 	}
 
-	private function json_decoder($content, $assoc = false) {
-		return @json_decode($content);
+	/**
+	 *
+	 * @param String (JSON)
+	 * @param Boolean $assoc
+	 *
+	 * @return Array
+	 */
+	private static function json_decoder($content, $assoc = false) {
+		return json_decode($content);
 	}
 
-	private function json_encoder($content) {
+	/**
+	 *
+	 * @param Array
+	 *
+	 * @return Array
+	 */
+	private static function json_encoder($content) {
 		return json_encode($content);
 	}
 

@@ -1,8 +1,9 @@
 <?php
 /**
- * GoogleMapLocationsObject.php: Sub-class of DataObject
- * DataObject holding all GeoPoints
- * @created 14/10/2008
+ *
+ * Map Location Object
+ * onBeforeWrite, it automagically adds all the details.
+ *
  */
 
 class GoogleMapLocationsObject extends DataObject {
@@ -67,6 +68,12 @@ class GoogleMapLocationsObject extends DataObject {
 		return "(6378.137 * ACOS( ( SIN( PI( ) * ".$lat." /180 ) * SIN( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) ) + ( COS( PI( ) * ".$lat." /180 ) * cos( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) * COS( (PI( ) * \"".$table."\".\"".$longitudeField."\" / 180 ) - ( PI( ) * $lon / 180 ) ) ) ) ) ";
 	}
 
+	/**
+	 * @param Int $longitude
+	 * @param Int $latitude
+	 *
+	 * return GoogleMapLocationsObject | Null
+	 */
 	public static function pointExists($longitude, $latitude) {
 		return GoogleMapLocationsObject::get()->filter(array(
 			"Longitude" => floatval($longitude),
@@ -127,10 +134,18 @@ class GoogleMapLocationsObject extends DataObject {
 		return $fields;
 	}
 
+	/**
+	 * @casted variable
+	 * @return SiteTree
+	 */
 	function getParentData() {
 		return $this->Parent();
 	}
 
+	/**
+	 * @casted variable
+	 * @return String (HTML)
+	 */
 	function getAjaxInfoWindowLink() {
 		if(strlen($this->CustomPopUpWindowInfo) > 3) {
 			return '<p>'.$this->CustomPopUpWindowInfo.'</p>';
@@ -140,18 +155,30 @@ class GoogleMapLocationsObject extends DataObject {
 		}
 	}
 
+	/**
+	 * @casted variable
+	 * @return String | Null
+	 */
 	function getParentClassName() {
 		if($parent = $this->getParentData()) {
 			return $parent->ClassName;
 		}
 	}
+
+	/**
+	 * @casted variable
+	 * @return String | Null
+	 */
 	function getLink() {
 		if($parent = $this->getParentData()) {
 			return $parent->Link();
 		}
 	}
 
-	function addParentData() {
+	/**
+	 * add data from Parent to the object
+	 */
+	public function addParentData() {
 		$parentData = $this->getParentData();
 		if(!isset(self::$parent_point_counts[$this->ParentID + 0]) && $this->getParentData()) {
 			$count = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->ParentID))->count();
@@ -171,15 +198,6 @@ class GoogleMapLocationsObject extends DataObject {
 		}
 	}
 
-	function complexTableFields() {
-		$fields = array(
-			'FullAddress' => 'FullAddress',
-			'Longitude' => 'Longitude',
-			'Latitude' => 'Latitude',
-		);
-		return $fields;
-	}
-
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 		/*
@@ -193,7 +211,11 @@ class GoogleMapLocationsObject extends DataObject {
 		$this->findGooglePoints($doNotWrite = true);
 	}
 
-	function completePoints() {
+	/**
+	 * complete points data
+	 *
+	 */
+	protected function completePoints() {
 		$uncompletedPoints = GoogleMapLocationsObject::get()->where("
 			(
 				(\"GoogleMapLocationsObject\".\"Address\" <> \"GoogleMapLocationsObject\".\"FullAddress\")
@@ -219,7 +241,11 @@ class GoogleMapLocationsObject extends DataObject {
 		}
 	}
 
-	function findGooglePointsAndWriteIfFound() {
+	/**
+	 *
+	 * @return this
+	 */
+	public function findGooglePointsAndWriteIfFound() {
 		$this->findGooglePoints(true);
 		if($this->FullAddress && $this->Longitude && $this->Latitude) {
 			$this->write();
@@ -228,7 +254,11 @@ class GoogleMapLocationsObject extends DataObject {
 		return false;
 	}
 
-	function findGooglePoints($doNotWrite) {
+	/**
+	 *
+	 * @param Boolean $doNotWrite - do not write to Database
+	 */
+	protected function findGooglePoints($doNotWrite) {
 		if($this) {
 			if($this->Address && !$this->Manual) {
 				$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
@@ -242,6 +272,11 @@ class GoogleMapLocationsObject extends DataObject {
 		}
 	}
 
+	/**
+	 *
+	 * @param Array $newData
+	 * @param Boolean $doNotWrite - do not write object to database
+	 */
 	protected function addDataFromArray($newData, $doNotWrite = false) {
 		foreach($newData as $field => $value) {
 			$this->$field = $value;

@@ -1447,7 +1447,8 @@ GMC.prototype.addAddressToMap = function (response) {
 GMC.prototype.updateAddressFormFields = function(latLng) {
 	if(GMO.opts.latFormFieldId) {
 		if(el = document.getElementById(GMO.opts.latFormFieldId)) {
-			document.getElementById(GMO.opts.latLngFormFieldId).value = latLng;
+			document.getElementById(GMO.opts.latFormFieldId).value = latLng.lat();
+			document.getElementById(GMO.opts.lngFormFieldId).value = latLng.lng();
 		}
 	}
 }

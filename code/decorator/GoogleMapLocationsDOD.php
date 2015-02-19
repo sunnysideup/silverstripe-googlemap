@@ -1,26 +1,39 @@
 <?php
-/*
+/**
+ * add to sitetree
+ *
+ *
+ *
  *
  */
 
-
-class GoogleMapLocationsDOD extends DataExtension {
+class GoogleMapLocationsDOD extends SiteTreeExtension {
 
 	private static $db = array("HasGeoInfo" => "Boolean");
-	private static $has_many = array("GeoPoints" => "GoogleMapLocationsObject");
-	private static $default = array();
 
+	private static $has_many = array("GeoPoints" => "GoogleMapLocationsObject");
+
+	/**
+	 * list of pages types without a map
+	 * @var Array
+	 */
 	private static $page_classes_without_map = array();
 
+	/**
+	 * list of pages types with a map
+	 * @var Array
+	 */
 	private static $page_classes_with_map = array();
 
+	/**
+	 * @param FieldList
+	 */
 	function updateCMSFields(FieldList $fields) {
 		if($this->classHasGoogleMap()) {
 			$fields->addFieldToTab("Root", new Tab("Map"));
-			$fields->addFieldToTab("Root.Map", new CheckboxField("HasGeoInfo", "Has Address(es)? - save and reload this page to start data-entry"));
+			$fields->addFieldToTab("Root.Map", new CheckboxField("HasGeoInfo", _t("GoogleMapLocationsDOD.HAS_ADDRESSES", "Has Address(es)? - save and reload this page to start data-entry")));
 			if($this->owner->HasGeoInfo) {
 				$dataObject = new GoogleMapLocationsObject();
-				$complexTableFields = $dataObject->complexTableFields();
 				$source = $this->owner->GeoPoints();
 				$GeoPointsField = new GridField(
 					"GeoPoints",
@@ -32,8 +45,12 @@ class GoogleMapLocationsDOD extends DataExtension {
 			}
 		}
 		return $fields;
- }
+	}
 
+	/**
+	 * returns the HTML for a info window on a map for this page.
+	 * @return String (HTML)
+	 */
 	public function AjaxInfoWindowLink() {
 		if($this->owner->hasMethod("CustomAjaxInfoWindow")) {
 			return $this->owner->CustomAjaxInfoWindow();
@@ -43,8 +60,11 @@ class GoogleMapLocationsDOD extends DataExtension {
 		}
 	}
 
-
-	public function classHasGoogleMap() {
+	/**
+	 * Page Type has a Google Map
+	 * @return Boolean
+	 */
+	public function ClassHasGoogleMap() {
 		//assumptions:
 		//1. in general YES
 		//2. if list of WITH is shown then it must be in that
@@ -71,7 +91,8 @@ class GoogleMapLocationsDOD extends DataExtension {
 	 *
 	 * @param $parentPage DataObject The Object of which you want to find the children
 	 * @param $classType String The text string to match `ClassName` field
-	 * @return DataObjectSet of items if Class $classType
+	 *
+	 * @return DataList of items if Class $classType
 	 */
 	function getChildrenOfType($parentPage, $classType = null) {
 		$children = $parentPage->AllChildren();
@@ -91,241 +112,6 @@ class GoogleMapLocationsDOD extends DataExtension {
 		return ($childrenOfType) ? $childrenOfType : new ArrayList();
 	}
 
-
 }
-
-class GoogleMapLocationsDOD_Controller extends Extension {
-
-	private static $allowed_actions = array("SearchByAddressForm");
-
-	protected $address = false;
-
-	protected $googleMap = null;
-
-	protected $isAjax = false;
-
-
-	private static $class_name_only = '';
-
-	function SearchByAddressForm($className = '') {
-		$form = new Form(
-			$this->owner,
-			"SearchByAddressForm",
-			new FieldList(
-				$addressField = new TextField("FindNearAddress", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->address),
-				new HiddenField("FindNearClassName", "ClassName", $className)
-			),
-			new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
-			new RequiredFields("FindNearAddress")
-		);
-		$addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your address or zip code here.")) ;
-		return $form;
-	}
-
-	function findnearaddress($data, $form) {
-		$address = Convert::raw2sql($data["FindNearAddress"]);
-		$className = Convert::raw2sql($data["FindNearClassName"]);
-		$pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
-		$this->address = $pointArray["FullAddress"];
-		if(!isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
-			GoogleMapSearchRecord::create_new($address, $this->owner->ID, false);
-			$form->addErrorMessage('FindNearAddress', _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND", "Sorry, address could not be found..."), 'warning');
-			$this->redirectBack();
-			return;
-		}
-		else {
-			GoogleMapSearchRecord::create_new(Convert::raw2sql($address), $this->owner->ID, true);
-		}
-		$lng = $pointArray["Longitude"];
-		$lat = $pointArray["Latitude"];
-		//$form->Fields()->fieldByName("Address")->setValue($pointArray["address"]); //does not work ....
-		//$this->owner->addMap($action = "showsearchpoint", "Your search",$lng, $lat);
-		$this->owner->addMap($action = "showaroundmexml","Closests to your search", $lng, $lat, $className);
-		return array();
-	}
-
-
-	function addMap($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
-		$this->initiateMap();
-		if(!$title) {
-			$title = $this->owner->Title;
-		}
-		if($lng && $lat) {
-			$linkForData = "googlemapextensive/".$action."/".$this->owner->ID."/".urlencode($title)."/".$lng."/".$lat."/";
-		}
-		else {
-			$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title);
-		}
-		if($filter) {
-			$linkForData .= urlencode($filter)."/";
-		}
-		$this->googleMap->addLayer($linkForData);
-		if(!Director::is_ajax()) {
-			if($this->hasStaticMaps()) {
-				$controller = new GoogleMapDataResponse();
-				if($controller->hasMethod($action)) {
-					$controller->setOwner($this->owner);
-					$controller->setTitle($title);
-					$controller->setLng($lng);
-					$controller->setLat($lat);
-					$controller->setFilter($filter);
-					return $controller->$action();
-				}
-			}
-		}
-		return Array();
-	}
-
-	public function addExtraLayersAsAction($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
-		if($lng && $lat) {
-			$linkForData = "googlemapextensive/".$action."/".$this->owner->ID."/".urlencode($title)."/".$lng."/".$lat."/";
-		}
-		else {
-			$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title);
-		}
-		if($filter) {
-			$linkForData .= "/".urlencode($filter)."/";
-		}
-		$this->addExtraLayersAsLinks($title, $linkForData);
-	}
-
-	public function addExtraLayersAsLinks($title, $link) {
-		$this->initiateMap();
-		$this->googleMap->addExtraLayersAsLinks($title, $link);
-	}
-
-
-	function addAddress($address = '') {
-		$this->initiateMap();
-		if(!$address && isset($_REQUEST["address"])) {
-			$address = urlencode($_REQUEST["address"]);
-		}
-		if($address) {
-			$this->googleMap->setAddress($address);
-		}
-		else {
-			user_error("No address could be added.", E_USER_ERROR);
-		}
-	}
-
-	function addUpdateServerUrlAddressSearchPoint($UpdateServerUrlAddPoint = "/googlemap/showaroundmexml/") {
-		$this->initiateMap();
-		$this->googleMap->setUpdateServerUrlAddressSearchPoint($UpdateServerUrlAddPoint);
-	}
-
-	function addUpdateServerUrlDragend($UpdateServerUrlDragend = "googlemap/updatemexml/") {
-		$this->initiateMap();
-		$UpdateServerUrlDragend .= $this->owner->ID.'/';
-		$this->googleMap->setUpdateServerUrlDragend($UpdateServerUrlDragend);
-	}
-
-	function addAllowAddingAndDeletingPoints() {
-		$this->initiateMap();
-		$this->googleMap->allowAddPointsToMap();
-	}
-
-	function clearCustomMaps() {
-		Session::clear("addCustomGoogleMap");
-		Session::set("addCustomGoogleMap", serialize(array()));
-		Session::save();
-	}
-
-	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '') {
-		$this->initiateMap();
-		$sessionTitle = preg_replace('/[^a-zA-Z0-9]/', '', $title);
-		$isGoogleMapLocationsObject = true;
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
-		if($pagesOrGoogleMapLocationsObjects) {
-			if(!$retainOldSessionData) {
-				$this->clearCustomMaps();
-			}
-			else {
-				if(is_array($addCustomGoogleMapArray)) {
-					$customMapCount = count($addCustomGoogleMapArray);
-				}
-			}
-			foreach($pagesOrGoogleMapLocationsObjects as $obj) {
-				if($obj instanceof SiteTree) {
-					$isGoogleMapLocationsObject = false;
-				}
-				if(!$obj->ID) {
-					user_error("Page provided to addCustomMap that does not have an ID", E_USER_ERROR);
-				}
-				if(!isset($addCustomGoogleMapArray[$title])) {
-					$addCustomGoogleMapArray[$title] = array();
-				}
-				$addCustomGoogleMapArray[$title][] = $obj->ID;
-			}
-		}
-
-		GoogleMapDataResponse::set_custom_google_map_session_data($addCustomGoogleMapArray);
-		Session::save();
-		if($isGoogleMapLocationsObject) {
-			$fn = "showcustomdosmapxml";
-		}
-		else {
-			$fn = "showcustompagesmapxml";
-		}
-		$this->addMap($fn, $title);
-		return Array();
-	}
-
-
-	protected function hasStaticMaps() {
-  	return (!Session::get("StaticMapsOff") && $this->googleMap->getShowStaticMapFirst()) ? true : false;
-	}
-
-
-	public static function hasStaticMapsStaticFunction() {
-  	return (!Session::get("StaticMapsOff") && $this->googleMap->getShowStaticMapFirst()) ? true : false;
-	}
-
-	private function initiateMap() {
-		if(!$this->googleMap) {
-			$this->googleMap = new GoogleMap();
-		}
-	}
-
-
-/* ******************************
- *  GENERAL FUNCTIONS
- *  ******************************
- */
-	function GoogleMapController() {
-		$this->initiateMap();
-		$this->googleMap->loadGoogleMap();
-		return $this->googleMap;
-	}
-
-	public function hasGoogleMap() {
-		if($this->googleMap && $this->owner->classHasGoogleMap()) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-
-	function returnMapDataFromAjaxCall($PageDataObjectSet = null, $GooglePointsDataObject = null, $dataObjectTitle = '', $whereStatementDescription = '') {
-		$this->googleMap = new GoogleMap();
-		$this->googleMap->setDataObjectTitle($dataObjectTitle);
-		$this->googleMap->setWhereStatementDescription($whereStatementDescription);
-		if($GooglePointsDataObject) {
-			$this->googleMap->setGooglePointsDataObject($GooglePointsDataObject);
-		}
-		elseif($PageDataObjectSet) {
-			$this->googleMap->setPageDataObjectSet($PageDataObjectSet);
-		}
-		else {
-			$this->googleMap->staticMapHTML = "<p>No points found</p>";
-		}
-		$data = $this->googleMap->createDataPoints();
-		return $this->owner->renderWith("GoogleMapXml");
-	}
-
-
-}
-
 
 

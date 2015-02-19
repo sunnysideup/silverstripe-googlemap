@@ -1,13 +1,22 @@
 <?php
 
+/**
+ * save a map to a local file.
+ *
+ *
+ */
+
 class StaticMapSaverForHTTPS extends Object {
 
 	private static $save_dir = "assets";
 
 	private static $overwrite = false;
 
+	/**
+	 * @param String $url
+	 * @param String $filename
+	 */
 	function convert_to_local_file($url, $filename) {
-		$overwrite = true; //or false if image has to be renamed on duplicate
 		$fileFolder = self::$save_dir.'/'.$filename;
 		$target = Director::baseFolder().'/'.$fileFolder;
 		if(file_exists($target) && !self::$overwrite){
