@@ -32,7 +32,7 @@ class GoogleMap extends ViewableData {
 		$staticMapURL = '';
 		$count = 0;
 		//width
-		$staticMapWidth = Config::inst()->get("GoogleMap", "google_map_width")
+		$staticMapWidth = Config::inst()->get("GoogleMap", "google_map_width");
 		if($staticMapWidth > 512) { $staticMapWidth = 512;}
 		//height
 		$staticMapHeight = Config::inst()->get("GoogleMap", "google_map_height");
@@ -210,8 +210,8 @@ class GoogleMap extends ViewableData {
 	 * @var String (HTML)
 	 */
 	protected $dataPointsStaticMapHTML;
-		public function setDataPointsObjectSet($s){$this->dataPointsObjectSet = $s;}
-		public function getDataPointsObjectSet(){return $this->dataPointsObjectSet;}
+		public function setDataPointsStaticMapHTML($s){$this->dataPointsObjectSet = $s;}
+		public function getDataPointsStaticMapHTML(){return $this->dataPointsObjectSet;}
 
 	/*********************
 	 *  map data
@@ -253,7 +253,7 @@ class GoogleMap extends ViewableData {
 	 * address being searched for
 	 * @var String
 	 */
-	protected $Address = "";
+	protected $address = "";
 		public function setAddress($v) {$this->address = Convert::raw2js($v);}
 		public function getAddress($v) {return $this->address;}
 
@@ -278,7 +278,7 @@ class GoogleMap extends ViewableData {
 	 * @var ArrayList
 	 */
 	protected $extraLayersAsLinks = null;
-		public function setExtraLayersAsLinks($v) {$this->extraLayersAsLinks = $v;}
+		public function setExtraLayersAsLinks($v) {user_error("use GoogleMap::addExtraLayersAsLinks");}
 		public function getExtraLayersAsLinks() {return $this->extraLayersAsLinks;}
 
 		/**
@@ -286,7 +286,7 @@ class GoogleMap extends ViewableData {
 		 * @param String $link
 		 */
 		public function addExtraLayersAsLinks($title, $link) {
-			if($this->extraLayersAsLinks() === null) {
+			if($this->getExtraLayersAsLinks() === null) {
 				$this->extraLayersAsLinks = new ArrayList();
 			}
 			$this->extraLayersAsLinks->push(new ArrayData(array("Title" => $title, "Link" => $link)));
@@ -383,7 +383,7 @@ class GoogleMap extends ViewableData {
 		ksort($tempArray);
 		//not sure why this is a bit counter intuitive.
 		if(!$reverse) {
-			$tempArray = array_reverse($tempArray)
+			$tempArray = array_reverse($tempArray);
 		}
 		foreach($tempArray as $item) {
 			$sortedSet->push($item);
@@ -443,7 +443,7 @@ class GoogleMap extends ViewableData {
 		$this->loadDefaults();
 		$idArray = array();
 		//width
-		$staticMapWidth = $this->Config()->get("google_map_width")
+		$staticMapWidth = $this->Config()->get("google_map_width");
 		if($staticMapWidth > 512) { $staticMapWidth = 512;}
 		//height
 		$staticMapHeight = $this->Config()->get("google_map_height");
