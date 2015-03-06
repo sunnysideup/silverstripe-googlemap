@@ -1,20 +1,25 @@
 <?php
 /**
- * Text field with Email Validation.
+ * Enter an address and check that it is correct ...
  * @package forms
  * @subpackage fields-formattedinput
  */
 class AddressFinderField extends TextField {
 
-	private static $addressArray = null;
+	private static $_address_array = null;
 
+	/**
+	 * returns false if the address can not be found and TRUE
+	 * if the address can be found...
+	 * @return False | Array
+	 */
 	function getAddressArray() {
-		if(!isset(self::$addressArray) && $this->value) {
-			self::$addressArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->value);
+		if(!isset(self::$_address_array) && $this->value) {
+			self::$_address_array = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->value);
 		}
-		if(isset(self::$addressArray["Longitude"]) && isset(self::$addressArray["Latitude"])) {
-			if(floatval(self::$addressArray["Longitude"]) && floatval(self::$addressArray["Latitude"])) {
-				return self::$addressArray;
+		if(isset(self::$_address_array["Longitude"]) && isset(self::$_address_array["Latitude"])) {
+			if(floatval(self::$_address_array["Longitude"]) && floatval(self::$_address_array["Latitude"])) {
+				return self::$_address_array;
 			}
 		}
 		return false;
@@ -22,7 +27,6 @@ class AddressFinderField extends TextField {
 
 	function validate($validator){
 		$this->value = trim($this->value);
-
 		if(!$this->getAddressArray()){
  			$validator->validationError(
  				$this->name,

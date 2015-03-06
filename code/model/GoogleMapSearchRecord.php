@@ -21,7 +21,7 @@ class GoogleMapSearchRecord extends DataObject {
 		if(!$addGoogleMapLocationsObjectOrItsID ) {
 			//do nothing
 		}
-		elseif($addGoogleMapLocationsObjectOrItsID === true || $addGoogleMapLocationsObjectOrItsID = 1) {
+		elseif($addGoogleMapLocationsObjectOrItsID === true || $addGoogleMapLocationsObjectOrItsID === 1) {
 			//create object
 			$location = new GoogleMapLocationsObject();
 			$location->Address = $searchedFor;
