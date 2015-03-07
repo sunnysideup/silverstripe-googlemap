@@ -42,7 +42,7 @@
 		<h2>Add to the map</h2>
 		<ul>
 	<% loop AllExtraLayersAsLinks %>
-			<li><a href="#map" onclick="return !addLayer('{$Link}');">$Title</a></li>
+			<li><a href="#map" onclick="return !{$MyMapFunctionName}.addLayer('{$Link}');">$Title</a></li>
 	<% end_loop %>
 		</ul>
 	</div>

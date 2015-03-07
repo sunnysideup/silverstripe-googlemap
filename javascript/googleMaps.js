@@ -1,110 +1,16 @@
 /**
-	many thanks to : http://econym.googlepages.com/index.htm
-	*
-	* @todo:
-	* - make GMO into generic object that can have any name! (e.g. replace GMO with "this")
-	* - replace variables below with encapsulated values
-	* - http://net.tutsplus.com/tutorials/javascript-ajax/the-basics-of-object-oriented-javascript/
-	*
-	*
-	*
-var GoogleMapOject = {
-
-	variable1 : " xxx" ,
-
-	variable2 : 11.11,
-
-	method1: function(a,b,c) {
-		return "boo";
-	}
-}
-
-myObject = new GoogleMapObject(); ????
-
-GoogleMapObject.variable1;
-GoogleMapObject.variable2;
-GoogleMapObject.method1();
-
-
-
-
-**/
-
-
-var map = null;
-var geocoder = null;
-var directions = null;
-var directionsDisplay;
-var NZLongitude = '0.0001';//173.2210
-var NZLatitude = '0.0001';//-41.2943
-var NZZoom = 2;//5
-var GMO;
-var addedPoint = 0;
-var markersArray = [];
-
-/**
- * adds layer to map with with points
- * @param URL url
- * @todo: encapsulate
+ * many thanks to : http://econym.googlepages.com/index.htm
+ *
+ * @todo:
+ * - make GMO into generic object that can have any name! (e.g. replace GMO with "this")
+ * - replace variables below with encapsulated values
+ * - http://net.tutsplus.com/tutorials/javascript-ajax/the-basics-of-object-oriented-javascript/
+ *
+ * Structure:
+ * van MyMap = new GMC("mapDivName", "URLForPoints", options);
+ *
+ *
  */
-function addLayer(url) {
-	GMO.downloadXml(url);
-	return true;
-}
-/**
- * add a point to the map
- * @todo: encapsulate, check that it works...
- * @todo: change processXML to something else...
- * @todo: move xmlParse to createPointXml method
- * @param LatLng latLng
- * @param String nameString - name for marker
- * @param String description - description for marker
- */
-function addPoint(latLng, nameString, description) {
-	var xmlSheet = GMO.createPointXml(nameString, latLng, description);
-	GMO.processXml(xmlSheet);
-}
-
-/**
- * finds an address on the map, similar to the opening page of maps.google.com
- * @param String address
- * @todo: encapsulate
- */
-function findAddress(address) {
-	GMO.showAddress(address);
-	return true;
-}
-
-/**
- * shows a route for pre-selected locations
- * @todo: encapsulate
- */
-function findRoute() {
-	GMO.showRoute();
-	return true;
-}
-
-/**
- * saves your current location on the map
- * @todo: encapsulate
- */
-function savePosition() {
-	//map.savePosition();
-	GMO.savePosition(map);
-	GMO.updateStatus("Position saved.");
-	return true;
-}
-
-/**
- * resets the map to last saved position
- * @todo: encapsulate
- */
-function goToSavedPosition() {
-	//map.returnToSavedPosition();
-	GMO.returnToSavedPosition(map);
-	GMO.updateStatus("Returned to saved position.");
-	return true;
-}
 
 
 /**
@@ -116,6 +22,158 @@ function goToSavedPosition() {
  * @param Object opts - list of options
  */
 function GMC(mapDivName, url, opts) {
+
+	/**
+	 * key variable translator that allows
+	 * deep into the code references to talk to "this"
+	 * @var Object
+	 */
+	var GMO = this;
+
+	/**
+	 * map holder
+	 * @var Object
+	 */
+	var map = null;
+
+	/**
+	 *
+	 * @var Object
+	 */
+	var geocoder = null;
+
+	/**
+	 *
+	 * @var Object
+	 */
+	var directions = null;
+
+	/**
+	 *
+	 * @var Object
+	 */
+	var directionsDisplay = null;
+
+	/**
+	 * default longitude
+	 * @var Float
+	 */
+	var NZLongitude = '0.0001';//173.2210
+
+	/**
+	 * default latitude
+	 * @var Float
+	 */
+	var NZLatitude = '0.0001';//-41.2943
+
+	/**
+	 * default zoom
+	 * @var Float
+	 */
+	var NZZoom = 2;//5
+
+	/**
+	 * array key of added point
+	 * @var Int
+	 */
+	var addedPoint = 0;
+
+	/**
+	 * array of markers
+	 * @var Array
+	 */
+	var markersArray = [];
+
+	/**
+	 * publicly exposed methods:
+	 * @var Object - main Object that holds all the private functions
+	 */
+	return {
+
+		/**
+		 * get any variable
+		 * @param Mixed
+		 * @return Mixed
+		 */
+		getVar: function( variableName ) {
+			if ( geocodingFieldVars.hasOwnProperty( variableName ) ) {
+				return geocodingFieldVars[ variableName ];
+			}
+		},
+
+		/**
+		 * set any variable
+		 * @param String
+		 * @param Mixed
+		 * @return Mixed
+		 */
+		setVar: function(variableName, value) {
+			geocodingFieldVars[variableName] = value;
+			return this;
+		},
+
+		/**
+		 * adds layer to map with with points
+		 * @param URL url
+		 * @todo: encapsulate
+		 */
+		addLayer: function(url) {
+			GMO.downloadXml(url);
+			return true;
+		},
+
+		/**
+		 * add a point to the map
+		 * @todo: change processXML to something else...
+		 * @todo: move xmlParse to createPointXml method
+		 * @param LatLng latLng
+		 * @param String nameString - name for marker
+		 * @param String description - description for marker
+		 */
+		addPoint: function(latLng, nameString, description) {
+			var xmlSheet = GMO.createPointXml(nameString, latLng, description);
+			GMO.processXml(xmlSheet);
+		},
+
+		/**
+		 * finds an address on the map, similar to the opening page of maps.google.com
+		 * @param String address
+		 */
+		findAddress: function(address) {
+			GMO.showAddress(address);
+			return true;
+		},
+
+		/**
+		 * shows a route for pre-selected locations
+		 */
+		findRoute: function() {
+			GMO.showRoute();
+			return true;
+		},
+
+		/**
+		 * saves your current location on the map
+		 */
+		savePosition: function() {
+			//map.savePosition();
+			GMO.savePosition(map);
+			GMO.updateStatus("Position saved.");
+			return true;
+		},
+
+		/**
+		 * resets the map to last saved position
+		 */
+		goToSavedPosition: function() {
+			//map.returnToSavedPosition();
+			GMO.returnToSavedPosition(map);
+			GMO.updateStatus("Returned to saved position.");
+			return true;
+		}
+	}
+
+
 	// store the parameters
 	this.opts = opts || {};
 	this.mapDivName = mapDivName;
@@ -172,6 +230,8 @@ function GMC(mapDivName, url, opts) {
 	//this.mapOriginalSize = map.getSize();
 	this.mapOriginalSize = {width: map.getDiv().offsetWidth, height: map.getDiv().offsetHeight};
 	this.updateStatus("Map Ready");
+
+
 }
 
 /**
@@ -1435,7 +1495,7 @@ GMC.prototype.addAddressToMap = function (response) {
 		GMO.processXml(xmlSheet);
 		GMO.updateStatus("Address found: " + description);
 		var serverURL = GMO.opts.updateServerUrlAddPoint+"&x=" + place.Point.coordinates[0] + "&y=" + place.Point.coordinates[1]
-		addLayer(serverURL);
+		GMO.addLayer(serverURL);
 		return true;
 	}
 }

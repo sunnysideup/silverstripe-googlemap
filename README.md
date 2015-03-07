@@ -7,28 +7,25 @@ Adds an in-depth application of the google map API to your Silverstripe applicat
 STEP-BY-STEP (by alex.guez [at] gmail dot com)
 -----------------------------------
 
-1.	Get a Google Maps API Key : http://code.google.com/apis/maps/signup.html
+1.	install googlemap as per usual (composer: sunnysideup/googlemap)
 
-2.	Put the googlemap folder into the base installation folder (attention : the folder name is case sensitive)
+2.	Modify settings as you wish in googlemap.yml.example
+		Copy the parts from googlemap.yml.example that you want to edit
+		in to your mysite config.yml
 
-3.	Modify settings as you wish in googlemap.yml.example :
-
-	a.	GoogleMapAPIKey: "abc"  ///here the abc stands for the key you obtained at step 1.
-
-	b.	Copy the parts from googlemap.yml.example in to your mysite config.yml that you want
-
-4.	Run a dev/build
+3.	Run a dev/build
 
 5.	The page type (lets call it TestPage for which you want to add a location must contain in the controller class:
 
-	a.	private static $allowed_actions = array('showPagePointsMapXML');
+```php
+	public function init() {
+		parent::init();
+		if($this->HasGeoInfo) {
+			$this->addMap("showPagePointsMapXML");
+		}
+	}
 
-	b.	public function init() {
-					parent::init();
-					if($this->HasGeoInfo) { //only add when there are points added
-						$this->addMap("showPagePointsMapXML");
-					}
-				}
+```
 
 6.	Run a dev/build
 
@@ -41,7 +38,7 @@ STEP-BY-STEP (by alex.guez [at] gmail dot com)
 10. to customise information in pop-ups, add the following function to your pages with map: CustomAjaxInfoWindow
 
 
-___________________________________
+
 CUSTOMISING POP-UP INFORMATION
 -----------------------------------
 1. enter CustomPopUpWindowTitle and CustomPopUpWindowInfo in CMS (overrules everything)

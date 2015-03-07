@@ -624,12 +624,12 @@ class GoogleMap extends ViewableData {
 		if($this->linksForData && count($this->linksForData)) {
 			foreach($this->linksForData as $link) {
 				$js .= '
-				addLayer("'.Director::absoluteBaseURL().$link.'");';
+				'.$this->getMyMapFunctionName().'.addLayer("'.Director::absoluteBaseURL().$link.'");';
 			}
 		}
 		elseif($this->address) {
 			$js .= '
-				findAddress(\''.$this->address.'\')';
+				'.$this->getMyMapFunctionName().'.findAddress(\''.$this->address.'\')';
 		}
 		$js .= '
 			}

@@ -61,9 +61,9 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		$q = trim($q);
 		if($q) {
 			$result = null;
-			$searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::get()->filter(array(
-				"SearchPhrase" => Convert::raw2sql($q)
-			))->First();
+			$searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::get()
+				->filter(array("SearchPhrase" => Convert::raw2sql($q)))
+				->First();
 			if($searchRecord && $searchRecord->ResultArray) {
 				if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 					debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");
@@ -81,14 +81,10 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 			}
 			if(!$result) {
 				$result = self::get_placemark($q, $tryAnyway);
-				if($debug) {
-					debug::show(print_r($result, 1));
-				}
+				if($debug) {debug::show(print_r($result, 1));}
 				if(is_object($result)) {
 					$resultArray = self::google_2_ss($result);
-					if($debug) {
-						debug::show(print_r($resultArray, 1));
-					}
+					if($debug) {debug::show(print_r($resultArray, 1));}
 					if(!isset($searchRecord) || !$searchRecord) {
 						$searchRecord = new GetLatLngFromGoogleUsingAddressSearchRecord();
 						$searchRecord->SearchPhrase = Convert::raw2sql($q);
@@ -143,7 +139,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	protected static function get_geocode_obj($q) {
 		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
 		if(!Config::inst()->get("GoogleMap", "google_map_api_key")) {
-			user_error('Please define a valid Google Maps API Key: google_map_api_key', E_USER_ERROR);
+			//user_error('Please define a valid Google Maps API Key: google_map_api_key', E_USER_ERROR);
 		}
 		$q = trim($q);
 		if($debug) {
@@ -164,9 +160,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 				return false;
 			}
 		}
-		if($debug) {
-			debug::show(print_r($responseString, 1));
-		}
+		if($debug) {debug::show(print_r($responseString, 1));}
 		return self::json_decoder($responseString);
 	}
 

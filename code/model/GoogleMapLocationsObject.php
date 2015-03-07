@@ -13,8 +13,8 @@ class GoogleMapLocationsObject extends DataObject {
 	private static $db = array (
 		'PointType' =>'Enum("none, point, polyline, polygon", "point")',
 		'Accuracy' => 'Varchar(100)',
-		'Latitude' => 'Double(12,7)',
 		'Longitude' => 'Double(12,7)',
+		'Latitude' => 'Double(12,7)',
 		'PointString' => 'Text',
 		'Address' => 'Text',
 		'FullAddress' => 'Text',
@@ -42,6 +42,24 @@ class GoogleMapLocationsObject extends DataObject {
 	private static $indexes = array(
 		"Latitude" => true,
 		"Longitude" => true
+	);
+
+	private static $field_labels = array(
+		'PointType' =>'Marker Type',
+		'Accuracy' => 'Accuracy',
+		'Longitude' => 'Longitude',
+		'Latitude' => 'Latitude',
+		'PointString' => 'PointString',
+		'Address' => 'Searched For Address',
+		'FullAddress' => 'Found Address',
+		'CountryNameCode' => 'Country Code',
+		'AdministrativeAreaName' => 'Main Area',
+		'SubAdministrativeAreaName' => 'Sub Area',
+		'LocalityName' => 'Locality',
+		'PostalCodeNumber' => 'Postal Code',
+		'Manual' => 'Set Details Manually',
+		'CustomPopUpWindowTitle' => "Marker Title",
+		'CustomPopUpWindowInfo' => "Marker Description"
 	);
 
 	private static $casting = array(
@@ -83,6 +101,7 @@ class GoogleMapLocationsObject extends DataObject {
 
 	function  getCMSFields() {
 		$fields = parent::getCMSFields();
+		$labels = $this->FieldLabels();
 		$addTitleAndContent = true;
 		$parentPageID = $this->ParentID;
 		if($parentPageID) {
@@ -93,39 +112,47 @@ class GoogleMapLocationsObject extends DataObject {
 				}
 			}
 		}
-		$fields->addFieldToTab("Root.Main",
-			new TextField('Address', 'Enter Full Address (e.g. 123 Main Street, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed (looked up at Google Maps)')
-			//new HiddenField('ParentID', 'ParentID', $parentPageID)
+		$fields->addFieldToTab("Root.Main", $addressField = new TextField('Address', $labels["Address"]));
+		$addressField->setRightTitle(
+			_t("GoogleMap.CMS_ADDRESS_EXPLANATION",
+			"(e.g. 123 Main Street, 90210, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed")
 		);
-
 		if($this->Manual) {
-			$fields->addFieldToTab("Root.Details", new TextField('Latitude', 'Latitude'));
-			$fields->addFieldToTab("Root.Details", new TextField('Longitude', 'Longitude'));
+			$fields->addFieldToTab("Root.Details", new TextField('Latitude', $labels["Latitude"]));
+			$fields->addFieldToTab("Root.Details", new TextField('Longitude', $labels["Longitude"]));
 		}
 		else {
-			$fields->addFieldToTab("Root.Details", new ReadonlyField('Latitude', 'Latitude'));
-			$fields->addFieldToTab("Root.Details", new ReadonlyField('Longitude', 'Longitude'));
+			$fields->addFieldToTab("Root.Details", new ReadonlyField('Latitude', $labels["Latitude"]));
+			$fields->addFieldToTab("Root.Details", new ReadonlyField('Longitude', $labels["Longitude"]));
 		}
-		$fields->addFieldToTab("Root.Main", new CheckboxField('Manual', 'Edit address manually (e.g. enter Longitude and Latitude - check box, save and reload to edit...)'));
-		$fields->addFieldToTab("Root.Main", new ReadonlyField('FullAddress', 'Found Address'));
-		$fields->addFieldToTab("Root.Details", new HeaderField('Auto-completed (not required)', 2));
-
-		$fields->addFieldToTab("Root.Details", new ReadonlyField('CountryNameCode', 'Country Name Code'));
-		$fields->addFieldToTab("Root.Details", new ReadonlyField('AdministrativeAreaName', 'Administrative Area Name'));
-		$fields->addFieldToTab("Root.Details", new ReadonlyField('SubAdministrativeAreaName', 'SubAdministrative Area Name'));
-		$fields->addFieldToTab("Root.Details", new ReadonlyField('LocalityName', 'Locality Name'));
-		$fields->addFieldToTab("Root.Details", new ReadonlyField('PostalCodeNumber', 'Postal Code Number'));
-		$fields->addFieldToTab("Root.Details", new ReadonlyField('Accuracy'));
+		$fields->addFieldToTab("Root.Main", $manualField = new CheckboxField('Manual', $labels["Manual"]));
+		$manualField->setDescription(
+			_t("GoogleMap.MANUAL_DESCRIPTION", 'Edit address manually (e.g. enter Longitude and Latitude - check box, save and reload to edit...)')
+		);
+		$fields->addFieldToTab("Root.Main", new ReadonlyField('FullAddress', $labels["FullAddress"]));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('CountryNameCode', $labels["CountryNameCode"]));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('AdministrativeAreaName', $labels["AdministrativeAreaName"]));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('SubAdministrativeAreaName', $labels["SubAdministrativeAreaName"]));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('LocalityName', $labels["LocalityName"]));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('PostalCodeNumber', $labels["PostalCodeNumber"]));
+		$fields->addFieldToTab("Root.Details", new ReadonlyField('Accuracy', $labels["Accuracy"]));
 		$fields->addFieldToTab("Root.Type", $fields->dataFieldByName("PointType"));
 		if($this->PointType != "point" && $this->PointType != "none") {
-			$fields->addFieldToTab("Root.Type", new TextField('PointString', 'PointString'));
+			$fields->addFieldToTab("Root.Type", new TextField('PointString', $labels["PointString"]));
 		}
 		else {
 			$fields->removeByName("PointString");
 		}
 		if($addTitleAndContent) {
-			$fields->addFieldToTab("Root.Popup", new TextField('CustomPopUpWindowTitle', 'Custom Title for Info Pop-Up Window, leave Blank to auto-complete the pop-up information on the map'));
-			$fields->addFieldToTab("Root.Popup", new TextareaField('CustomPopUpWindowInfo', 'Custom Description for Info Pop-Up Window, leave Blank to auto-complete the pop-up information on the map'));
+			$fields->addFieldToTab("Root.Popup", $customPopUpWindowTitleField = new TextField('CustomPopUpWindowTitle', $labels["CustomPopUpWindowTitle"]));
+			$customPopUpWindowTitleField->setRightTitle(
+				_t("GoogleMap.CUSTOM_POP_UP_WINDOW_TITLE", 'Leave Blank to auto-complete the pop-up information on the map.')
+			);
+			$fields->addFieldToTab("Root.Popup", $customPopUpWindowInfoField = new TextareaField('CustomPopUpWindowInfo', $labels["CustomPopUpWindowInfo"] ));
+			$customPopUpWindowInfoField->setRightTitle(
+				_t("GoogleMap.CUSTOM_POP_UP_WINDOW_INFO", 'Leave Blank to auto-complete the pop-up information on the map.')
+			);
+
 		}
 		else {
 			$fields->removeByName("CustomPopUpWindowTitle");
