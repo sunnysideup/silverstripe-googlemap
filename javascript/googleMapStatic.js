@@ -31,7 +31,7 @@ var googleMapStatic = function(){
 		 * selector where map is being loaded
 		 * @var String
 		 */
-		mapSelector: "#Map",
+		mapSelector: "#GoogleMapDiv",
 
 		/**
 		 * selector for place where click to search for address

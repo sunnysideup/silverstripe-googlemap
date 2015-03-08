@@ -101,7 +101,7 @@ class SearchByAddressForm extends Form {
 		$lng = $pointArray["Longitude"];
 		$lat = $pointArray["Latitude"];
 		//$form->Fields()->fieldByName("Address")->setValue($pointArray["address"]); //does not work ....
-		//$this->owner->addMap($action = "showsearchpoint", "Your search",$lng, $lat);
+		//$this->owner->addMap($action = "showsearchpoint", "Your search", $lng, $lat);
 		$action = "showaroundmexml";
 		$title = _t("GoogleMap.CLOSESTS_TO_YOUR_SEARCH", "Closests to your search");
 		$link = "";

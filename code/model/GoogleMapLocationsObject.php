@@ -92,10 +92,10 @@ class GoogleMapLocationsObject extends DataObject {
 	 *
 	 * return GoogleMapLocationsObject | Null
 	 */
-	public static function pointExists($longitude, $latitude) {
+	public static function pointExists($lng, $lat) {
 		return GoogleMapLocationsObject::get()->filter(array(
-			"Longitude" => floatval($longitude),
-			"Latitude" => floatval($latitude)
+			"Longitude" => floatval($lng),
+			"Latitude" => floatval($lat)
 		))->First();
 	}
 

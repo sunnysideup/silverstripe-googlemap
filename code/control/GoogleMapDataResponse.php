@@ -227,12 +227,12 @@ class GoogleMapDataResponse extends Controller {
 	/**
 	 * @param Float
 	 */
-	function setLat($lat) {$this->lat = $lat;}
+	function setLng($lng) {$this->lng = $lng;}
 
 	/**
 	 * @param Float
 	 */
-	function setLng($lng) {$this->lng = $lng;}
+	function setLat($lat) {$this->lat = $lat;}
 
 	/**
 	 * @param String
@@ -259,7 +259,7 @@ class GoogleMapDataResponse extends Controller {
 	 * @return String (XML)
 	 */
 	function index($request) {
-		return $this->showemptymap();
+		return $this->showemptymap($request);
 	}
 
 	/**
@@ -301,7 +301,7 @@ class GoogleMapDataResponse extends Controller {
 		if($data->count()) {
 			return $this->makeXMLData(null, $data, $this->title, $this->title);
 		}
-		return $this->showemptymap();
+		return $this->showemptymap($request);
 	}
 
 	/**
@@ -313,7 +313,7 @@ class GoogleMapDataResponse extends Controller {
 		if($children = $this->owner->getChildrenOfType($this->owner, null)) {
 			return $this->makeXMLData($children, null, "Points related to ".$this->title, "Points related to ".$this->title);
 		}
-		return $this->showemptymap();
+		return $this->showemptymap($request);
 	}
 
 	/**
@@ -338,7 +338,7 @@ class GoogleMapDataResponse extends Controller {
 				return $this->makeXMLData(null, $data, $this->title, $this->title);
 			}
 		}
-		return $this->showemptymap();
+		return $this->showemptymap($request);
 	}
 
 	/**
@@ -346,7 +346,7 @@ class GoogleMapDataResponse extends Controller {
 	 *
 	 * @return String (XML)
 	 */
-	public function showpointbyid() {
+	public function showpointbyid($request) {
 		die("To be completed");
 		$id = 0;
 		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $id));
@@ -414,21 +414,21 @@ class GoogleMapDataResponse extends Controller {
 		$lng = 0;
 		$lat = 0;
 		$excludeIDList = array();
-		if($this->lat && $this->lng) {
-			$lat = $this->lat;
+		if($this->lng && $this->lat) {
 			$lng = $this->lng;
+			$lat = $this->lat;
 		}
 		elseif($this->owner->ID) {
 			//find the average!
 			$objects = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->owner->ID));
 			if($count = $objects->count()) {
 				foreach($objects as $point) {
-					$lat += $point->Latitude;
 					$lng += $point->Longitude;
+					$lat += $point->Latitude;
 					$excludeIDList[] = $point->ID;
 				}
-				$lat = $lat / $count;
 				$lng = $lng / $count;
+				$lat = $lat / $count;
 			}
 		}
 		$classNameForParent = '';
@@ -460,7 +460,7 @@ class GoogleMapDataResponse extends Controller {
 				return $this->makeXMLData(null, $objects, $title, Config::inst()->get("GoogleMap", "number_shown_in_around_me") . " "._t("GoogleMap.CLOSEST_POINTS", "closest points"));
 			}
 		}
-		return $this->showemptymap();
+		return $this->showemptymap($request);
 	}
 
 	/**
@@ -487,7 +487,7 @@ class GoogleMapDataResponse extends Controller {
 				$lat = floatval($_REQUEST["y"]);
 				$id = intval($_REQUEST["i"]);
 				$action = $_REQUEST["a"];
-				if($lat && $lng) {
+				if($lng && $lat) {
 					if( 0 == $id && "add" == $action ) {
 						$point = new GoogleMapLocationsObject;
 						$point->ParentID = $this->owner->ID;
@@ -595,7 +595,7 @@ class GoogleMapDataResponse extends Controller {
 
 		if(Director::is_ajax() || $this->owner->ID) {
 			//$this->dataPointsXML = $data[1];
-			$this->turnoffstaticmaps();
+			$this->turnoffstaticmaps(null);
 			$this->response->addHeader("Content-Type", "text/xml; charset=\"utf-8\"");
 			return $this->renderWith("GoogleMapXml");
 		}

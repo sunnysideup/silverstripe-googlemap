@@ -30,7 +30,7 @@ class GoogleMap extends ViewableData {
 	private static $uses_sensor = true;
 	private static $default_latitude = 0.000000001; //MOVE TO SITECONFIG
 	private static $default_longitude = 0.0000000001; //MOVE TO SITECONFIG
-	private static $default_zoom = 0; //MOVE TO SITECONFIG
+	private static $default_zoom = 2; //MOVE TO SITECONFIG
 	private static $google_map_width = 500;
 	private static $google_map_height = 500;
 
@@ -107,8 +107,8 @@ class GoogleMap extends ViewableData {
 	private static $locale_for_results = "en_NZ";
 
 	/* SERVER SETTINGS */
-	private static $lat_form_field_id = "";
 	private static $lng_form_field_id = "";
+	private static $lat_form_field_id = "";
 
 
 
@@ -166,16 +166,16 @@ class GoogleMap extends ViewableData {
 	protected static function make_static_map_url_into_image($staticMapURL, $title) {
 		$fullStaticMapURL  = '';
 		$uses_sensor = "false";
-		if($this->Config()->get("uses_sensor")) {
+		if(Config::inst()->get("GoogleMap", "uses_sensor")) {
 			$uses_sensor = "true";
 		}
 		$fullStaticMapURL =
 			'http://maps.google.com/maps/api/staticmap?'
 				.'sensor='.$uses_sensor.'&amp;'
-				.$this->Config()->get("static_map_settings").'&amp;'
+				.Config::inst()->get("GoogleMap", "static_map_settings").'&amp;'
 				.$staticMapURL.'&amp;'
 				.'key='.Config::inst()->get("GoogleMap", "google_map_api_key");
-		if($this->Config()->get("save_static_map_locally")) {
+		if(Config::inst()->get("GoogleMap", "save_static_map_locally")) {
 			$fileName = str_replace(array('&', '|', ',', '=', ';'), array('', '', '', '', ''), $staticMapURL);
 			$length = strlen($fileName);
 			$fileName = "_sGMap".substr(hash("md5", $fileName), 0, 35)."_".$length.".gif";
@@ -218,7 +218,7 @@ class GoogleMap extends ViewableData {
 	 * @var String
 	 */
 	protected $dataObjectTitle = "";
-		public function setDataObjectTitle($a){$this->dataObjectTitle = $s;}
+		public function setDataObjectTitle($s){$this->dataObjectTitle = $s;}
 		public function DataObjectTitle(){return $this->getDataObjectTitle();}
 		public function getDataObjectTitle(){return $this->dataObjectTitle;}
 
@@ -661,8 +661,8 @@ class GoogleMap extends ViewableData {
 			}
 			$this->dataPointsXML =
 						'<mapinfo>'.'<title>'.$this->getDataObjectTitle().'</title>'
-						.'<latitude>'.$this->Config()->get("default_latitude").'</latitude>'
-						.'<longitude>'.$this->Config()->get("default_longitude").'</longitude>'
+						.'<longitude>'.number_format($this->config()->get("default_longitude") - 0 , 12, ".", "").'</longitude>'
+						.'<latitude>'.number_format($this->config()->get("default_latitude") - 0 , 9, ".", "").'</latitude>'
 						.'<zoom>'.$this->Config()->get("default_zoom").'</zoom>'
 						.'<pointcount>'.$count.'</pointcount>'
 						.'<info>'.$this->getWhereStatementDescription().'</info>'
@@ -688,8 +688,8 @@ class GoogleMap extends ViewableData {
 		$variableName = $this->getMyMapFunctionName();
 		$loadFunctionVariableName = 'load'.$variableName;
 		$js = '
-			var '.$loadFunctionVariableName.' = new GMC(
-				"map",
+			var '.$loadFunctionVariableName.' = new GoogleMapConstructor(
+				"GoogleMapDiv",
 				null,
 				"'.$variableName.'",
 				{
@@ -748,8 +748,8 @@ class GoogleMap extends ViewableData {
 					mapScaleInfoSizeInPixels:'.intval($this->config()->get("map_scale_info_size_in_pixels") - 0).',
 
 					/* START POSITION */
-					defaultLatitude:'.floatval($this->config()->get("default_latitude") - 0 ).',
-					defaultLongitude:'.floatval($this->config()->get("default_longitude") - 0).',
+					defaultLatitude:'.number_format($this->config()->get("default_latitude") - 0 , 9, ".", "").',
+					defaultLongitude:'.number_format($this->config()->get("default_longitude") - 0 , 12, ".", "").',
 					defaultZoom:'.intval($this->config()->get("default_zoom")  - 0).',
 
 					/* SERVER INTERACTION */

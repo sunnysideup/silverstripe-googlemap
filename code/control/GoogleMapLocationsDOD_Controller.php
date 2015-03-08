@@ -53,18 +53,18 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 *
 	 * @param String $action - see GoogleMapDataResponse::allowed_actions to get a list of actions
 	 * @param String $title
-	 * @param float $lat - default LONGITUDE
 	 * @param float $lng - default LATITUDE
+	 * @param float $lat - default LONGITUDE
 	 * @param String $filter
 	 *
 	 * @return Array
 	 */
-	function addMap($action = "", $title = "", $lat = 0, $lng = 0, $filter = "") {
+	function addMap($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
 		$this->initiateMap();
 		if(!$title) {
 			$title = $this->owner->Title;
 		}
-		$linkForData = $this->getLinkForData($this->owner->ID, $action = "", $title = "", $lat = 0, $lng = 0, $filter = "");
+		$linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filter);
 		//where the magic happens...
 		$this->googleMap->addLayer($linkForData);
 		if(!Director::is_ajax()) {
@@ -74,8 +74,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 				if(isset($allowedActions[$action])) {
 					$controller->setOwner($this->owner);
 					$controller->setTitle($title);
-					$controller->setLat($lat);
 					$controller->setLng($lng);
+					$controller->setLat($lat);
 					$controller->setFilter($filter);
 					return $controller->$action();
 				}
@@ -92,12 +92,12 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 *
 	 * @param String $action
 	 * @param String $title
-	 * @param Int $lat
 	 * @param Int $lng
+	 * @param Int $lat
 	 * @param String $filter
 	 */
-	public function addExtraLayersAsAction($action = "", $title = "", $lat = 0, $lng = 0, $filter = "") {
-		$linkForData = $this->getLinkForData($this->owner->ID, $action = "", $title = "", $lat = 0, $lng = 0, $filter = "");
+	public function addExtraLayersAsAction($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+		$linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filter);
 		$this->addExtraLayersAsLinks($title, $linkForData);
 	}
 
@@ -233,28 +233,28 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param SiteTree $page
 	 * @param String $action
 	 * @param String $title
-	 * @param Int $lat
 	 * @param Int $lng
+	 * @param Int $lat
 	 * @param String $filter
 	 *
 	 * @return String
 	 */
-	public function LoadmapLink($page, $action = "", $title = "", $lat = 0, $lng = 0, $filter = "") {
-		return urlencode($this->getLinkForData($page->ID, $action, $title, $lat, $lng, $filter));
+	public function LoadmapLink($page, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+		return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filter));
 	}
 
 	/**
 	 * @param String $action
 	 * @param String $title
-	 * @param Int $lat
 	 * @param Int $lng
+	 * @param Int $lat
 	 * @param String $filter
 	 *
 	 * @return String
 	 */
-	protected function getLinkForData($pageID, $action = "", $title = "", $lat = 0, $lng = 0, $filter = "") {
-		if($lat && $lng) {
-			$linkForData = "googlemapextensive/".$action."/".$pageID."/".urlencode($title)."/".$lat."/".$lng."/";
+	protected function getLinkForData($pageID, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+		if($lng && $lat) {
+			$linkForData = "googlemapextensive/".$action."/".$pageID."/".urlencode($title)."/".$lng."/".$lat."/";
 		}
 		else {
 			$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title)."/";
