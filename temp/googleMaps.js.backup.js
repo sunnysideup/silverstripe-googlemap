@@ -865,12 +865,12 @@ GMC.prototype.createSideBar = function(sideBarArray) {
 			for (var j = 0; j < sideBarArray.length; j++) {
 				sideBarElements = sideBarArray[j].split("$$$", 2);
 				i = sideBarElements[1];
-				layerName = this.gmarkers[i].layerId;				
+				layerName = this.gmarkers[i].layerId;
 				if(!strpos(this.gmarkers[i].serverId, "manuallyAdded", 0)) {
-					html += '<li class="forLayer'+layerName+' icon'+i+'"><a href="'+ this.currentPageURL + '#map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a> <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div></li>';
+					html += '<li class="forLayer'+layerName+' icon'+i+'"><a href="'+ this.currentPageURL + '#Map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a> <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div></li>';
 				}
 				else {
-					html += '<li class="forLayer'+layerName+'">You added: <a href="'+ this.currentPageURL + '#map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a></li>';
+					html += '<li class="forLayer'+layerName+'">You added: <a href="'+ this.currentPageURL + '#Map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a></li>';
 				}
 			}
 			html += '</ul>';

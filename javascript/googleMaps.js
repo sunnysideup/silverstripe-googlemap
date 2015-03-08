@@ -9,9 +9,73 @@
  * Structure:
  * van MyMap = new GMC("mapDivName", "URLForPoints", options);
  *
+ * @see:
+ *  - https://developers.google.com/maps/documentation/javascript/reference
+ *
  *
  */
 
+var GoogleMapTranslatableUserMessages = {
+	position_saved: "position saved.",
+	return_to_position: "returned to saved position.",
+	map_ready: "map ready.",
+	currently_set_to: "currently set to: ",
+	loading_map: "loading . . .",
+	manually_added_point: "manually added point.",
+	points: "points",
+	updating_database: "updating database",
+	dril_a_hole: "drill a hole",
+	found_oposite: "Exact opposite point on earth - goodluck finding your way back...",
+	antipodean_of: "Antipodean of",
+	drag_instructions: "marker can be dragged to new location once this info window has been closed.",
+	partial_obscuring: "this marker (partially) obscures the following point(s):",
+	and_with_spaces: " and ",
+	zoom_in: "ZOOM IN",
+	error_in_zoom: "Error in MaxZoomService",
+	select_this_point: "select this point",
+	clear_last_route: "clear Last Route",
+	do_next: "do next:",
+	calculate_route: "calculate route",
+	alernatively: "Alternatively:",
+	create_routes_using_current_points: "create route using current points.",
+	this_point: "This Point",
+	find_address: "find address",
+	address_not_found: "address not found.",
+	address_not_retrieved: "address could not be retrieved from server.",
+	address_not_accurate: "NB: Address may not be accurate",
+	close: "close",
+	remove: "remove",
+	added_to_db: "added point to database",
+	added_to_db_error: "could NOT add point to database",
+	loaded: "loaded",
+	error_in_loading: "sorry - could not load data",
+	processing: "processing",
+	of: "of",
+	locations_added: "locations added",
+	one_location_loaded: "one location loaded.",
+	large_number_of_items: "location are being loaded. It may take a while for all the locations to show on the map, please be patient.",
+	no_location_could_be_found: "No locations could be found.",
+	updating_lists: "Updating lists . . .",
+	you_added: "You added",
+	select_a_location: " - Select a location - ",
+	kml: "kml",
+	hide: "hide [x]",
+	show_help: "show help",
+	can_not_hide_bar_in_full_screen_mode: "Can not hide this bar in full screen mode",
+	searching_for_address: "searching for address . . .",
+	added_position: "added position",
+	address_finder_not_loaded: "ERROR: address finder not loaded.",
+	address_not_found: "Sorry, we were unable to find that address.",
+	address_search: "address search",
+	address_found: "address found",
+	no_valid_start: "No valid start location has been selected.",
+	no_valid_end: "No valid end location has been selected.",
+	searching_for_route: "Searching for Route . . .",
+	no_route_could_be_found: "No Route Could Be Found . . .",
+	from: "from",
+	to: "to",
+	do_next: "do next"
+};
 
 /**
  * main METHOD to encapsulate a map
@@ -19,9 +83,19 @@
  * var GMO = new GMC()
  * @param String mapDivName
  * @param String url - url that provides points as XML
+ * @param String name for the variable name being assigned to GMC
+ *    e.g. var XXX = new GMC(....); then the variable name is XXX
  * @param Object opts - list of options
+ *    these are all the PHP options provided for the map...
  */
-function GMC(mapDivName, url, opts) {
+function GMC(mapDivName, url, variableName, opts) {
+
+	/**
+	 * key variable translator that allows
+	 * deep into the code references to talk to "this"
+	 * @var Object
+	 */
+	var variableName = variableName;
 
 	/**
 	 * key variable translator that allows
@@ -83,6 +157,12 @@ function GMC(mapDivName, url, opts) {
 	 * @var Array
 	 */
 	var markersArray = [];
+
+	/**
+	 * array of markers
+	 * @var Array
+	 */
+	var _t = GoogleMapTranslatableUserMessages;
 
 	/**
 	 * publicly exposed methods:
@@ -158,7 +238,7 @@ function GMC(mapDivName, url, opts) {
 		savePosition: function() {
 			//map.savePosition();
 			GMO.savePosition(map);
-			GMO.updateStatus("Position saved.");
+			GMO.updateStatus(_t.position_saved);
 			return true;
 		},
 
@@ -168,68 +248,79 @@ function GMC(mapDivName, url, opts) {
 		goToSavedPosition: function() {
 			//map.returnToSavedPosition();
 			GMO.returnToSavedPosition(map);
-			GMO.updateStatus("Returned to saved position.");
+			GMO.updateStatus(_t.return_to_position);
 			return true;
+		},
+
+		/**
+		 * startup map
+		 *
+		 */
+		init: function(){
+
+			// store the parameters
+			GMO.opts = opts || {};
+			GMO.mapDivName = mapDivName;
+			GMO.mapIsZoomed = false;
+			GMO.mapOriginalSize = {};
+			GMO.defaultUrl = url || "";
+			GMO.latestUrl = url || "";
+			GMO.currentPageURL = location.href.replace(/#/g,""); //replaces all #
+
+			// other useful "global" stuff
+			GMO.gmarkers = [];
+			GMO.layerInfo = [];
+			GMO.lastMarker = {};
+			GMO.markerImageCollection = [];
+			GMO.imageNum = 0;
+			GMO.previousPosition = null;
+			if(!GMO.opts.defaultLatitude) {  GMO.opts.defaultLatitude = NZLatitude; }
+			if(!GMO.opts.defaultLongitude) {  GMO.opts.defaultLongitude = NZLongitude; }
+			if(!GMO.opts.defaultZoom) {  GMO.opts.defaultZoom = NZZoom; }
+			if(!GMO.opts.defaultTitle) {GMO.opts.defaultTitle = _t.map_ready; }
+			var el = null;
+
+			//clear html areas
+			if(GMO.opts.changePageTitle) {document.title = GMO.opts.defaultTitle;}
+			if(GMO.opts.titleId) { if(el = document.getElementById(GMO.opts.titleId)) {el.innerHTML = GMO.opts.defaultTitle;}}
+			if(GMO.opts.layerListId) { if(el = document.getElementById(GMO.opts.layerListId)) {el.innerHTML = "";} else {GMO.opts.layerListId = "";}}
+			if(GMO.opts.sideBarId) { if(el = document.getElementById(GMO.opts.sideBarId)) {el.innerHTML = "";} else {GMO.opts.sideBarId = "";}}
+			if(GMO.opts.dropBoxId) { if(el = document.getElementById(GMO.opts.dropBoxId)) {el.innerHTML = "";} else {GMO.opts.dropBoxId = "";}}
+			if(GMO.opts.statusDivId) { if( el = document.getElementById(GMO.opts.statusDivId)) {el.innerHTML = _t.loading_map;} else {GMO.opts.statusDivId = "statusDivOnMap";}} else {GMO.opts.statusDivId = "statusDivOnMap";}
+			if(GMO.opts.directionsDivId) {
+				if(el = document.getElementById(GMO.opts.directionsDivId)) {
+					el.innerHTML = "";
+				}
+				else {
+					GMO.opts.directionsDivId = "";
+				}
+			}
+
+			GMO.clearRouteVariables();
+			GMO.mapAddress = "";
+			GMO.currentlySetToString = "<br />"+ _t.currently_set_to;
+
+			//setup map
+			if(!map) {
+				GMO.setupMap(mapDivName);
+			}
+			var latLng = new google.maps.LatLng(GMO.opts.defaultLatitude, GMO.opts.defaultLongitude, true);
+			GMO.zoomTo(latLng, GMO.opts.defaultZoom);
+			map.clearOverlays();
+			if(GMO.opts.mapTypeDefaultZeroToTwo) {
+				var mapType = GMO.mapTypesArray(GMO.opts.mapTypeDefaultZeroToTwo-0);
+				//map.setMapTypeId();
+			}
+			if(GMO.defaultUrl) {
+				GMO.downloadXml(GMO.defaultUrl);
+			}
+			//GMO.mapOriginalSize = map.getSize();
+			GMO.mapOriginalSize = {width: map.getDiv().offsetWidth, height: map.getDiv().offsetHeight};
+			GMO.updateStatus(_t.map_ready);
+
 		}
 	}
 
-
-	// store the parameters
-	this.opts = opts || {};
-	this.mapDivName = mapDivName;
-	this.mapIsZoomed = false;
-	this.mapOriginalSize = {};
-	this.defaultUrl = url || "";
-	this.latestUrl = url || "";
-	this.currentPageURL = location.href.replace(/#/g,""); //replaces all #
-	// other useful "global" stuff
-	this.gmarkers = [];
-	this.layerInfo = [];
-	this.lastMarker = {};
-	this.markerImageCollection = [];
-	this.imageNum = 0;
-	this.previousPosition = null;
-	if(!this.opts.defaultLatitude) {  this.opts.defaultLatitude = NZLatitude; }
-	if(!this.opts.defaultLongitude) {  this.opts.defaultLongitude = NZLongitude; }
-	if(!this.opts.defaultZoom) {  this.opts.defaultZoom = NZZoom; }
-	if(!this.opts.defaultTitle) {this.opts.defaultTitle = "Map Ready"; }
-	var el = null;
-	//clear html areas
-	if(this.opts.changePageTitle) {document.title = this.opts.defaultTitle;}
-	if(this.opts.titleId) { if(el = document.getElementById(this.opts.titleId)) {el.innerHTML = this.opts.defaultTitle;}}
-	if(this.opts.layerListId) { if(el = document.getElementById(this.opts.layerListId)) {el.innerHTML = "";} else {this.opts.layerListId = "";}}
-	if(this.opts.sideBarId) { if(el = document.getElementById(this.opts.sideBarId)) {el.innerHTML = "";} else {this.opts.sideBarId = "";}}
-	if(this.opts.dropBoxId) { if(el = document.getElementById(this.opts.dropBoxId)) {el.innerHTML = "";} else {this.opts.dropBoxId = "";}}
-	if(this.opts.statusDivId) { if( el = document.getElementById(this.opts.statusDivId)) {el.innerHTML = "loading map . . .";} else {this.opts.statusDivId = "statusDivOnMap";}} else {this.opts.statusDivId = "statusDivOnMap";}
-	if(this.opts.directionsDivId) {
-		if(el = document.getElementById(this.opts.directionsDivId)) {
-			el.innerHTML = "";
-		}
-		else {
-			this.opts.directionsDivId = "";
-		}
-	}
-
-	this.clearRouteVariables();
-	this.mapAddress = "";
-	this.currentlySetToString = "<br />Currently set to: ";
-	//setup map
-	if(!map) {
-		this.setupMap(mapDivName);
-	}
-	var latLng = new google.maps.LatLng(this.opts.defaultLatitude, this.opts.defaultLongitude, true);
-	this.zoomTo(latLng, this.opts.defaultZoom);
-	map.clearOverlays();
-	if(this.opts.mapTypeDefaultZeroToTwo) {
-		var mapType = this.mapTypesArray(this.opts.mapTypeDefaultZeroToTwo-0);
-		//map.setMapTypeId();
-	}
-	if(this.defaultUrl) {
-		this.downloadXml(this.defaultUrl);
-	}
-	//this.mapOriginalSize = map.getSize();
-	this.mapOriginalSize = {width: map.getDiv().offsetWidth, height: map.getDiv().offsetHeight};
-	this.updateStatus("Map Ready");
 
 
 }
@@ -277,8 +368,8 @@ GMC.prototype.setupMap = function (mapDivName) {
 		// Add map type control
 		mapTypeControl: this.opts.mapAddTypeControl,
 		mapTypeControlOptions: {
-				style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
-				position: google.maps.ControlPosition.TOP_LEFT
+			style: google.maps.MapTypeControlStyle.HORIZONTAL_BAR,
+			position: google.maps.ControlPosition.TOP_LEFT
 		},
 		//turn off annoying map zoom with scrollwheel
 		scrollwheel: false,
@@ -360,7 +451,7 @@ GMC.prototype.setupMap = function (mapDivName) {
 				if(GMO.opts.addPointsToMap) {
 					var nameString = "Longitude (" + Math.round(point.lng()*10000)/10000 + ") and Latitude (" + Math.round(point.lat()*10000)/10000 + ")";
 					var pointLngLat = point.lng() + "," + point.lat();
-					var description = "Manually added point.";
+					var description = _t.manually_added_point;
 					xmlSheet = GMO.createPointXml(nameString,pointLngLat,description);
 					GMO.processXml(xmlSheet);
 				}
@@ -503,7 +594,7 @@ GMC.prototype.changeLayerVisibility = function(selectedLayerId){//remove layer
 	}
 	this.layerInfo[selectedLayerId].show = newStatus;
 	this.updateLists();
-	this.updateStatus("Points (" + count + ") " + newStatusName + ".");
+	this.updateStatus(_t.points+" (" + count + ") " + newStatusName + ".");
 }
 
 /**
@@ -543,7 +634,7 @@ GMC.prototype.createMarker = function(point,name,desc, serverId, iconUrl) {// Cr
 		markerOpts.draggable = true;
 		m.draggable = true;
 		google.maps.event.addListener(m, "dragend", function() {
-			GMO.updateStatus('<p>updating database</p>');
+			GMO.updateStatus('<p>'+_t.updating_database+'</p>');
 			var lng = m.getPoint().lng();
 			var lat = m.getPoint().lat();
 			jQuery.get(
@@ -695,25 +786,27 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 		});
 	}
 	if(this.opts.addAntipodean) {
-		infoTabExtraLinksArray.push('<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickAntipodean\');">drill a hole</a>');
+		infoTabExtraLinksArray.push(
+			'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickAntipodean\');">'+_t.drill_a_hole+'</a>'
+		);
 		google.maps.event.addListener(m, "clickAntipodean", function() {
 			map.setZoom(6);
 			var point = GMO.antipodeanPointer(m.getPosition());
 			var longitude = GMO.checkLongitude(point.lng());
 			var latitude = GMO.checkLatitude(point.lat());
-			var nameString = "Antipodean of " + m.markerName;
+			var nameString = _t.antipodean_of + " " + m.markerName;
 			var pointLngLat = longitude+","+latitude;
-			var description = "Exact opposite point on earth - goodluck finding your way back...";
+			var description = _t.found_opposite;
 			var zoom = 3;
 			var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description, latitude, longitude, zoom)
 			GMO.processXml(xmlSheet);
 		});
 	}
 	if(m.draggable) {
-		infoTabExtraLinksArray.push('<b>marker can be dragged to new location once this info window has been closed</b>');
+		infoTabExtraLinksArray.push('<b>'+_t.drag_instructions+'</b>');
 	}
 	if(hiddenMarkerArray.length) {
-		obscuringLinks += ' <p><span class="partialObscuring">This marker (partially) obscures the following point(s): ';
+		obscuringLinks += ' <p><span class="partialObscuring">'+_t.partial_obscuring;
 		for(var i = 0; i < hiddenMarkerArray.length; i++) {
 			var markerId = hiddenMarkerArray[i];
 			obscuringLinks += ' <a href="javascript:void(0)" onclick="GMO.showMarkerFromList('+markerId+');">' + this.gmarkers[markerId].markerName + '</a>';
@@ -721,7 +814,7 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 				obscuringLinks += ", ";
 			}
 			else if(i == (hiddenMarkerArray.length - 2 )){
-				obscuringLinks += " and ";
+				obscuringLinks += _t.and_with_spaces;
 			}
 		}
 		obscuringLinks += "</span></p>";
@@ -729,16 +822,24 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 	//basic html
 	var html = '<div id="infoWindowTab1" class="infoWindowTab">' + obscuringLinks + '<h1>'+name+'</h1><div>'+desc+'</div>';
 	if(this.opts.addZoomInButton) {
-		infoTabExtraLinksArray.push('<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">ZOOM IN</a>');
+		infoTabExtraLinksArray.push(
+			'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">'+_t.zoom_in+'</a>'
+		);
 	}
 	if(this.opts.addCloseUpButton) {
-		infoTabExtraLinksArray.push('<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickCloseUp\')">'+this.opts.addCloseUpButton+'</a>');
+		infoTabExtraLinksArray.push(
+			'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickCloseUp\')">'+this.opts.addCloseUpButton+'</a>'
+		);
 	}
 	if(this.opts.addDeleteMarkerButton) {
-		infoTabExtraLinksArray.push('<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickRemoveMe\')">'+this.opts.addDeleteMarkerButton+'</a>');
+		infoTabExtraLinksArray.push(
+			'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickRemoveMe\')">'+this.opts.addDeleteMarkerButton+'</a>'
+		);
 	}
 	if(this.opts.addCloseWindowButton) {
-		infoTabExtraLinksArray.push('<a href="javascript:void(0)" onclick="infowindow.close();">'+this.opts.addCloseWindowButton+'</a>');
+		infoTabExtraLinksArray.push(
+			'<a href="javascript:void(0)" onclick="infowindow.close();">'+this.opts.addCloseWindowButton+'</a>'
+		);
 	}
 	if(infoTabExtraLinksArray.length) {
 		html += '<p class="infoTabExtraLinks">'+infoTabExtraLinksArray.join(", ")+'.</p>';
@@ -747,7 +848,7 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 		var maxZoomService = new google.maps.MaxZoomService();
 		maxZoomService.getMaxZoomAtLatLng(m.position, function(response) {
 			if (response.status != google.maps.MaxZoomStatus.OK) {
-				alert('Error in MaxZoomService');
+				alert(_t.error_in_zoom);
 				return;
 			}
 			else {
@@ -771,20 +872,37 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 		if(this.opts.addDirections) {
 			var currentFrom = this.currentFromLocation();
 			findDirections = ''
-				+ '<p class="infoTabFromOption"><b>From:</b></p><p id="fromHereLink"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickFromHere\')">select this point</a>' + this.currentFromLocation() + '</p>'
-				+ '<p class="infoTabToOption"><b>To:</b></p><p id="toHereLink"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickToHere\')">select this point</a>' + this.currentToLocation() + '</p>'
+				+ '<p class="infoTabFromOption">'
+				+ ' <b>' + _t.from + ':</b>'
+				+ '</p>'
+				+ '<p id="fromHereLink">'
+				+ ' <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickFromHere\')">'+ _t.select_this_point + '</a>: '
+				+ ' ' + this.currentFromLocation()
+				+ '</p>'
+				+ '<p class="infoTabToOption">'
+				+ ' <b>' + _t.to + ':</b>'
+				+ '</p>'
+				+ '<p id="toHereLink">'
+				+ ' <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickToHere\')">' + _t.select_this_point + '</a>:'
+				+ ' ' + this.currentToLocation()
+				+ '</p>'
 				+ '<p class="infoTabAlternative">';
 			if(this.routeShown) {
 				findDirections += ''
-					+ '<b>Do next:</b></p><p><a href="javascript:google.maps.event.trigger(GMO.lastMarker,\'clickClearRoute\')" id="clearRouteLink">Clear Last Route</a> ';
+					+ ' <b>' + _t.do_next + ':</b>'
+					+ '</p>'
+					+ '<p>'
+					+ ' <a href="javascript:google.maps.event.trigger(GMO.lastMarker,\'clickClearRoute\')" id="clearRouteLink">'+_t.clear_last_route+'</a> ';
 			}
 			else if((this.floatFrom || this.floatTo) || (this.to || this.from)) {
 				findDirections += ''
-					+ '<b>Do next:</b></p><p><a href="javascript:void(0)" class="submitButton" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickFindRoute\')" id="calculateLinkRoute">Calculate Route</a>';
+					+ '<b>'+_t.do_next+':</b></p>'
+					+ '<p><a href="javascript:void(0)" class="submitButton" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickFindRoute\')" id="calculateLinkRoute">'+_t.calculate_route+'</a>';
 			}
 			else if(this.layerInfo[m.layerId].pointCount > 1 && this.layerInfo[m.layerId].pointCount < 20) {
 				findDirections += ''
-					+ '<br /><br /><b>Alternatively:</b></p><p><a href="javascript:void(0)" class="submitButton" onclick="google.maps.event.trigger(GMO.lastMarker,\'joinTheDots\')" id="calculateLinkRoute">Create Route Using Current Points</a>';
+					+ '<span class="alternatively">'+_t.alernatively+'</p>'
+					+ '<p><a href="javascript:void(0)" class="submitButton" onclick="google.maps.event.trigger(GMO.lastMarker,\'joinTheDots\')" id="calculateLinkRoute">'+_t.create_routes_using_current_points+'</a>';
 			}
 			findDirections += ''
 				+ '</p>'
@@ -797,11 +915,11 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 			google.maps.event.addListener(m, "clickFromHere", function() {
 				GMO.from = name;
 				GMO.floatFrom = new google.maps.LatLng(point.ob, point.pb);
-				document.getElementById("fromHereLink").innerHTML = "This point";
+				document.getElementById("fromHereLink").innerHTML = _t.this_point;
 			});t
 			//current end point
 			google.maps.event.addListener(m, "clickToHere", function() {
-				document.getElementById("toHereLink").innerHTML = "This point";
+				document.getElementById("toHereLink").innerHTML = _t.this_point;
 				GMO.to = name;
 				GMO.floatTo = new google.maps.LatLng(point.ob, point.pb);
 			});
@@ -820,7 +938,9 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 	}
 
 	if(this.opts.addCurrentAddressFinder) {
-		html = html + '<div id="infoWindowTab3" class="infoWindowTab"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>';
+		html = html + '<div id="infoWindowTab3" class="infoWindowTab">'
+			+ '<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">'+_t.find_address+'</a>'
+			+ '</div>';
 		//tabsHtml.push(new GInfoWindowTab("address", '<div id="infoWindowTab3" class="infoWindowTab"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>'));
 		google.maps.event.addListener(m, "findAddressFromLngLat",
 			function() {
@@ -828,9 +948,9 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 				geocoder.getLocations(
 					m.getLatLng(),
 					function(response) {
-						var html = '<p>Address not found</p>';
+						var html = '<p>'+_t.address_not_found+'</p>';
 						if (!response || response.Status.code != 200) {
-							var html = '<p>Address could not be retrieved from server</p>';
+							var html = '<p>'+_t.address_not_retrieved+'</p>';
 						}
 						else {
 							place = response.Placemark[0];
@@ -838,7 +958,7 @@ GMC.prototype.retrieveInfoWindowContent = function(m) {
 								var html = place.address;
 							}
 						}
-						html += '<hr /><h2>This is NOT necessarily the actual address for '+m.markerName+'. The address above is the address (as provided by Google Maps) of the marker on the map.</h2>';
+						html += '<hr /><h2>'+_t.address_not_accurate+'.</h2>';
 						jQuery("#infoWindowTab3").html(html);
 					}
 				);
@@ -871,8 +991,8 @@ GMC.prototype.openPolyInfoTabs = function( m, pbounds) {
 	//basic html
 	var html = '<div id="infoWindowTab1" class="infoWindowTab"><h1>'+name+'</h1><div>'+desc+'</div>'
 		+ '<p class="infoTabBasicLinks">'
-		+ '<a href="javascript:void(0)" onclick="map.closeInfoWindow();">Close Window</a>'
-		+ ', <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickHideMe\')">Remove Item</a>'
+		+ '<a href="javascript:void(0)" onclick="map.closeInfoWindow();">'+_t.close+'</a>'
+		+ ', <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickHideMe\')">'+_t.remove+'</a>'
 		+ hideGroupLink
 		+ '.</p>'
 	google.maps.event.addListener(m, "clickHideMe", function() {
@@ -976,11 +1096,11 @@ GMC.prototype.createPointXml = function (name, pointLngLat, description, latitud
 			{ x: lng, y: lat, i: 0, a: "add" },
 			function(data){
 				if(parseInt(data) > 0) {
-					GMO.updateStatus('<p>added point to database</p>');
+					GMO.updateStatus('<p>'+_t.added_to_db+'</p>');
 					GMO.lastMarker.serverId = data;
 				}
 				else {
-					GMO.updateStatus('<p>could NOT add point to database</p>');
+					GMO.updateStatus('<p>'+_t.added_to_db_error+'</p>');
 				}
 			}
 		);
@@ -996,14 +1116,14 @@ GMC.prototype.createPointXml = function (name, pointLngLat, description, latitud
 GMC.prototype.downloadXml = function(url) {
 	var previouslyLoaded;
 	if(previouslyLoaded = this.layerInfo.inSubArray("url", url)) {
-		this.updateStatus("Already loaded");
+		this.updateStatus(_t.loaded);
 		var realLayerId = previouslyLoaded - 1;
 		if(!this.layerInfo[realLayerId].show) {
 			this.changeLayerVisibility(previouslyLoaded-1);
 		}
 	}
 	else {
-		this.updateStatus("Downloading data from server . . . ");
+		this.updateStatus(_t.loading_map);
 		this.latestUrl = url;
 		downloadUrl(
 			url,
@@ -1114,7 +1234,7 @@ GMC.prototype.processXml = function(doc) {
 					var p = this.createPolygon(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc);
 				}
 				else {
-					alert("sorry - could not load data");
+					alert(_t.error_in_loading);
 				}
 			}
 			else {
@@ -1123,7 +1243,7 @@ GMC.prototype.processXml = function(doc) {
 				var point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
 				this.bounds.extend(point);
 			// create marker
-				this.updateStatus("Processing new point " + i + " of " + pointCount + " . . .");
+				this.updateStatus(_t.processing + " " + i + " " + _t.of + " " + pointCount + ".");
 				var m = this.createMarker(point, name, desc, serverId, newIconURL);
 			}
 			if(!iconUrlCollection.inArray(newIconURL)) {
@@ -1150,7 +1270,7 @@ GMC.prototype.processXml = function(doc) {
 			marker.infowindow.close();
 		}
 		if(pointCount > 1) {
-			this.updateStatus(pointCount + " locations added.");
+			this.updateStatus(pointCount + " " + _t.locations_added + ".");
 		}
 		else {
 			window.setTimeout(
@@ -1161,7 +1281,7 @@ GMC.prototype.processXml = function(doc) {
 				}
 				, 300
 			);
-			this.updateStatus("One location loaded.");
+			this.updateStatus(_t.one_location_loaded);
 		}
 	}
 	else {
@@ -1184,19 +1304,20 @@ GMC.prototype.processXml = function(doc) {
  */
 GMC.prototype.tooManyPointsWarning = function(pointCount) {
 	if(pointCount > 100) {
-		this.updateStatus("In total, " + pointCount + " location are being loaded. It may take a while for all the locations to show on the map, please be patient.");
+		this.updateStatus(pointCount + " " + _t.large_number_of_items);
 	}
 	else if(pointCount == 0) {
-		this.updateStatus("No locations could be found.");
+		this.updateStatus(_t.no_location_could_be_found);
 	}
 }
 /* update lists */
+
 /**
  * updates lists
  * @todo test???
  */
 GMC.prototype.updateLists = function() {
-	this.updateStatus("Updating lists . . .");
+	this.updateStatus(_t.updating_lists);
 	if(this.opts.sideBarId || this.opts.dropBoxId || this.opts.layerListId) {
 		var a = [];
 		var sideBarArray = [];
@@ -1241,7 +1362,7 @@ GMC.prototype.updateLists = function() {
 		jQuery("#"+this.opts.layerListId).css("display", displayLayerList);
 		this.updateLayerList();
 	}
-	this.updateStatus("Map Ready");
+	this.updateStatus(_t.map_ready);
 }
 /**
  * creates and displays a sidebar
@@ -1260,21 +1381,29 @@ GMC.prototype.createSideBar = function(sideBarArray) {
 				i = sideBarElements[1];
 				layerName = this.gmarkers[i].layerId;
 				if(!strpos(this.gmarkers[i].serverId, "manuallyAdded", 0)) {
-				layerName = this.gmarkers[i].layerId;
-				var serverID = String(this.gmarkers[i].serverId);
-				var isManuallyAdded = serverID.indexOf( "manuallyAdded", 0 ); // returns -1
-				if(isManuallyAdded == -1) {
-					html += '<li class="forLayer'+layerName+' icon'+i+'"><a href="'+ this.currentPageURL + '#map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a> <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div></li>';
-				}
-				else {
-					html += '<li class="forLayer'+layerName+'">You added: <a href="'+ this.currentPageURL + '#map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a></li>';
+					layerName = this.gmarkers[i].layerId;
+					var serverID = String(this.gmarkers[i].serverId);
+					var isManuallyAdded = serverID.indexOf( "manuallyAdded", 0 ); // returns -1
+					if(isManuallyAdded == -1) {
+						html += ''
+							+ '<li class="forLayer'+layerName+' icon'+i+'">'
+							+' <a href="'+ this.currentPageURL + '#Map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
+							+' <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div>'
+							+'</li>';
+					}
+					else {
+						html += ''
+							+'<li class="forLayer'+layerName+'">' + _t.you_added + ':'
+							+' <a href="'+ this.currentPageURL + '#Map" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
+							+'</li>';
+					}
 				}
 			}
 			html += '</ul>';
 			el.innerHTML = html;
 		}
 		else {
-			console.debug("you defined the dropbox like this "+this.opts.sideBarId+", but it does not exist");
+			console.debug("you defined the dropbox like this " + this.opts.sideBarId + ", but it does not exist");
 		}
 	}
 }
@@ -1287,7 +1416,8 @@ GMC.prototype.createDropDown = function(sideBarArray) {
 	if(this.opts.dropBoxId) {
 		var el;
 		if(el = document.getElementById(this.opts.dropBoxId)) {
-			var html = '<select onchange="GMO.showMarkerFromList(this.value);"><option selected="selected"> - Select a location - </option>';
+			var html = '<select onchange="GMO.showMarkerFromList(this.value);">'
+				+ '<option selected="selected">' + _t.select_a_location + ' </option>';
 			for (var j = 0; j < sideBarArray.length; j++) {
 				var sideBarElements = sideBarArray[j].split("$$$", 2);
 				i = sideBarElements[1];
@@ -1339,11 +1469,11 @@ GMC.prototype.updateLayerList = function() {
 					+ this.layerInfo[i].title
 					+ ' <a href="javascript:void(0)" onclick="GMO.changeLayerVisibility('+i+')">' + linkText + '</a>';
 					if(!this.opts.hiddenLayersRemovedFromList) {
-						+ ' - <a href="javascript:void(0)" onclick="GMO.deleteLayer('+i+')">delete</a>';
+						+ ' - <a href="javascript:void(0)" onclick="GMO.deleteLayer('+i+')">' + _t.remove + '</a>';
 					}
 				if(this.opts.addKmlLink && this.layerInfo[i].url) {
 					html += ''
-						+ ' (<a href="' + this.layerInfo[i].url + '&kml=1">kml</a>)</li>';
+						+ ' (<a href="' + this.layerInfo[i].url + '&kml=1">' + _t.kml + '</a>)</li>';
 				}
 			}
 			html += "<ul>";
@@ -1382,6 +1512,7 @@ GMC.prototype.updateTitles = function() {
  */
 GMC.prototype.updateStatus = function(html, add) {
 	var el = null;
+	var hideAction = "";
 	//depreciated...
 	if(this.opts.addAddressFinder || add == "find") {
 		if(html) {
@@ -1405,15 +1536,15 @@ GMC.prototype.updateStatus = function(html, add) {
 		}
 		else {
 			var zoomLinkLabel = 'full-screen';
-			var hideAction = '| <a href="javascript:void(0)" onclick="GMO.hideStatus();">hide [x]</a>';
+			var hideAction = '| <a href="javascript:void(0)" onclick="GMO.hideStatus();">' + _t.hide + '</a>';
 		}
 	}
 	var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
 	// depreciated
 	if(this.opts.addAddressFinder) {
-		fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">find address</a> |'
+		fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">' + _t.find_address + '</a> |'
 	}
-	fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');">show help</a> |'
+	fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');"> ' + _t.show_help + ' </a> |'
 	+ ' <a href="javascript:void(0)" onclick="GMO.enlargeMap();" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
 	+ hideAction
 	+ '</p>'+ html;
@@ -1435,7 +1566,7 @@ GMC.prototype.hideStatus = function() {
 			el.style.display = "none";
 		}
 		else if(this.mapIsZoomed) {
-			alert("Can not hide this bar in full screen mode");
+			alert(_t.can_not_hide_bar_in_full_screen_mode);
 		}
 	}
 }
@@ -1453,7 +1584,7 @@ GMC.prototype.showAddress = function(address) {
 	console.debug(countryCode);
 	geocoder = new google.maps.Geocoder();
 	if (geocoder) {
-		this.updateStatus("Searching for Address . . .");
+		this.updateStatus(_t.search_for_address);
 		this.mapAddress = address;
 		if(this.opts.defaultAddressText) {
 			address += this.opts.defaultAddressText;
@@ -1462,10 +1593,10 @@ GMC.prototype.showAddress = function(address) {
 			if (status == google.maps.GeocoderStatus.OK) {
 				var result = results[0];
 				map.setCenter(result.geometry.location);
-				var marker = addPoint(
+				var marker = GMO.addPoint(
 					result.geometry.location, //latLng
 					result.formatted_address, //address string
-					"added position" //description
+					_t.added_position //description
 				);
 			} else {
 				alert("Geocode was not successful for the following reason: " + status);
@@ -1474,7 +1605,7 @@ GMC.prototype.showAddress = function(address) {
 		return false;
 	}
 	else {
-		this.updateStatus("Address Finder Not Loaded");
+		this.updateStatus(_t.address_finder_not_loaded);
 	}
 }
 /**
@@ -1484,16 +1615,16 @@ GMC.prototype.showAddress = function(address) {
  */
 GMC.prototype.addAddressToMap = function (response) {
 	if (!response || response.Status.code != 200) {
-		GMO.updateStatus("Sorry, we were unable to find that address.");
+		GMO.updateStatus(_t.address_not_found);
 	}
 	else {
 		place = response.Placemark[0];
 		var pointLngLat = place.Point.coordinates[0] + "," + place.Point.coordinates[1];
-		var nameString = "Address Search: " + GMO.mapAddress;
+		var nameString = _t.address_search + ": " + GMO.mapAddress;
 		var description = place.address;
 		var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description);
 		GMO.processXml(xmlSheet);
-		GMO.updateStatus("Address found: " + description);
+		GMO.updateStatus(_t.address_found + ": " + description);
 		var serverURL = GMO.opts.updateServerUrlAddPoint+"&x=" + place.Point.coordinates[0] + "&y=" + place.Point.coordinates[1]
 		GMO.addLayer(serverURL);
 		return true;
@@ -1519,14 +1650,14 @@ GMC.prototype.updateAddressFormFields = function(latLng) {
  */
 GMC.prototype.showRoute = function() {
 	if(!this.floatFrom) {
-		this.updateStatus("No valid start location has been selected.");
+		this.updateStatus(_t.no_valid_start);
 	}
 	else if(!this.floatTo) {
-		this.updateStatus("No valid end location has been selected.");
+		this.updateStatus(_t.no_valid_end);
 	}
 	else {
 		GMO.routeShown = true;
-		this.updateStatus("Searching for Route . . .");
+		this.updateStatus(_t.searching_for_route);
 		var fromTo = this.floatFrom + " to " + this.floatTo;
 		var directionOptions = { locale: this.opts.localeForResults, getSteps:true}
 		directions.load(fromTo, directionOptions);
@@ -1553,7 +1684,7 @@ GMC.prototype.createRouteFromLayer = function(layerId) {
 	}
 	if(wayPointArray.length) {
 		GMO.routeShown = true;
-		this.updateStatus("Searching for Route . . .");
+		this.updateStatus(_t.searching_for_route);
 		var request = {
 			origin:GMO.floatFrom,
 			destination:GMO.floatTo,
@@ -1566,7 +1697,7 @@ GMC.prototype.createRouteFromLayer = function(layerId) {
 		});
 	}
 	else {
-		this.updateStatus("No Route Could Be Found . . .");
+		this.updateStatus(_t.no_route_could_be_found);
 	}
 }
 /**
@@ -1627,7 +1758,7 @@ GMC.prototype.clearRouteAll = function () {
  * @todo test
  */
 GMC.prototype.directionsHandleErrors = function (){
-	if (directions.getStatus().code == G_GEO_UNKNOWN_ADDRESS) GMO.updateStatus("No corresponding geographic location could be found for one of the specified addresses. This may be due to the fact that the address is relatively new, or it may be incorrect.\nError code: " + directions.getStatus().code);
+	if (directions.getStatus().code == G_GEO_UNKNOWN_ADDRESS) {GMO.updateStatus("No corresponding geographic location could be found for one of the specified addresses. This may be due to the fact that the address is relatively new, or it may be incorrect.\nError code: " + directions.getStatus().code);}
 	else if (directions.getStatus().code == G_GEO_SERVER_ERROR) GMO.updateStatus("A geocoding or directions request could not be successfully processed, yet the exact reason for the failure is not known.\n Error code: " + directions.getStatus().code);
 	else if (directions.getStatus().code == G_GEO_MISSING_QUERY) GMO.updateStatus("The HTTP q parameter was either missing or had no value. For geocoder requests, this means that an empty address was specified as input. For directions requests, this means that no query was specified in the input.\n Error code: " + directions.getStatus().code);
 	//else if (directions.getStatus().code == G_UNAVAILABLE_ADDRESS)  GMO.updateStatus("The geocode for the given address or the route for the given directions query cannot be returned due to legal or contractual reasons.\n Error code: " + directions.getStatus().code);
@@ -2004,7 +2135,7 @@ GMC.prototype.findAddressForm = function () {
 			//+ '<form action="#">'
 			+ ' <p class="findAddressHtml">'
 			+ '  <input type="text" size="60" id="mapAddress" class="infoTabInputAddress" />' + this.opts.defaultAddressText
-			+ '  <input type="button" value="find address" id="infoTabSubmitAddress" class="submitButton" onclick="findAddress(document.getElementById(\'mapAddress\').value); return false" />'
+			+ '  <input type="button" value="find address" id="infoTabSubmitAddress" class="submitButton" onclick="' + variableName + '.findAddress(document.getElementById(\'mapAddress\').value); return false" />'
 			+ ' </p>'
 			//+ '</form>';
 	return findAddressHtml

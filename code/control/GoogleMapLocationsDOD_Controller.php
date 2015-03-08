@@ -149,7 +149,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 */
 	function addAllowAddingAndDeletingPoints() {
 		$this->initiateMap();
-		$this->googleMap->allowAddPointsToMap();
+		$this->googleMap->AllowAddPointsToMap();
 	}
 
 	/**
@@ -212,7 +212,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * return Boolean
 	 */
 	protected function hasStaticMaps() {
-		return (!Session::get("StaticMapsOff") && $this->googleMap->getShowStaticMapFirst()) ? true : false;
+		return (!Session::get("StaticMapsOff") && $this->googleMap->ShowStaticMapFirst()) ? true : false;
 	}
 
 	/**

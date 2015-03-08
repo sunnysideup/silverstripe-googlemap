@@ -2,9 +2,9 @@
 .infoWindowTab div {}
 .infoWindowTab h1{margin-top: 0.3em;}
 
-#map{margin-top: 7px;}
+#Map{margin-top: 7px;}
 
-#map a img {border: none;}
+#Map a img {border: none;}
 
 /* LIST BELOW MAP */
 .boxy {}
