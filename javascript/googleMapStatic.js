@@ -73,7 +73,8 @@ var googleMapStatic = function(){
 				"click",
 				function() {
 					if(staticMapObject.scriptsLoaded) {
-						staticMapObject.variableName.findAddress(jQuery(staticMapObject.addressInputFieldSelector).val());
+						var objectName = staticMapObject.variableName;
+						window[objectName].findAddress(jQuery(staticMapObject.addressInputFieldSelector).val());
 						return false;
 					}
 					else {
@@ -122,7 +123,8 @@ var googleMapStatic = function(){
 		loadAddressWhenReady: function() {
 			if(staticMapObject.scriptsLoaded) {
 				staticMapObject.timer = null;
-				staticMapObject.variableName.findAddress(jQuery(staticMapObject.addressInputFieldSelector).val());
+				var objectName = staticMapObject.variableName;
+				window[objectName].findAddress(jQuery(staticMapObject.addressInputFieldSelector).val());
 			}
 			else {
 				staticMapObject.timer = window.setTimeout(

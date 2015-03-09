@@ -211,7 +211,18 @@ class GoogleMap extends ViewableData {
 	protected $myMapFunctionName = "GMO";
 		public function setMyMapFunctionName($a){$this->myMapFunctionName = $s;}
 		public function MyMapFunctionName(){return $this->getMyMapFunctionName();}
-		public function getMyMapFunctionName(){return $this->myMapFunctionName;}
+		public function getMyMapFunctionName($instanceName = false, $staticVersion = false){
+			if($instanceName) {
+				$var = 'load_my_map_'.$this->myMapFunctionName;
+			}
+			else {
+				$var = $this->myMapFunctionName;
+			}
+			if($staticVersion) {
+				$var .= "_static";
+			}
+			return $var;
+		}
 
 	/**
 	 * title of map
@@ -490,23 +501,25 @@ class GoogleMap extends ViewableData {
 			Requirements::themedCSS("googleMap");
 			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 			Requirements::javascript("googlemap/javascript/googleMapStatic.js");
-			$staticVariablename = $this->getMyMapFunctionName()."_Static";
-			$js .= "\r\n\t\t\t". $staticVariablename." = new googleMapStatic();".
-				"\r\n\t\t\t".$staticVariablename.".init();".
-				"\r\n\t\t\t".$staticVariablename.".setVar('variableName', '".$this->getMyMapFunctionName()."');\r\n";
+			$variableName = $this->getMyMapFunctionName(false);
+			$instanceName = $this->getMyMapFunctionName(true);
+			$staticInstanceName = $this->getMyMapFunctionName(true, true);
+			$js .= "\r\n\t\t\t". $staticInstanceName." = new googleMapStatic();".
+				"\r\n\t\t\t".$staticInstanceName.".init();".
+				"\r\n\t\t\t".$staticInstanceName.".setVar('variableName', '".$instanceName."');\r\n";
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
 			if(!$this->ShowStaticMapFirst()) {
 				Requirements::javascript("http://maps.googleapis.com/maps/api/js?v=3.16&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
 				Requirements::javascript("googlemap/javascript/googleMaps.js");
-				$js .= "\r\n\t\t\t".$staticVariablename.".setVar('scriptsLoaded', true);"
+				$js .= "\r\n\t\t\t".$staticInstanceName.".setVar('scriptsLoaded', true);"
 					."\r\n\t\t\tjQuery(document).ready( function() { initiateGoogleMap();} );\r\n";
 			}
 			else {
-				$js .= "\r\n\t\t\t\t".$staticVariablename.".setVar('scriptsLoaded', false);\r\n";
+				$js .= "\r\n\t\t\t\t".$staticInstanceName.".setVar('scriptsLoaded', false);\r\n";
 				Requirements::javascript('http://www.google.com/jsapi?key='.Config::inst()->get("GoogleMap", "google_map_api_key"));//
 			}
-			$js .= $this->createJavascript($staticVariablename);
+			$js .= $this->createJavascript($staticInstanceName);
 			Requirements::customScript($js, "GoogleMapCustomScript");
 			self::$_includes_are_done = true;
 		}
@@ -684,11 +697,12 @@ class GoogleMap extends ViewableData {
 	 * @param String staticVariablename
 	 * @return String (Javascript)
 	 */
-	protected function createJavascript($staticVariablename) {
-		$variableName = $this->getMyMapFunctionName();
-		$loadFunctionVariableName = 'load'.$variableName;
+	protected function createJavascript() {
+			$variableName = $this->getMyMapFunctionName(false);
+			$instanceName = $this->getMyMapFunctionName(true);
+			$staticInstanceName = $this->getMyMapFunctionName(true, true);
 		$js = '
-			var '.$loadFunctionVariableName.' = new GoogleMapConstructor(
+			var '.$instanceName.' = new GoogleMapConstructor(
 				"GoogleMapDiv",
 				null,
 				"'.$variableName.'",
@@ -769,20 +783,20 @@ class GoogleMap extends ViewableData {
 				}
 			);
 			function initiateGoogleMap() {
-				if(!'.$staticVariablename.'.getVar(\'scriptsLoaded\')) {
+				if(!'.$staticInstanceName.'.getVar(\'scriptsLoaded\')) {
 					alert("load interactive map by clicking on it");
 				}
 				else {
-					'.$loadFunctionVariableName.'.init();';
+					'.$instanceName.'.init();';
 		if($this->linksForData && count($this->linksForData)) {
 			foreach($this->linksForData as $link) {
 				$js .= '
-					'.$loadFunctionVariableName.'.addLayer("'.Director::absoluteBaseURL().$link.'");';
+					'.$instanceName.'.addLayer("'.Director::absoluteBaseURL().$link.'");';
 			}
 		}
 		elseif($this->address) {
 			$js .= '
-					'.$loadFunctionVariableName.'.findAddress(\''.$this->address.'\')';
+					'.$instanceName.'.findAddress(\''.$this->address.'\')';
 		}
 		$js .= '
 				}

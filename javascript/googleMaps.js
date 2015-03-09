@@ -162,6 +162,64 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 
 
 
+		/**
+		 * adds layer to map with with points
+		 * @param URL url
+		 * @todo: encapsulate
+		 */
+		addLayer: function(url) {
+			GMO.downloadXml(url);
+			return true;
+		},
+
+		/**
+		 * add a point to the map
+		 * @todo: change processXML to something else...
+		 * @todo: move xmlParse to createPointXml method
+		 * @param LatLng latLng
+		 * @param String nameString - name for marker
+		 * @param String description - description for marker
+		 */
+		addPoint: function(latLng, nameString, description) {
+			var xmlSheet = GMO.createPointXml(nameString, latLng, description);
+			GMO.processXml(xmlSheet);
+		},
+
+		/**
+		 * finds an address on the map, similar to the opening page of maps.google.com
+		 * @param String address
+		 */
+		findAddress: function(address) {
+			GMO.showAddress(address);
+			return true;
+		},
+
+		/**
+		 * shows a route for pre-selected locations
+		 */
+		findRoute: function() {
+			GMO.showRoute();
+			return true;
+		},
+
+		/**
+		 * saves your current location on the map
+		 */
+		savePosition: function() {
+			GMO.savePositionNow(GMO.mapObject);
+			GMO.updateStatus(GMO._t.position_saved);
+			return true;
+		},
+
+		/**
+		 * resets the map to last saved position
+		 */
+		goToSavedPosition: function() {
+			//GMO.mapObject.returnToSavedPosition();
+			GMO.returnToSavedPosition(GMO.mapObjec);
+			GMO.updateStatus(GMO._t.return_to_position);
+			return true;
+		},
 
 
 
@@ -360,7 +418,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * saves map position
 		 * @todo make public
 		 */
-		savePosition: function() {
+		savePositionNow: function() {
 			GMO.previousPosition = GMO.mapObject.getCenter();
 		},
 
@@ -1450,6 +1508,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 					if (status == google.maps.GeocoderStatus.OK) {
 						var result = results[0];
 						GMO.mapObject.setCenter(result.geometry.location);
+						console.debug(GMO);
 						var marker = GMO.addPoint(
 							result.geometry.location, //latLng
 							result.formatted_address, //address string
@@ -2172,8 +2231,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @todo: encapsulate
 		 */
 		addLayer: function(url) {
-			GMO.downloadXml(url);
-			return true;
+			return GMO.addLayer(url);
 		},
 
 		/**
@@ -2185,8 +2243,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @param String description - description for marker
 		 */
 		addPoint: function(latLng, nameString, description) {
-			var xmlSheet = GMO.createPointXml(nameString, latLng, description);
-			GMO.processXml(xmlSheet);
+			GMO.addPoint(latLng, nameString, description);
 		},
 
 		/**
@@ -2194,26 +2251,21 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @param String address
 		 */
 		findAddress: function(address) {
-			GMO.showAddress(address);
-			return true;
+			return GMO.findAddress(address);
 		},
 
 		/**
 		 * shows a route for pre-selected locations
 		 */
 		findRoute: function() {
-			GMO.showRoute();
-			return true;
+			return GMO.findRoute();
 		},
 
 		/**
 		 * saves your current location on the map
 		 */
 		savePosition: function() {
-			//GMO.mapObject.savePosition();
-			GMO.savePosition(GMO.mapObject);
-			GMO.updateStatus(GMO._t.position_saved);
-			return true;
+			return GMO.savePosition();
 		},
 
 		/**
@@ -2221,9 +2273,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 */
 		goToSavedPosition: function() {
 			//GMO.mapObject.returnToSavedPosition();
-			GMO.returnToSavedPosition(GMO.mapObjec);
-			GMO.updateStatus(GMO._t.return_to_position);
-			return true;
+			return GMO.goToSavedPosition();
 		},
 
 		/**
