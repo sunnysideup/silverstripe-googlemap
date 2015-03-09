@@ -92,7 +92,7 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 	 * @param $parentPage DataObject The Object of which you want to find the children
 	 * @param $classType String The text string to match `ClassName` field
 	 *
-	 * @return DataList of items if Class $classType
+	 * @return ArrayList of items if Class $classType
 	 */
 	function getChildrenOfType($parentPage, $classType = null) {
 		$children = $parentPage->AllChildren();
@@ -110,6 +110,7 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 			}
 		}
 		return ($childrenOfType) ? $childrenOfType : new ArrayList();
+
 	}
 
 }

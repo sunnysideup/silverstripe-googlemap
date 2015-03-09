@@ -411,11 +411,17 @@ class GoogleMap extends ViewableData {
 		/**
 		 * sets the list of points through a list of parent pages
 		 * affected variable is: googlePointsDataObject
-		 * @param DataList $pageDataList
+		 * @param DataList | ArrayList $pageDataList
 		 */
 		public function setPageDataObjectSet($pageDataList) {
 			if($pageDataList->count()) {
-				$this->googlePointsDataObject = GoogleMapLocationsObject::get()->filter(array("ParentID" => $pageDataList->map("ID", "ID")->toArray));
+				if($pageDataList instanceof ArrayList) {
+					$array = $pageDataList->map("ID", "ID");
+				}
+				else {
+					$array = $pageDataList->map("ID", "ID")->toArray();
+				}
+				$this->googlePointsDataObject = GoogleMapLocationsObject::get()->filter(array("ParentID" => $array));
 				$pageDataList = null;
 			}
 		}

@@ -582,11 +582,11 @@ class GoogleMapDataResponse extends Controller {
 		$this->map = GoogleMap::create();
 		$this->map->setDataObjectTitle($dataObjectTitle);
 		$this->map->setWhereStatementDescription($whereStatementDescription);
-		if($GooglePointsDataObject) {
-			$this->map->setGooglePointsDataObject($GooglePointsDataObject);
-		}
-		elseif($PageDataObjectSet) {
+		if($PageDataObjectSet) {
 			$this->map->setPageDataObjectSet($PageDataObjectSet);
+		}
+		elseif($GooglePointsDataObject) {
+			$this->map->setGooglePointsDataObject($GooglePointsDataObject);
 		}
 		else {
 			$this->staticMapHTML = "<p>No points found</p>";
