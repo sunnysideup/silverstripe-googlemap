@@ -1289,23 +1289,20 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						sideBarElements = sideBarArray[j].split("$$$", 2);
 						i = sideBarElements[1];
 						layerName = this.gmarkers[i].layerId;
-						if(!strpos(this.gmarkers[i].serverId, "manuallyAdded", 0)) {
-							layerName = this.gmarkers[i].layerId;
-							var serverID = String(this.gmarkers[i].serverId);
-							var isManuallyAdded = serverID.indexOf( "manuallyAdded", 0 ); // returns -1
-							if(isManuallyAdded == -1) {
-								html += ''
-									+ '<li class="forLayer'+layerName+' icon'+i+'">'
-									+' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
-									+' <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div>'
-									+'</li>';
-							}
-							else {
-								html += ''
-									+'<li class="forLayer'+layerName+'">' + GMO._t.you_added + ':'
-									+' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
-									+'</li>';
-							}
+						var serverID = String(this.gmarkers[i].serverId);
+						var isManuallyAdded = serverID.indexOf( "manuallyAdded", 0 ); // returns -1
+						if(isManuallyAdded == -1) {
+							html += ''
+								+ '<li class="forLayer'+layerName+' icon'+i+'">'
+								+' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
+								+' <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div>'
+								+'</li>';
+						}
+						else {
+							html += ''
+								+'<li class="forLayer'+layerName+'">' + GMO._t.you_added + ':'
+								+' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
+								+'</li>';
 						}
 					}
 					html += '</ul>';
@@ -1508,7 +1505,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 					if (status == google.maps.GeocoderStatus.OK) {
 						var result = results[0];
 						GMO.mapObject.setCenter(result.geometry.location);
-						console.debug(GMO);
 						var marker = GMO.addPoint(
 							result.geometry.location, //latLng
 							result.formatted_address, //address string
@@ -2018,7 +2014,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 					}
 				}
 			}
-			return a;
+			//BROKEN!!!
+			return [];
 		},
 
 		/**

@@ -37,10 +37,10 @@
 
 	<div id="extraMapOptions" class="typography">
 		<div id="MapControlsOutsideMap" class="MapExtraInformation">
-			<a href="#GoogleMapDiv" onclick="return !savePosition();">save map position</a> |
-			<a href="#GoogleMapDiv" onclick="return !goToSavedPosition();">back to saved map position</a> |
+			<a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.savePosition();">save map position</a> |
+			<a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.goToSavedPosition();">back to saved map position</a> |
 			<a href="#GoogleMapDiv" onclick="initiateGoogleMap(); return false;">reset map</a> |
-			<a href="#GoogleMapDiv" onclick="return !turnOnStaticMaps(this, '{$Link}')" title="without loading dynamic maps (stop maps) - pages load faster">stop maps</a>
+			<a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.turnOnStaticMaps(this, '{$Link}')" title="without loading dynamic maps (stop maps) - pages load faster">stop maps</a>
 		</div>
 
 		<% if AllExtraLayersAsLinks %>
@@ -48,7 +48,7 @@
 			<h2>Add to the map</h2>
 			<ul>
 			<% loop AllExtraLayersAsLinks %>
-				<li><a href="#GoogleMapDiv" onclick="return !{$MyMapFunctionName}.addLayer('{$Link}');">$Title</a></li>
+				<li><a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.addLayer('{$Link}');">$Title</a></li>
 			<% end_loop %>
 			</ul>
 		</div>

@@ -44,7 +44,7 @@ class GoogleMap extends ViewableData {
 	/* INFORMATION AROUND THE MAP */
 	private static $default_title = ""; //MOVE TO SITECONFIG
 	private static $default_where_statement_description = ""; //MOVE TO SITECONFIG
-	private static $no_status_at_all = false; //MOVE TO SITECONFIG
+	private static $no_status_at_all = true; //MOVE TO SITECONFIG
 	private static $add_kml_link = false; //MOVE TO SITECONFIG
 	private static $hidden_layers_removed_from_list = false;
 	private static $change_page_title = false; //MOVE TO SITECONFIG
@@ -69,7 +69,7 @@ class GoogleMap extends ViewableData {
 
 	/* MARKERS */
 	private static $add_points_to_map = false;
-	private static $add_delete_marker_button = "delete this point";
+	private static $add_delete_marker_button = "";
 	private static $marker_options = "{bouncy:true,title: \"click me\"}";
 	private static $preload_images = false;
 
@@ -97,13 +97,13 @@ class GoogleMap extends ViewableData {
 	private static $save_static_map_locally = false;
 
 	/* ADDRESS FINDER */
-	private static $add_address_finder = true; //MOVE TO SITECONFIG
+	private static $add_address_finder = false; //MOVE TO SITECONFIG
 	private static $default_country_code = "NZ";
 	private static $default_address_text = " New Zealand"; //MOVE TO SITECONFIG
 	private static $number_shown_in_around_me = 7; //MOVE TO SITECONFIG
 
 	/* DIRECTIONS SETTINGS */
-	private static $style_sheet_url = true;
+	private static $style_sheet_url = "";
 	private static $locale_for_results = "en_NZ";
 
 	/* SERVER SETTINGS */
@@ -210,7 +210,10 @@ class GoogleMap extends ViewableData {
 	 */
 	protected $myMapFunctionName = "GMO";
 		public function setMyMapFunctionName($a){$this->myMapFunctionName = $s;}
-		public function MyMapFunctionName(){return $this->getMyMapFunctionName();}
+		public function MyMapFunctionName(){return $this->getMyMapFunctionName(false, false);}
+		public function MyInstanceName(){return $this->getMyMapFunctionName(true, false);}
+		public function MyStaticFunctionName(){return $this->getMyMapFunctionName(false, true);}
+		public function MyStaticInstanceName(){return $this->getMyMapFunctionName(true, true);}
 		public function getMyMapFunctionName($instanceName = false, $staticVersion = false){
 			if($instanceName) {
 				$var = 'load_my_map_'.$this->myMapFunctionName;
