@@ -493,7 +493,7 @@ class GoogleMap extends ViewableData {
 			$staticVariablename = $this->getMyMapFunctionName()."_Static";
 			$js .= "\r\n\t\t\t". $staticVariablename." = new googleMapStatic();".
 				"\r\n\t\t\t".$staticVariablename.".init();".
-				"\r\n\t\t\t".$staticVariablename.".setVar('variablename', '".$this->getMyMapFunctionName()."');\r\n";
+				"\r\n\t\t\t".$staticVariablename.".setVar('variableName', '".$this->getMyMapFunctionName()."');\r\n";
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
 			if(!$this->ShowStaticMapFirst()) {

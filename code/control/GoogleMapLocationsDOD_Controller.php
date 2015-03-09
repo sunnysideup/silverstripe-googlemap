@@ -27,6 +27,11 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 */
 	protected $address = "";
 
+
+	/**
+	 * look for address
+	 *
+	 */
 	public function onAfterInit(){
 		if(!$this->address && isset($_REQUEST["address"])) {
 			$this->address = urldecode($_REQUEST["address"]);
@@ -44,7 +49,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	public function loadmap($request){
 		$link = urldecode($request->param("ID"));
 		$options = explode("/", $link);
-		$this->addExtraLayersAsLinks($title = $options[3], $link);
+		$title = $options[3];
+		$this->addExtraLayersAsLinks($title, $link);
 		return array();
 	}
 

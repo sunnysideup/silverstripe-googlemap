@@ -12,7 +12,7 @@
 	<div class="findAddressHtml">
 		<a class="searchForAddress" href="#GoogleMapDiv" onclick="jQuery('#googleMapAddressFinderFieldSet').slideToggle(); return false;">search for address/location</a>
 		<fieldset style="display: none;" id="googleMapAddressFinderFieldSet" class="middleColumn">
-			<input type="text" class="infoTabInputAddress" id="MapAddress2" size="60" value="Enter your address or location" onclick="this.value = '';"/>
+			<input type="text" class="infoTabInputAddress" id="MapAddress2" size="60" placeholder="Enter your address or location" onclick="this.value = '';"/>
 			<input type="button" class="submitButton" id="InfoTabSubmitAddress2" value="find locations around your address"/>
 		</fieldset>
 	</div>
