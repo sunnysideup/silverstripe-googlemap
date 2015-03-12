@@ -343,8 +343,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				GMO.mapObject,
 				"rightclick",
 				function(point) {
-					var latLng = new google.maps.LatLng(point.latLng.ob, point.latLng.pb, true);
-					//point = GMO.mapObject.fromContainerPixelToLatLng(point);
+					var latLng = new google.maps.LatLng(point.latLng.lat(), point.latLng.lng(), false);
 					point = new google.maps.Point(point.x, point.y);
 					if(GMO.opts.addPointsToMap) {
 						var nameString = "Longitude (" + Math.round(point.x*10000)/10000 + ") and Latitude (" + Math.round(point.y*10000)/10000 + ")";
