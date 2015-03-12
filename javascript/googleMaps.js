@@ -342,20 +342,20 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			google.maps.event.addListener(
 				GMO.mapObject,
 				"rightclick",
-				function(point, image) {
-						var latLng = new google.maps.LatLng(point.latLng.ob, point.latLng.pb, true);
-						//point = GMO.mapObject.fromContainerPixelToLatLng(point);
-						point = new google.maps.Point(point.pixel.x, point.pixel.y);
-						if(GMO.opts.addPointsToMap) {
-							var nameString = "Longitude (" + Math.round(point.lng()*10000)/10000 + ") and Latitude (" + Math.round(point.lat()*10000)/10000 + ")";
-							var pointLngLat = point.lng() + "," + point.lat();
-							var description = GMO._t.manually_added_point;
-							xmlSheet = GMO.createPointXml(nameString,pointLngLat,description);
-							GMO.processXml(xmlSheet);
-						}
-						else {
-							GMO.zoomTo(latLng, GMO.mapObject.getZoom()-1);
-						}
+				function(point) {
+					var latLng = new google.maps.LatLng(point.latLng.ob, point.latLng.pb, true);
+					//point = GMO.mapObject.fromContainerPixelToLatLng(point);
+					point = new google.maps.Point(point.x, point.y);
+					if(GMO.opts.addPointsToMap) {
+						var nameString = "Longitude (" + Math.round(point.x*10000)/10000 + ") and Latitude (" + Math.round(point.y*10000)/10000 + ")";
+						var pointLngLat = new google.maps.LatLng(point.x, point.y);
+						var description = GMO._t.manually_added_point;
+						xmlSheet = GMO.createPointXml(nameString,pointLngLat,description);
+						GMO.processXml(xmlSheet);
+					}
+					else {
+						GMO.zoomTo(latLng, GMO.mapObject.getZoom()-1);
+					}
 				}
 			);
 			if(this.opts.viewFinderSize > 0) {
@@ -688,10 +688,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 					var longitude = GMO.checkLongitude(point.lng());
 					var latitude = GMO.checkLatitude(point.lat());
 					var nameString = GMO._t.antipodean_of + " " + m.markerName;
-					var pointLngLat = longitude+","+latitude;
+					var pointLngLat = new google.maps.LatLng(longitude, latitude);
 					var description = GMO._t.found_opposite;
 					var zoom = 3;
-					var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description, latitude, longitude, zoom)
+					var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description, longitude, latitude, zoom)
 					GMO.processXml(xmlSheet);
 				});
 			}
@@ -809,7 +809,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						GMO.from = name;
 						GMO.floatFrom = new google.maps.LatLng(point.ob, point.pb);
 						document.getElementById("fromHereLink").innerHTML = GMO._t.this_point;
-					});t
+					});
 					//current end point
 					google.maps.event.addListener(m, "clickToHere", function() {
 						document.getElementById("toHereLink").innerHTML = GMO._t.this_point;
@@ -968,10 +968,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @return XML
 		 * @todo test if(GMO.opts.updateServerUrlDragend),
 		 */
-		createPointXml: function(name, pointLngLat, description, latitude, longitude, zoom, info) {//creates XML for one point only
+		createPointXml: function(name, pointLngLat, description, longitude, latitude, zoom, info) {//creates XML for one point only
 
-			if(!longitude) {longitude = pointLngLat.lng();}
-			if(!latitude) {latitude = pointLngLat.lat();}
+			if(!longitude) {longitude = pointLngLat.x;}
+			if(!latitude) {latitude = pointLngLat.y;}
 			if(!zoom) {zoom = 5;}
 
 			var serverId = "Marker_manuallyAdded" + GMO.layerInfo.length;
@@ -1532,7 +1532,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			}
 			else {
 				place = response.Placemark[0];
-				var pointLngLat = place.Point.coordinates[0] + "," + place.Point.coordinates[1];
+				var pointLngLat = new google.maps.LatLng(place.Point.coordinates[0],  place.Point.coordinates[1]);
 				var nameString = GMO._t.address_search + ": " + GMO.mapAddress;
 				var description = place.address;
 				var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description);

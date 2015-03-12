@@ -4,14 +4,20 @@ Google Map
 Adds an in-depth application of the google map API to your Silverstripe application
 
 
-STEP-BY-STEP (by alex.guez [at] gmail dot com)
+Also See
+-----------------------------------
+
+ - embedded maps: https://developers.google.com/maps/documentation/embed/guide
+ -
+
+STEP-BY-STEP
 -----------------------------------
 
 1.	install googlemap as per usual (composer: sunnysideup/googlemap)
 
 2.	Modify settings as you wish in googlemap.yml.example
 		Copy the parts from googlemap.yml.example that you want to edit
-		in to your mysite config.yml
+		into your mysite config.yml
 
 3.	Run a dev/build
 
@@ -29,9 +35,9 @@ STEP-BY-STEP (by alex.guez [at] gmail dot com)
 
 6.	Run a dev/build
 
-7.	Create a new page in the TestPage type
+7.	Create a new page "TestPage"
 
-8.	Go tho the Map tab in the CMS for the test page, add a full address, save and publish
+8.	Go to the TestPage in the CMS and find the Map tab, add a full address, save and publish
 
 9.	Find your template file and add the following: <% include GoogleMap %>
 
