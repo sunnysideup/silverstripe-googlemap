@@ -43,7 +43,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	}
 
 	/**
-	 *
+	 * e.g. mysite.com/mypage/mysub-page/loadmap/optionsHereURLEncoded/
 	 * @param HTTPRequest
 	 */
 	public function loadmap($request){
@@ -54,6 +54,60 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		return array();
 	}
 
+
+	/**
+	 * returns encoded link for the loadmap function
+	 *
+	 * @param SiteTree $page
+	 * @param String $action
+	 * @param String $title
+	 * @param Int $lng
+	 * @param Int $lat
+	 * @param String $filter
+	 *
+	 * @return String
+	 */
+	public function LoadmapLink($page, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+		return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filter));
+	}
+	
+
+	/* ******************************
+	 *  TEMPLATE FUNCTIONS
+	 * ******************************
+	 */
+
+
+	/**
+	 * @return GoogleMap
+	 */
+	public function GoogleMapController() {
+		$this->initiateMap();
+		$this->googleMap->loadGoogleMap();
+		return $this->googleMap;
+	}
+
+	/**
+	 * @return Boolean
+	 */
+	public function HasGoogleMap() {
+		if($this->googleMap && $this->owner->classHasGoogleMap()) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	/**
+	 * @return Form
+	 */
+	public function SearchByAddressForm(){
+		return SearchByAddressForm::create($this->owner, "SearchByAddressForm", $this->address);
+	}
+	
+	
+	
 	/**
 	 * add a layer to a Google Map
 	 *
@@ -160,7 +214,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 
 	/**
 	 * removes user settings for map
-	 * a custom map is a bunch of points that are customised.
+	 * a custom map is a bunch of points that are customised via a session
 	 */
 	function clearCustomMaps() {
 		Session::clear("addCustomGoogleMap");
@@ -234,22 +288,6 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 
 
 	/**
-	 *  returns encoded link for the loadmap function
-	 *
-	 * @param SiteTree $page
-	 * @param String $action
-	 * @param String $title
-	 * @param Int $lng
-	 * @param Int $lat
-	 * @param String $filter
-	 *
-	 * @return String
-	 */
-	public function LoadmapLink($page, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
-		return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filter));
-	}
-
-	/**
 	 * @param String $action
 	 * @param String $title
 	 * @param Int $lng
@@ -271,42 +309,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		return $linkForData;
 	}
 
-	/* ******************************
-	 *  TEMPLATE FUNCTIONS
-	 * ******************************
-	 */
-
-
 	/**
-	 * @return GoogleMap
-	 */
-	function GoogleMapController() {
-		$this->initiateMap();
-		$this->googleMap->loadGoogleMap();
-		return $this->googleMap;
-	}
-
-	/**
-	 * @return Boolean
-	 */
-	public function HasGoogleMap() {
-		if($this->googleMap && $this->owner->classHasGoogleMap()) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	/**
-	 * @return Form
-	 */
-	function SearchByAddressForm(){
-		return SearchByAddressForm::create($this->owner, "SearchByAddressForm", $this->address);
-	}
-
-	/**
-	 *
+	 * todo: why
 	 * @param DataList $pageDataList
 	 * @param GooglePointDataObject
 	 * @param String $dataObjectTitle
@@ -314,7 +318,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 *
 	 * @return String (XML)
 	 */
-	public function returnMapDataFromAjaxCall($pageDataList = null, $googlePointsDataObject = null, $dataObjectTitle = '', $whereStatementDescription = '') {
+	protected function returnMapDataFromAjaxCall($pageDataList = null, $googlePointsDataObject = null, $dataObjectTitle = '', $whereStatementDescription = '') {
 		if($pageDataList && $googlePointsDataObject) {
 			user_error("for GoogleMapLocationsDOD_Controller::returnMapDataFromAjaxCall you need to set pageDataList or googlePointsDataObject NOT both");
 		}
