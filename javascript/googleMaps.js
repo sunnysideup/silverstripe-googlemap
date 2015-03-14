@@ -24,7 +24,7 @@ var GoogleMapTranslatableUserMessages = {
 	manually_added_point: "manually added point.",
 	points: "points",
 	updating_database: "updating database",
-	dril_a_hole: "drill a hole",
+	drill_a_hole: "drill a hole",
 	found_oposite: "Exact opposite point on earth - goodluck finding your way back...",
 	antipodean_of: "Antipodean of",
 	drag_instructions: "marker can be dragged to new location once this info window has been closed.",
@@ -334,7 +334,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						alert("marker");
 					}
 					else {
-						var latLng = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng(), true);
+						var latLng = new google.maps.LatLng(event.latLng.lat(), event.latLng.lng(), false);
 						GMO.zoomTo(latLng, GMO.mapObject.getZoom() +1);
 					}
 				}
@@ -409,7 +409,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				GMO.mapObject.panTo(latitudeAndlongitude);
 			}
 			else{
-				GMO.mapObject.setCenter(new google.maps.LatLng(latitudeAndlongitude, true));
+				GMO.mapObject.setCenter(new google.maps.LatLng(latitudeAndlongitude, false));
 			}
 		},
 
@@ -542,11 +542,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				m.draggable = false;
 			}
 			var contentString = GMO.retrieveInfoWindowContent(m);
-			var infowindow = new google.maps.InfoWindow(
-				{
-					content: contentString
-				}
-			);
+			var infoWindowSettings = this.opts.infoWindowOptions || {};
+			infoWindowSettings.content = contentString;
+			var infowindow = new google.maps.InfoWindow(infoWindowSettings);
 			google.maps.event.addListener(
 				m,
 				"click",
@@ -683,7 +681,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				);
 				google.maps.event.addListener(m, "clickAntipodean", function() {
 					GMO.mapObject.setZoom(6);
-					var point = GMO.antipodeanPointer(m.getPosition());
+					var position = m.getPosition();
+					var point = GMO.antipodeanPointer(position.lng(), position.lat());
 					var longitude = GMO.checkLongitude(point.lng());
 					var latitude = GMO.checkLatitude(point.lat());
 					var nameString = GMO._t.antipodean_of + " " + m.markerName;
@@ -1158,7 +1157,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				this.layerInfo[currentLayerId].iconUrl = iconUrlCollection;
 				// Shall we zoom to the bounds?
 				if (pointCount > 1) {
-					var latLng = new google.maps.LatLng(this.bounds.getCenter().lat(),  this.bounds.getCenter().lng(), true);
+					var latLng = new google.maps.LatLng(this.bounds.getCenter().lat(),  this.bounds.getCenter().lng(), false);
 					this.zoomTo(latLng, GMO.mapObject.fitBounds(this.bounds));
 					GMO.mapObject.setCenter(this.bounds.getCenter());
 				}
@@ -1919,9 +1918,12 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 
 		/**
 		 * drills hole to the other side of the world from marker clicked on
-		 * @todo test
+		 * @param float lng
+		 * @param float lat
+		 * 
+		 * @return google.maps.LatLng
 		 */
-		antipodeanPointer: function(lat, lng) {
+		antipodeanPointer: function(lng, lat) {
 			var point = {}
 			if(lng > 0) {
 				lng = -180 + lng;
@@ -1931,7 +1933,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			}
 			lat = lat * -1;
 			this.updateStatus("Hole Drilled!");
-			point = new google.maps.LatLng(lat, lng, true)
+			point = new google.maps.LatLng(lat, lng, false)
 			return point;
 		},
 
@@ -2324,7 +2326,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			if(!GMO.map) {
 				GMO.setupMap(mapDivName);
 			}
-			var latLng = new google.maps.LatLng(GMO.opts.defaultLatitude, GMO.opts.defaultLongitude, true);
+			var latLng = new google.maps.LatLng(GMO.opts.defaultLatitude, GMO.opts.defaultLongitude, false);
 			GMO.zoomTo(latLng, GMO.opts.defaultZoom);
 			GMO.mapObject.clearOverlays(GMO.markersArray);
 			if(GMO.opts.mapTypeDefaultZeroToTwo) {

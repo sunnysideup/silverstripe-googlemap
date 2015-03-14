@@ -109,7 +109,7 @@ GoogleMap:
   # INFO WINDOW
   #####################################
 
-  #info window options (see http: #code.google.com/apis/maps/documentation/reference.html for details)
+  #info window options (see http: https://developers.google.com/maps/documentation/javascript/reference#InfoWindowOptions for details)
   info_window_options: "{maxWidth: 280, zoomLevel:17, mapType:G_HYBRID_MAP}"
 
   #add antipodean option (allowing visitors to find the exact opposite point on earth)
@@ -143,7 +143,7 @@ GoogleMap:
 
   add_delete_marker_button: "remove this location"
 
-  #marker options (see http: #code.google.com/apis/maps/documentation/reference.html for details)
+  #marker options (see http: https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions for details)
   marker_options: "{draggable:false,bouncy:true,title: 'click me'}"
 
   preload_images: true

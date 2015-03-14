@@ -620,7 +620,10 @@ class GoogleMap extends ViewableData {
 		$staticMapHeight = $this->GoogleMapHeight();
 		if($staticMapHeight > 512) { $staticMapHeight = 512;}
 		$this->dataPointsStaticMapHTML = "size=".$staticMapWidth."x".$staticMapHeight;
-		$totalCount = $this->googlePointsDataObject->count();
+		$totalCount = 0;
+		if($this->googlePointsDataObject) {
+			$totalCount = $this->googlePointsDataObject->count();
+		}
 		if($totalCount > 0  && $totalCount < 500) {
 			$count = 0;
 			$pointsXml = '';
