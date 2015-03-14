@@ -25,7 +25,7 @@ var GoogleMapTranslatableUserMessages = {
 	points: "points",
 	updating_database: "updating database",
 	drill_a_hole: "drill a hole",
-	found_oposite: "Exact opposite point on earth - goodluck finding your way back...",
+	found_opposite: "Exact opposite point on earth - goodluck finding your way back...",
 	antipodean_of: "Antipodean of",
 	drag_instructions: "marker can be dragged to new location once this info window has been closed.",
 	partial_obscuring: "this marker (partially) obscures the following point(s):",
@@ -387,7 +387,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 */
 		addViewFinder: function(width, height) {
 			var ovSize = new google.maps.Size(width, height);
-			var ovMap = new GOverviewMapControl(ovSize);
+			var ovMap = new google.maps.OverviewMapControlOptions(ovSize);
 			GMO.mapObject.addControl(ovMap);
 			window.setTimeout(
 				function() {
@@ -590,8 +590,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @param Int opacity
 		 * @param String name
 		 * @param String desc
-		 * @todo delete?
-		 */
 		createPolyline: function(points,color,width,opacity,name,desc) {
 			var currentLayerId = this.layerInfo.length - 1;
 			//marker options
@@ -628,7 +626,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @param String name
 		 * @param String desc
 		 * @todo delete?
-		 */
 		createPolygon: function(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc) {
 			var currentLayerId = this.layerInfo.length - 1;
 			//marker options
@@ -652,6 +649,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			this.gmarkers.push(p);
 			return p;
 		},
+		*/ 
 
 		/**
 		 * retrieves html content to display above marker inside and infowindow
@@ -682,11 +680,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				google.maps.event.addListener(m, "clickAntipodean", function() {
 					GMO.mapObject.setZoom(6);
 					var position = m.getPosition();
-					var point = GMO.antipodeanPointer(position.lng(), position.lat());
+					var pointLngLat = GMO.antipodeanPointer(position.lng(), position.lat());
 					var longitude = GMO.checkLongitude(point.lng());
 					var latitude = GMO.checkLatitude(point.lat());
 					var nameString = GMO._t.antipodean_of + " " + m.markerName;
-					var pointLngLat = new google.maps.LatLng(longitude, latitude);
 					var description = GMO._t.found_opposite;
 					var zoom = 3;
 					var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description, longitude, latitude, zoom)
@@ -835,7 +832,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				//tabsHtml.push(new GInfoWindowTab("address", '<div id="infoWindowTab3" class="infoWindowTab"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>'));
 				google.maps.event.addListener(m, "findAddressFromLngLat",
 					function() {
-						GMO.geocoder = new GClientGeocoder();
+						GMO.geocoder = new google.maps.Geocoder();
 						GMO.geocoder.getLocations(
 							m.getLatLng(),
 							function(response) {
@@ -897,40 +894,13 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				var currentLayerId = m.layerId
 				GMO.updateLists();
 			});
-			var tabsHtml = [new GInfoWindowTab("info", html)];
+			//var tabsHtml = [new google.maps.InfoWindowTab("info", html)];//[new GInfoWindowTab("info", html)];
 			//directions and address finder
 			if(pbounds) {
 				GMO.mapObject.openInfoWindowHtml(pbounds.getCenter(),html,options);
 			}
 			else {
 				GMO.mapObject.openInfoWindowHtml(m.getVertex(Math.floor(m.getVertexCount()/2)),html,options);
-			}
-		},
-
-		/**
-		 * preloads the marker images
-		 * @param String desc
-		 * @todo test???
-		 */
-		preLoadMarkerImages: function(desc) {
-			var text = desc;
-			var pattern = /<\s*img/ig;
-			var result;
-			var pattern2 = /src\s*=\s*[\'\"]/;
-			var pattern3 = /[\'\"]/;
-			while ((result = pattern.exec(text)) != null) {
-				var stuff = text.substr(result.index);
-				var result2 = pattern2.exec(stuff);
-				if (result2 != null) {
-					stuff = stuff.substr(result2.index+result2[0].length);
-					var result3 = pattern3.exec(stuff);
-					if (result3 != null) {
-						var imageUrl = stuff.substr(0,result3.index);
-						this.markerImageCollection[this.imageNum] = new Image();
-						this.markerImageCollection[this.imageNum].src = imageUrl;
-						this.imageNum++;
-					}
-				}
 			}
 		},
 
@@ -1099,9 +1069,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						}
 					}
 					// Attempt to preload images
-					if (this.opts.preloadImages) {
-						//this.preLoadMarkerImages(desc);
-					}
 					var coords = placemarks[i].getElementsByTagName("coordinates")[0].childNodes[0].nodeValue;
 					coords=coords.replace(/\s+/g," "); // tidy the whitespace
 					coords=coords.replace(/^ /,"");    // remove possible leading whitespace
@@ -1984,7 +1951,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 */
 		distancePerPixel: function(latLngPoint) {
 			var pixelCoordinates = GMO.mapObject.fromLatLngToDivPixel(latLngPoint);
-			var newPoint = new GPoint(pixelCoordinates.x + 10, pixelCoordinates.y);
+			var newPoint = new google.maps.Point(pixelCoordinates.x + 10, pixelCoordinates.y);
 			var newlatLngPoint = GMO.mapObject.fromDivPixelToLatLng(newPoint);
 			return distance = latLngPoint.distanceFrom(newlatLngPoint)/10;
 		},

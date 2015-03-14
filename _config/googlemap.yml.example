@@ -144,9 +144,7 @@ GoogleMap:
   add_delete_marker_button: "remove this location"
 
   #marker options (see http: https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions for details)
-  marker_options: "{draggable:false,bouncy:true,title: 'click me'}"
-
-  preload_images: true
+  marker_options: "{opacity: 1.0}"
 
 
   #####################################
@@ -156,7 +154,7 @@ GoogleMap:
   default_icon_url: ""
 
   #default Icon Folder - icons need to be name: i1, i2, i3, i4, etc...
-  icon_folder: "googlemap/iamges/icon/"
+  icon_folder: "googlemap/images/icon/"
 
   icon_width: 20
 
