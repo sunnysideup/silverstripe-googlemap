@@ -14,3 +14,4 @@ extras:
 - move all translatable phrases
 - deep remove Save Map Position footer
 - remove all references to preload_images / preloadImages
+
