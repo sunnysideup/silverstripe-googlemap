@@ -151,10 +151,10 @@ GoogleMap:
   # ICON
   #####################################
 
-  default_icon_url: ""
+  default_icon_url: "googlemap/images/icons/i5.png"
 
   #default Icon Folder - icons need to be name: i1, i2, i3, i4, etc...
-  icon_folder: "googlemap/images/icon/"
+  icon_folder: "googlemap/images/icons/"
 
   icon_width: 20
 
