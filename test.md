@@ -15,6 +15,6 @@ extras:
 - deep remove Save Map Position footer
 - remove all references to preload_images / preloadImages
 - deep remove default_address
-
+- deep remove # Direcions in yml etc
 - Nicolaas to research "serach for address" which then shows nearest 'x number' of closest locations
 
