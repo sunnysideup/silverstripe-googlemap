@@ -1463,9 +1463,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			if (GMO.geocoder) {
 				this.updateStatus(GMO._t.search_for_address);
 				this.mapAddress = address;
-				if(this.opts.defaultAddressText) {
-					address += this.opts.defaultAddressText;
-				}
 				GMO.geocoder.geocode( { 'address': address, 'region': countryCode}, function(results, status) {
 					if (status == google.maps.GeocoderStatus.OK) {
 						var result = results[0];

@@ -98,8 +98,7 @@ class GoogleMap extends ViewableData {
 
 	/* ADDRESS FINDER */
 	private static $add_address_finder = false; //MOVE TO SITECONFIG
-	private static $default_country_code = "NZ";
-	private static $default_address_text = " New Zealand"; //MOVE TO SITECONFIG
+	private static $default_country_code = "nz"; // see https://developers.google.com/maps/documentation/geocoding/#RegionCodes
 	private static $number_shown_in_around_me = 7; //MOVE TO SITECONFIG
 
 	/* DIRECTIONS SETTINGS */
@@ -263,7 +262,11 @@ class GoogleMap extends ViewableData {
 	 * what is the user preference?
 	 * @return Boolean
 	 */
-	public function ShowStaticMapFirst() {return (Config::inst()->get("GoogleMap", "show_static_map_first") && !Session::get("StaticMapsOff")) ? true : false;}
+	public function ShowStaticMapFirst() {
+		return (
+			Config::inst()->get("GoogleMap", "show_static_map_first") && !Session::get("StaticMapsOff")
+		) ? true : false;
+	}
 
 
 	/**
@@ -805,7 +808,6 @@ class GoogleMap extends ViewableData {
 					/* ADDRESS FORM */
 					addAddressFinder:'.$this->showFalseOrTrue($this->config()->get("add_address_finder")).',
 					defaultCountryCode:"'.$this->config()->get("default_country_code").'",
-					defaultAddressText:"'.$this->config()->get("DefaultAddressText").'",
 
 					/* DIRECTIONS */
 					styleSheetUrl: "'.$this->config()->get("style_sheet_url").'",

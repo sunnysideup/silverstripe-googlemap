@@ -215,9 +215,8 @@ GoogleMap:
   #provide an address finder helping visitors to enter an address and search for it on the map
   add_address_finder: false
 
+  # see: https://developers.google.com/maps/documentation/geocoding/#RegionCodes
   default_country_code: ""
-
-  default_address_text: ""
 
   number_shown_in_around_me: 7
 
