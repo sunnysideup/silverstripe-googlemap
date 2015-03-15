@@ -363,7 +363,15 @@ class GoogleMap extends ViewableData {
 			if($this->getExtraLayersAsLinks() === null) {
 				$this->extraLayersAsLinks = new ArrayList();
 			}
-			$this->extraLayersAsLinks->push(new ArrayData(array("Title" => $title, "Link" => $link)));
+			$this->extraLayersAsLinks->push(
+				new ArrayData(
+					array(
+						"Title" => $title,
+						"Link" => $link,
+						"MyInstanceName" => $this->MyInstanceName()
+					)
+				)
+			);
 		}
 
 		/**
@@ -613,6 +621,7 @@ class GoogleMap extends ViewableData {
 		$this->dataPointsObjectSet = new ArrayList();
 		$this->loadDefaults();
 		$idArray = array();
+		$bestZoom = $this->Config()->get("default_zoom");
 		//width
 		$staticMapWidth = $this->GoogleMapWidth();
 		if($staticMapWidth > 512) { $staticMapWidth = 512;}
@@ -627,6 +636,8 @@ class GoogleMap extends ViewableData {
 		if($totalCount > 0  && $totalCount < 500) {
 			$count = 0;
 			$pointsXml = '';
+			$averageLatitude = 0;
+			$averageLongitude = 0;
 			$this->dataPointsStaticMapHTML .= '&amp;markers=';
 			if($iconURLForStatic = $this->Config()->get("default_icon_url")) {
 				$this->dataPointsStaticMapHTML .= 'icon:'.urlencode($iconURLForStatic).'|';
@@ -637,15 +648,7 @@ class GoogleMap extends ViewableData {
 				$dataPoint->addParentData();
 				if(!count($this->filteredClassNameArray) || in_array($dataPoint->ClassName, $this->filteredClassNameArray)) {
 					if(!in_array($dataPoint->ID, $idArray)) {
-						if($dataPoint->PointType == "polygon") {
-							$dataLine = '<Polygon><outerBoundaryIs><LinearRing><coordinates>'.$dataPoint->PointString.'</coordinates></LinearRing></outerBoundaryIs></Polygon>';
-						}
-						elseif($dataPoint->PointType == "polyline") {
-							$dataLine = '<LineString><coordinates>'.$dataPoint->PointString.'</coordinates></LineString>';
-						}
-						else {
-							$dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
-						}
+						$dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
 						$link = '';
 						if($dataPoint->Link) {
 							$link = $dataPoint->AjaxInfoWindowLink;
@@ -661,6 +664,7 @@ class GoogleMap extends ViewableData {
 						 $this->dataPointsStaticMapHTML .= '|';
 						}
 						$center = round($dataPoint->Latitude, 6).",".round($dataPoint->Longitude, 6);
+						//get the center IF there is only one point...
 						if(!$count) {
 							$defaultCenter = $center;
 						}
@@ -676,6 +680,8 @@ class GoogleMap extends ViewableData {
 									'<description><![CDATA[ '.$dataPoint->AjaxInfoWindowLink.']]></description>'.
 									'</Placemark>';
 						$this->dataPointsObjectSet->push($dataPoint);
+						$averageLatitude = $dataPoint->Longitude;
+						$averageLongitude = $dataPoint->Latitude;
 						$count++;
 					}
 				}
@@ -684,11 +690,23 @@ class GoogleMap extends ViewableData {
 			if($count == 1) {
 				$this->dataPointsStaticMapHTML .= '&amp;center='.$defaultCenter.'&amp;zoom='.$this->Config()->get("default_zoom");
 			}
+			if($averageLongitude) {
+				$averageLongitude = $averageLongitude / $count;
+			}
+			else {
+				$averageLongitude = $this->config()->get("default_longitude");
+			}
+			if($averageLatitude) {
+				$averageLatitude = $averageLatitude / $count;
+			}
+			else {
+				$averageLatitude = $this->config()->get("default_latitude");
+			}
 			$this->dataPointsXML =
 						'<mapinfo>'.'<title>'.$this->getDataObjectTitle().'</title>'
-						.'<longitude>'.number_format($this->config()->get("default_longitude") - 0 , 12, ".", "").'</longitude>'
-						.'<latitude>'.number_format($this->config()->get("default_latitude") - 0 , 9, ".", "").'</latitude>'
-						.'<zoom>'.$this->Config()->get("default_zoom").'</zoom>'
+						.'<longitude>'.number_format($averageLongitude - 0 , 12, ".", "").'</longitude>'
+						.'<latitude>'.number_format($averageLatitude - 0 , 9, ".", "").'</latitude>'
+						.'<zoom>'.$bestZoom.'</zoom>'
 						.'<pointcount>'.$count.'</pointcount>'
 						.'<info>'.$this->getWhereStatementDescription().'</info>'
 						.'</mapinfo>'
@@ -696,8 +714,8 @@ class GoogleMap extends ViewableData {
 		}
 		else {
 			$this->dataPointsStaticMapHTML .=
-				"&amp;center=".$this->Config()->get("default_latitude").",".$this->Config()->get("default_longitude").
-				"&amp;zoom=".$this->Config()->get("default_zoom");
+				"&amp;center=".$averageLongitude.",".$averageLatitude.
+				"&amp;zoom=".$bestZoom;
 		}
 		$this->dataPointsStaticMapHTML = self::make_static_map_url_into_image(
 			$this->getDataPointsStaticMapHTML(),

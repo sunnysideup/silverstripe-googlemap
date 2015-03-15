@@ -41,6 +41,12 @@ class GoogleMapDataResponse extends Controller {
 
 
 
+	/**
+	 * Default URL handlers - (Action)/(ID)/(OtherID)
+	 */
+	private static $url_handlers = array(
+		'$Action//$OwnerID/$Title/$Longitude/$Latitude/$Filter' => 'handleAction',
+	);
 
 
 	#################
@@ -455,9 +461,14 @@ class GoogleMapDataResponse extends Controller {
 				->where($where)
 				->sort($orderByRadius)
 				->leftJoin("SiteTree_Live", "SiteTree_Live.ID = GoogleMapLocationsObject.ParentID")
-				->limit(GoogleMap::get_number_shown_in_around_me());
+				->limit(Config::inst()->get("GoogleMap", "number_shown_in_around_me"));
 			if($objects->count()) {
-				return $this->makeXMLData(null, $objects, $title, Config::inst()->get("GoogleMap", "number_shown_in_around_me") . " "._t("GoogleMap.CLOSEST_POINTS", "closest points"));
+				return $this->makeXMLData(
+					null,
+					$objects,
+					$title,
+					Config::inst()->get("GoogleMap", "number_shown_in_around_me") . " "._t("GoogleMap.CLOSEST_POINTS", "closest points")
+				);
 			}
 		}
 		return $this->showemptymap($request);

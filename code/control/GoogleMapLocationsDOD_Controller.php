@@ -70,7 +70,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	public function LoadmapLink($page, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
 		return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filter));
 	}
-	
+
 
 	/* ******************************
 	 *  TEMPLATE FUNCTIONS
@@ -105,9 +105,9 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	public function SearchByAddressForm(){
 		return SearchByAddressForm::create($this->owner, "SearchByAddressForm", $this->address);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * add a layer to a Google Map
 	 *
@@ -176,14 +176,22 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	/**
 	 * add an address to the map
 	 * @param String $address
+	 * @param Boolean $addShowAroundAdress
+	 * @param String $filter
 	 */
-	function addAddress($address = '') {
-		if($address) {
-			$this->address = $address;
+	function addAddress($address, $addShowAroundAdress = false, $filter = "") {
+		if($addShowAroundAdress) {
+			$pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
+			if($pointArray) {
+				$title = $pointArray["FullAddress"];
+				$lng = $pointArray["Longitude"];
+				$lat = $pointArray["Latitude"];
+				$this->addMap("showaroundmexml", $title, $lng, $lat, $filter );
+			}
 		}
-		$this->initiateMap();
-		if(!$this->address) {
-			user_error("No address could be added.", E_USER_ERROR);
+		else {
+			$this->address = $address;
+			$this->initiateMap();
 		}
 	}
 
