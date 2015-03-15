@@ -199,24 +199,22 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param String $updateServerUrlAddPoint
 	 */
 	function addUpdateServerUrlAddressSearchPoint($updateServerUrlAddPoint = "/googlemap/showaroundmexml/") {
-		$this->initiateMap();
-		$this->googleMap->setUpdateServerUrlAddressSearchPoint($updateServerUrlAddPoint);
+		$link = Controller::join_links($updateServerUrlAddPoint, $this->owner->ID);
+		$this->googleMap->setUpdateServerUrlAddressSearchPoint($link);
 	}
 
 	/**
 	 * @param String $updateServerUrlDragend
 	 */
 	function addUpdateServerUrlDragend($updateServerUrlDragend = "googlemap/updatemexml/") {
-		$this->initiateMap();
-		$UpdateServerUrlDragend .= $this->owner->ID.'/';
-		$this->googleMap->setUpdateServerUrlDragend($updateServerUrlDragend);
+		$link = Controller::join_links($UpdateServerUrlDragend, $this->owner->ID);;
+		$this->googleMap->setUpdateServerUrlDragend($link);
 	}
 
 	/**
 	 * make the map editable
 	 */
 	function addAllowAddingAndDeletingPoints() {
-		$this->initiateMap();
 		$this->googleMap->AllowAddPointsToMap();
 	}
 
@@ -304,12 +302,13 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 *
 	 * @return String
 	 */
-	protected function getLinkForData($pageID, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
-		if($lng && $lat) {
-			$linkForData = "googlemapextensive/".$action."/".$pageID."/".urlencode($title)."/".$lng."/".$lat."/";
+	protected function getLinkForData($pageID = 0, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+		if(!$pageID) {
+			$pageID = $this->owner->ID;
 		}
-		else {
-			$linkForData = "googlemap/".$action."/".$this->owner->ID."/".urlencode($title)."/";
+		$linkForData = "googlemap/".$action."/".$pageID."/".urlencode($title)."/";
+		if($lng && $lat) {
+			$linkForData .= $lng."/".$lat."/";
 		}
 		if($filter) {
 			$linkForData .= urlencode($filter)."/";

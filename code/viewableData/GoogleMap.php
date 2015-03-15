@@ -625,6 +625,8 @@ class GoogleMap extends ViewableData {
 		$this->loadDefaults();
 		$idArray = array();
 		$bestZoom = $this->Config()->get("default_zoom");
+		$averageLatitude = 0;
+		$averageLongitude = 0;
 		//width
 		$staticMapWidth = $this->GoogleMapWidth();
 		if($staticMapWidth > 512) { $staticMapWidth = 512;}
@@ -639,8 +641,6 @@ class GoogleMap extends ViewableData {
 		if($totalCount > 0  && $totalCount < 500) {
 			$count = 0;
 			$pointsXml = '';
-			$averageLatitude = 0;
-			$averageLongitude = 0;
 			$this->dataPointsStaticMapHTML .= '&amp;markers=';
 			if($iconURLForStatic = $this->Config()->get("default_icon_url")) {
 				$this->dataPointsStaticMapHTML .= 'icon:'.urlencode($iconURLForStatic).'|';
@@ -693,16 +693,10 @@ class GoogleMap extends ViewableData {
 			if($count == 1) {
 				$this->dataPointsStaticMapHTML .= '&amp;center='.$defaultCenter.'&amp;zoom='.$this->Config()->get("default_zoom");
 			}
-			if($averageLongitude) {
-				$averageLongitude = $averageLongitude / $count;
-			}
-			else {
+			if(!$averageLongitude) {
 				$averageLongitude = $this->config()->get("default_longitude");
 			}
-			if($averageLatitude) {
-				$averageLatitude = $averageLatitude / $count;
-			}
-			else {
+			if(!$averageLatitude) {
 				$averageLatitude = $this->config()->get("default_latitude");
 			}
 			$this->dataPointsXML =
@@ -716,6 +710,18 @@ class GoogleMap extends ViewableData {
 						.$pointsXml;
 		}
 		else {
+			if($averageLongitude) {
+				$averageLongitude = $averageLongitude / $count;
+			}
+			else {
+				$averageLongitude = $this->config()->get("default_longitude");
+			}
+			if($averageLatitude) {
+				$averageLatitude = $averageLatitude / $count;
+			}
+			else {
+				$averageLatitude = $this->config()->get("default_latitude");
+			}
 			$this->dataPointsStaticMapHTML .=
 				"&amp;center=".$averageLongitude.",".$averageLatitude.
 				"&amp;zoom=".$bestZoom;

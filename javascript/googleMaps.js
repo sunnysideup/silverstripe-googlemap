@@ -650,7 +650,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			this.gmarkers.push(p);
 			return p;
 		},
-		*/ 
+		*/
 
 		/**
 		 * retrieves html content to display above marker inside and infowindow
@@ -1502,7 +1502,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description);
 			GMO.processXml(xmlSheet);
 			GMO.updateStatus(GMO._t.address_found + ": " + description);
-			var serverURL = GMO.opts.updateServerUrlAddressSearchPoint+ "1/" + encodeURIComponent(description) + place.lng() + "/" + place.lat() + "/";
+			var serverURL = GMO.opts.updateServerUrlAddressSearchPoint + encodeURIComponent(description) + "/" + place.lng() + "/" + place.lat() + "/";
 			GMO.addLayer(serverURL);
 			return true;
 		},
@@ -1885,7 +1885,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * drills hole to the other side of the world from marker clicked on
 		 * @param float lng
 		 * @param float lat
-		 * 
+		 *
 		 * @return google.maps.LatLng
 		 */
 		antipodeanPointer: function(lng, lat) {
