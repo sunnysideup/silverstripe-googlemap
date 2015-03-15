@@ -482,7 +482,7 @@ class GoogleMap extends ViewableData {
 	/**
 	 * @var String
 	 */
-	protected $updateServerUrlAddressSearchPoint = "";
+	protected $updateServerUrlAddressSearchPoint = "/googlemap/showaroundmexml/";
 		public function setUpdateServerUrlAddressSearchPoint($v) {$this->updateServerUrlAddressSearchPoint = Director::absoluteBaseURL().$v;}
 		public function getUpdateServerURLAddressSearchPoint() {return $this->updateServerUrlAddressSearchPoint;}
 

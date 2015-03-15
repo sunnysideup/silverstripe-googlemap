@@ -14,4 +14,7 @@ extras:
 - move all translatable phrases
 - deep remove Save Map Position footer
 - remove all references to preload_images / preloadImages
+- deep remove default_address
+
+- Nicolaas to research "serach for address" which then shows nearest 'x number' of closest locations
 

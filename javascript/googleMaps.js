@@ -402,6 +402,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @param latitudeAndlongitude
 		 * @param Int zoom
 		 * @todo make public
+		 * @todo turn latitudeAndlongitude into two variables!
 		 */
 		zoomTo: function(latitudeAndlongitude, zoom) {
 			if(zoom && latitudeAndlongitude) {
@@ -1465,14 +1466,19 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				this.mapAddress = address;
 				GMO.geocoder.geocode( { 'address': address, 'region': countryCode}, function(results, status) {
 					if (status == google.maps.GeocoderStatus.OK) {
+						console.debug(results);
 						var result = results[0];
+						GMO.addAddressToMap(result);
 						GMO.mapObject.setCenter(result.geometry.location);
+						/*
 						var marker = GMO.addPoint(
 							result.geometry.location, //latLng
 							result.formatted_address, //address string
 							GMO._t.added_position //description
 						);
-					} else {
+						*/
+					}
+					else {
 						alert("Geocode was not successful for the following reason: " + status);
 					}
 				});
@@ -1488,22 +1494,17 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @param HTTP Response response
 		 * @todo test???
 		 */
-		addAddressToMap: function(response) {
-			if (!response || response.Status.code != 200) {
-				GMO.updateStatus(GMO._t.address_not_found);
-			}
-			else {
-				place = response.Placemark[0];
-				var pointLngLat = new google.maps.LatLng(place.Point.coordinates[0],  place.Point.coordinates[1]);
-				var nameString = GMO._t.address_search + ": " + GMO.mapAddress;
-				var description = place.address;
-				var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description);
-				GMO.processXml(xmlSheet);
-				GMO.updateStatus(GMO._t.address_found + ": " + description);
-				var serverURL = GMO.opts.updateServerUrlAddPoint+"&x=" + place.Point.coordinates[0] + "&y=" + place.Point.coordinates[1]
-				GMO.addLayer(serverURL);
-				return true;
-			}
+		addAddressToMap: function(firstResponseObject) {
+			place = firstResponseObject.geometry.location;
+			var pointLngLat = new google.maps.LatLng(place.lat(),  place.lng());
+			var nameString = GMO._t.address_search + ": " + GMO.mapAddress;
+			var description = place.formatted_address;
+			var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description);
+			GMO.processXml(xmlSheet);
+			GMO.updateStatus(GMO._t.address_found + ": " + description);
+			var serverURL = GMO.opts.updateServerUrlAddressSearchPoint+ "1/" + encodeURIComponent(description) + place.lng() + "/" + place.lat() + "/";
+			GMO.addLayer(serverURL);
+			return true;
 		},
 
 		/**
