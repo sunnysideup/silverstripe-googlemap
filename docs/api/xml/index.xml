@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<index xmlns="http://xml.phpdox.net/src" basedir="/var/www/_modules/googlemap/trunk">
+  <namespace name="">
+    <class name="GetLatLngFromGoogleUsingAddress" src="code/converters/GetLatLngFromGoogleUsingAddress.php" description="Geocode an address-string to a set of coordinates using Google's free geocoding services." xml="classes/GetLatLngFromGoogleUsingAddress.xml"/>
+    <class name="Services_JSON" src="code/converters/thirdparty/Services_JSON.php" description="Converts to and from JSON format." xml="classes/Services_JSON.xml"/>
+    <class name="Services_JSON_Error" src="code/converters/thirdparty/Services_JSON.php" xml="classes/Services_JSON_Error.xml"/>
+    <class name="BatchGeoAddressConverter" src="code/converters/BatchGeoAddressConverter.php" description="here is some old code that maybe of use." xml="classes/BatchGeoAddressConverter.xml"/>
+    <class name="StaticMapSaverForHTTPS" src="code/converters/StaticMapSaverForHTTPS.php" description="save a map to a local file." xml="classes/StaticMapSaverForHTTPS.xml"/>
+    <class name="GoogleMapDataResponse" src="code/control/GoogleMapDataResponse.php" description="a controller that returns the Google Map You can show one point by adding ?i=123 Where 123 is the ID of a GoogleMapLocationsObject" xml="classes/GoogleMapDataResponse.xml"/>
+    <class name="GoogleMapLocationsDOD_Controller" src="code/control/GoogleMapLocationsDOD_Controller.php" description="Adds functions to a Page_Controller to action a map." xml="classes/GoogleMapLocationsDOD_Controller.xml"/>
+    <class name="GoogleMapSearchRecord" src="code/model/GoogleMapSearchRecord.php" xml="classes/GoogleMapSearchRecord.xml"/>
+    <class name="GetLatLngFromGoogleUsingAddressSearchRecord" src="code/model/GetLatLngFromGoogleUsingAddressSearchRecord.php" xml="classes/GetLatLngFromGoogleUsingAddressSearchRecord.xml"/>
+    <class name="GoogleMapLocationsObject" src="code/model/GoogleMapLocationsObject.php" description="Map Location Object onBeforeWrite, it automagically adds all the details." xml="classes/GoogleMapLocationsObject.xml"/>
+    <class name="GoogleMapSiteConfigDOD" src="code/decorator/GoogleMapSiteConfigDOD.php" xml="classes/GoogleMapSiteConfigDOD.xml"/>
+    <class name="GoogleMapLocationsDOD" src="code/decorator/GoogleMapLocationsDOD.php" description="add to sitetree" xml="classes/GoogleMapLocationsDOD.xml"/>
+    <class name="SearchByAddressForm" src="code/forms/SearchByAddressForm.php" xml="classes/SearchByAddressForm.xml"/>
+    <class name="AddressFinderField" src="code/forms/AddressFinderField.php" description="Enter an address and check that it is correct ..." xml="classes/AddressFinderField.xml"/>
+    <class name="GoogleMap" src="code/viewableData/GoogleMap.php" description="This is the basic engine for the Google Map" xml="classes/GoogleMap.xml"/>
+  </namespace>
+</index>

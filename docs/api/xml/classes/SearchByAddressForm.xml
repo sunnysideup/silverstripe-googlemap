@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="SearchByAddressForm" namespace="" name="SearchByAddressForm" abstract="false" final="false" start="3" end="123">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/forms" file="SearchByAddressForm.php" realpath="/var/www/_modules/googlemap/trunk/code/forms/SearchByAddressForm.php" size="3804" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="3bd70cea98112ab093a43e3e939e1a29782bce19" relative="code/forms/SearchByAddressForm.php"/>
+  <extends full="Form" namespace="" name="Form"/>
+  <member name="defaultAddress" type="string" default="&quot;&quot;" visibility="protected" line="10">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setDefaultAddress" start="16" end="16" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="String" namespace="" name="String"/>
+      </param>
+    </docblock>
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <member name="classNamesSearchedFor" type="array" visibility="protected" line="22">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setClassNamesSearchedFor" start="28" end="28" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </param>
+    </docblock>
+    <parameter name="a" byreference="false" type="{unknown}"/>
+  </method>
+  <member name="displayPage" type="{unknown}" default="null" visibility="protected" line="35">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="SiteTree" namespace="" name="SiteTree"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setDisplayPage" start="42" end="42" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SiteTree" namespace="" name="SiteTree"/>
+      </param>
+    </docblock>
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <constructor name="__construct" start="55" end="79" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object" variable="$controller">
+        <type full="Controller" namespace="" name="Controller"/>
+      </param>
+      <param type="object" variable="$name">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <param type="object" variable="$classNamesSearchedFor">
+        <type full="Array" namespace="" name="Array"/>
+      </param>
+      <param type="object" variable="$defaultAddress">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <param type="object" variable="$displayPage">
+        <type full="SiteTree" namespace="" name="SiteTree"/>
+      </param>
+      <return type="object">
+        <type full="Form" namespace="" name="Form"/>
+      </return>
+    </docblock>
+    <parameter name="controller" byreference="false" type="{unknown}"/>
+    <parameter name="name" byreference="false" type="{unknown}"/>
+    <parameter name="defaultAddress" byreference="false" type="string" default="&quot;&quot;"/>
+    <parameter name="classNamesSearchedFor" byreference="false" type="array"/>
+    <parameter name="displayPage" byreference="false" type="{unknown}" default="null"/>
+  </constructor>
+  <method name="findnearaddress" start="81" end="121" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="data" byreference="false" type="{unknown}"/>
+    <parameter name="form" byreference="false" type="{unknown}"/>
+    <inline>
+      <comment value="$form-&gt;Fields()-&gt;fieldByName(&quot;Address&quot;)-&gt;setValue($pointArray[&quot;address&quot;]); //does not work ...." line="103"/>
+      <comment value="$this-&gt;owner-&gt;addMap($action = &quot;showsearchpoint&quot;, &quot;Your search&quot;, $lng, $lat);" line="104"/>
+    </inline>
+  </method>
+</class>

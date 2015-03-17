@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="AddressFinderField" namespace="" name="AddressFinderField" abstract="false" final="false" start="7" end="42">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/forms" file="AddressFinderField.php" realpath="/var/www/_modules/googlemap/trunk/code/forms/AddressFinderField.php" size="1129" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="92337940c7ef1bc7a606cce51cae0ca026986565" relative="code/forms/AddressFinderField.php"/>
+  <docblock>
+    <description compact="Enter an address and check that it is correct ..."/>
+    <package value="forms"/>
+    <subpackage value="fields-formattedinput"/>
+  </docblock>
+  <extends full="TextField" namespace="" name="TextField"/>
+  <member name="_address_array" type="{unknown}" default="null" visibility="private" line="9"/>
+  <method name="getAddressArray" start="16" end="26" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="returns false if the address can not be found and TRUE if the address can be found..."/>
+      <return description="| Array" type="object">
+        <type full="False" namespace="" name="False"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="validate" start="28" end="41" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="validator" byreference="false" type="{unknown}"/>
+  </method>
+</class>

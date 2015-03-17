@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>phpDox - GoogleMapLocationsObject</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" media="screen"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  </head>
+  <body>
+    <nav class="topnav">
+      <ul>
+        <li>
+          <div class="logo"><span>/**</span>phpDox</div>
+        </li>
+        <li class="separator">
+          <a href="../index.xhtml">Overview</a>
+        </li>
+        <li class="separator">
+          <a href="../namespaces.xhtml">Namespaces</a>
+        </li>
+        <li>
+          <a href="../classes.xhtml">Classes</a>
+        </li>
+        <li class="separator">
+          <a href="../source/index.xhtml">Source</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="mainstage">
+      <div class="box">
+        <ul class="breadcrumb">
+          <li>
+            <a href="../index.xhtml">Overview</a>
+          </li>
+          <li class="separator">
+            <a href="../classes.xhtml">Classes</a>
+          </li>
+          <li class="separator">GoogleMapLocationsObject</li>
+        </ul>
+      </div>
+      <nav class="box">
+        <ul>
+          <li>
+            <a href="#introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#synopsis">Synopsis</a>
+          </li>
+          <li>
+            <a href="#hierarchy">Hierarchy</a>
+          </li>
+          <li>
+            <a href="#members">Members</a>
+          </li>
+          <li>
+            <a href="#methods">Methods</a>
+          </li>
+          <li>
+            <a href="../source/code/model/GoogleMapLocationsObject.php.xhtml#line9">Source</a>
+          </li>
+        </ul>
+      </nav>
+      <section>
+        <h1 id="introduction"><small>\</small>GoogleMapLocationsObject</h1>
+        <h4>Map Location Object onBeforeWrite, it automagically adds all the details.</h4>
+        <p/>
+        <ul/>
+        <h2 id="synopsis">Synopsis</h2>
+        <div class="synopsis">class GoogleMapLocationsObject
+                extends <a title="DataObject" href="../classes/DataObject.xhtml">DataObject</a>
+            {<br/><ul class="none"><li>// members</li><li>private array <a href="#members">$parent_point_counts</a>;
+                    </li><li>private array <a href="#members">$db</a>;
+                    </li><li>private array <a href="#members">$summary_fields</a>;
+                    </li><li>private array <a href="#members">$has_one</a>;
+                    </li><li>private array <a href="#members">$indexes</a>;
+                    </li><li>private array <a href="#members">$field_labels</a>;
+                    </li><li>private array <a href="#members">$casting</a>;
+                    </li></ul><ul class="none"><li>// methods</li><li>public static String <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/radiusDefinition.xhtml">radiusDefinition</a>()
+                    </li><li>public static void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/radiusDefinitionOtherTable.xhtml">radiusDefinitionOtherTable</a>()
+                    </li><li>public static void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/pointExists.xhtml">pointExists</a>()
+                    </li><li>public void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getCMSFields.xhtml">getCMSFields</a>()
+                    </li><li>public SiteTree <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getParentData.xhtml">getParentData</a>()
+                    </li><li>public String <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getAjaxInfoWindowLink.xhtml">getAjaxInfoWindowLink</a>()
+                    </li><li>public String <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getParentClassName.xhtml">getParentClassName</a>()
+                    </li><li>public String <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getLink.xhtml">getLink</a>()
+                    </li><li>public void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/addParentData.xhtml">addParentData</a>()
+                    </li><li>public void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/onBeforeWrite.xhtml">onBeforeWrite</a>()
+                    </li><li>protected void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/completePoints.xhtml">completePoints</a>()
+                    </li><li>public this <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/findGooglePointsAndWriteIfFound.xhtml">findGooglePointsAndWriteIfFound</a>()
+                    </li><li>protected void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/findGooglePoints.xhtml">findGooglePoints</a>()
+                    </li><li>protected void <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/addDataFromArray.xhtml">addDataFromArray</a>()
+                    </li></ul>
+
+            }<br/></div>
+        <h2 id="hierarchy">Hierarchy</h2>
+        <div class="styled">
+          <h4>Extends</h4>
+          <ul>
+            <li>
+              <a href="../classes/DataObject.xhtml">DataObject</a>
+            </li>
+          </ul>
+        </div>
+        <h2 id="members">Members</h2>
+        <div class="styled members">
+          <h4>private</h4>
+          <ul class="members">
+            <li id="casting">
+              <strong>$casting</strong>
+            </li>
+            <li id="db">
+              <strong>$db</strong>
+            </li>
+            <li id="field_labels">
+              <strong>$field_labels</strong>
+            </li>
+            <li id="has_one">
+              <strong>$has_one</strong>
+            </li>
+            <li id="indexes">
+              <strong>$indexes</strong>
+            </li>
+            <li id="parent_point_counts">
+              <strong>$parent_point_counts</strong>
+            </li>
+            <li id="summary_fields">
+              <strong>$summary_fields</strong>
+            </li>
+          </ul>
+        </div>
+        <h2 id="methods">Methods</h2>
+        <div class="styled">
+          <h4>protected</h4>
+          <ul>
+            <li id="addDataFromArray">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/addDataFromArray.xhtml">addDataFromArray()</a>
+            </li>
+            <li id="completePoints"><a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/completePoints.xhtml">completePoints()</a>
+                — complete points data</li>
+            <li id="findGooglePoints">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/findGooglePoints.xhtml">findGooglePoints()</a>
+            </li>
+          </ul>
+          <h4>public</h4>
+          <ul>
+            <li id="addParentData"><a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/addParentData.xhtml">addParentData()</a>
+                — add data from Parent to the object</li>
+            <li id="findGooglePointsAndWriteIfFound">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/findGooglePointsAndWriteIfFound.xhtml">findGooglePointsAndWriteIfFound()</a>
+            </li>
+            <li id="getAjaxInfoWindowLink">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getAjaxInfoWindowLink.xhtml">getAjaxInfoWindowLink()</a>
+            </li>
+            <li id="getCMSFields">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getCMSFields.xhtml">getCMSFields()</a>
+            </li>
+            <li id="getLink">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getLink.xhtml">getLink()</a>
+            </li>
+            <li id="getParentClassName">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getParentClassName.xhtml">getParentClassName()</a>
+            </li>
+            <li id="getParentData">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/getParentData.xhtml">getParentData()</a>
+            </li>
+            <li id="onBeforeWrite">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/onBeforeWrite.xhtml">onBeforeWrite()</a>
+            </li>
+            <li id="pointExists">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/pointExists.xhtml">pointExists()</a>
+            </li>
+            <li id="radiusDefinition"><a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/radiusDefinition.xhtml">radiusDefinition()</a>
+                — Provides MySQL snippet to work out distance between GoogleMapLocationsObject and location The method returns a string for use in queries The query snippet returns the distance between the GoogleMapLocationsObject and the latitude and longitude provided NOTE: 6378.137 is the radius of the earth in kilometers</li>
+            <li id="radiusDefinitionOtherTable">
+              <a title="GoogleMapLocationsObject" href="../classes/GoogleMapLocationsObject/radiusDefinitionOtherTable.xhtml">radiusDefinitionOtherTable()</a>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <footer>
+      <span/>
+    </footer>
+  </body>
+</html>

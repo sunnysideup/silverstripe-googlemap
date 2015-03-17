@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="GoogleMapSearchRecord" namespace="" name="GoogleMapSearchRecord" abstract="false" final="false" start="4" end="49">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/model" file="GoogleMapSearchRecord.php" realpath="/var/www/_modules/googlemap/trunk/code/model/GoogleMapSearchRecord.php" size="1264" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="3c0d53fae199d125e7d22a8f7d3e7bc68e207953" relative="code/model/GoogleMapSearchRecord.php"/>
+  <extends full="DataObject" namespace="" name="DataObject"/>
+  <member name="db" type="array" visibility="private" line="6"/>
+  <member name="has_one" type="array" visibility="private" line="11"/>
+  <method name="create_new" start="17" end="37" abstract="false" final="false" static="true" visibility="public">
+    <parameter name="searchedFor" byreference="false" type="{unknown}"/>
+    <parameter name="parentID" byreference="false" type="integer" default="0"/>
+    <parameter name="addGoogleMapLocationsObjectOrItsID" byreference="false" type="{unknown}" default="false"/>
+  </method>
+  <method name="onBeforeWrite" start="40" end="47" abstract="false" final="false" static="false" visibility="public"/>
+</class>

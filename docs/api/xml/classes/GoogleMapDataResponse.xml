@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="GoogleMapDataResponse" namespace="" name="GoogleMapDataResponse" abstract="false" final="false" start="39" end="608">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/control" file="GoogleMapDataResponse.php" realpath="/var/www/_modules/googlemap/trunk/code/control/GoogleMapDataResponse.php" size="15112" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="b0f9534b484310d3e73f09c1aaa5cadfe10598d1" relative="code/control/GoogleMapDataResponse.php"/>
+  <docblock>
+    <description compact="a controller that returns the Google Map You can show one point by adding ?i=123 Where 123 is the ID of a GoogleMapLocationsObject">returns Data For Map ....
+
+HERE are the options
+======================
+
+'turnonstaticmaps' =&gt; start with static maps
+
+'turnoffstaticmaps' =&gt; go straight to interactive maps
+
+'showemptymap' =&gt; map without anything on it, fallback
+
+'showpagepointsmapxml' =&gt; show points from the current page
+
+'showchildpointsmapxml' =&gt; show points from the child pages
+
+'showsearchpoint' =&gt;
+
+'showcustompagesmapxml' =&gt;
+
+'showcustomdosmapxml' =&gt;
+
+'showdataobjects' =&gt;
+
+'updatemexml' =&gt;
+
+'showaroundmexml' =&gt;
+
+'showpointbyid' =&gt;</description>
+  </docblock>
+  <extends full="Controller" namespace="" name="Controller"/>
+  <method name="add_custom_google_map_session_data" start="53" end="57" abstract="false" final="false" static="true" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object" variable="$addCustomGoogleMapArrayNEW">
+        <type full="Array" namespace="" name="Array"/>
+      </param>
+    </docblock>
+    <parameter name="addCustomGoogleMapArrayNEW" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="set_custom_google_map_session_data" start="63" end="68" abstract="false" final="false" static="true" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object" variable="$addCustomGoogleMapArray">
+        <type full="Array" namespace="" name="Array"/>
+      </param>
+    </docblock>
+    <parameter name="addCustomGoogleMapArray" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="get_custom_google_map_session_data" start="74" end="88" abstract="false" final="false" static="true" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </return>
+    </docblock>
+  </method>
+  <member name="allowed_actions" type="array" visibility="private" line="103">
+    <docblock>
+      <description/>
+      <inherited/>
+    </docblock>
+  </member>
+  <member name="actions_without_owner" type="array" visibility="private" line="121">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="owner" type="{unknown}" default="null" visibility="protected" line="131">
+    <docblock>
+      <description compact="The Page that is displaying the"/>
+      <var type="object">
+        <type full="SiteTree" namespace="" name="SiteTree"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="lng" type="integer" default="0" visibility="protected" line="136">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="Float" namespace="" name="Float"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="lat" type="integer" default="0" visibility="protected" line="141">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="Float" namespace="" name="Float"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="title" type="string" default="&quot;&quot;" visibility="protected" line="146">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="sessionTitle" type="string" default="&quot;&quot;" visibility="protected" line="151">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="filter" type="string" default="&quot;&quot;" visibility="protected" line="156">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="map" type="{unknown}" default="null" visibility="protected" line="161">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="GoogleMap" namespace="" name="GoogleMap"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="init" start="177" end="215" abstract="false" final="false" static="false" visibility="public">
+    <inline>
+      <comment value="user_error(&quot;no owner has been identified for GoogleMapDataResponse&quot;, E_USER_NOTICE);" line="203"/>
+      <comment value="END HACK" line="206"/>
+    </inline>
+  </method>
+  <method name="setOwner" start="220" end="220" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="String" namespace="" name="String"/>
+      </param>
+    </docblock>
+    <parameter name="owner" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="setTitle" start="225" end="225" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="String" namespace="" name="String"/>
+      </param>
+    </docblock>
+    <parameter name="title" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="setLng" start="230" end="230" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="Float" namespace="" name="Float"/>
+      </param>
+    </docblock>
+    <parameter name="lng" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="setLat" start="235" end="235" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="Float" namespace="" name="Float"/>
+      </param>
+    </docblock>
+    <parameter name="lat" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="setFilter" start="240" end="240" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="String" namespace="" name="String"/>
+      </param>
+    </docblock>
+    <parameter name="filter" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="index" start="261" end="263" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="turnonstaticmaps" start="270" end="273" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="turnoffstaticmaps" start="280" end="283" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="showemptymap" start="290" end="292" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="showpagepointsmapxml" start="299" end="305" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="showchildpointsmapxml" start="312" end="317" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="showsearchpoint" start="324" end="342" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="showpointbyid" start="349" end="354" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="showcustompagesmapxml" start="363" end="378" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="load data from session"/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+    <inline>
+      <comment value="print_r($array);" line="369"/>
+    </inline>
+  </method>
+  <method name="showcustomdosmapxml" start="387" end="404" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="load a custom set of GoogleMapLocationsObjects"/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+    <inline>
+      <comment value="print_r($array);" line="393"/>
+    </inline>
+  </method>
+  <method name="showaroundmexml" start="413" end="464" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="Show what is around my points"/>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="updatemexml" start="482" end="544" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="URL must contain for GET variables i - ID of owner a - action x - lng y - lat">actions are:
+  - add
+  - move
+  - remove</description>
+      <param type="object">
+        <type full="SS_HTTPRequest" namespace="" name="SS_HTTPRequest"/>
+      </param>
+      <return description="(message)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="request" byreference="false" type="{unknown}"/>
+    <inline>
+      <comment value="we use request here, because the data comes from javascript!" line="483"/>
+    </inline>
+  </method>
+  <method name="GoogleMapController" start="559" end="564" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="GoogleMap" namespace="" name="GoogleMap"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="makeXMLData" start="581" end="606" abstract="false" final="false" static="false" visibility="protected">
+    <docblock>
+      <description/>
+      <return description="(XML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="PageDataObjectSet" byreference="false" type="{unknown}" default="null"/>
+    <parameter name="GooglePointsDataObject" byreference="false" type="{unknown}" default="null"/>
+    <parameter name="dataObjectTitle" byreference="false" type="string" default="''"/>
+    <parameter name="whereStatementDescription" byreference="false" type="string" default="''"/>
+    <inline>
+      <comment value="$this-&gt;dataPointsXML = $data[1];" line="597"/>
+    </inline>
+  </method>
+</class>

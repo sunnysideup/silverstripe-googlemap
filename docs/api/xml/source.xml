@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<source xmlns="http://xml.phpdox.net/src">
+  <dir name="/var/www/_modules/googlemap/trunk">
+    <file name="_config.php" size="428" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="831c4be364de502942bf12cc5ce1988a27d0b87a" xml="tokens/_config.php.xml"/>
+    <dir name="code">
+      <dir name="converters">
+        <file name="GetLatLngFromGoogleUsingAddress.php" size="10454" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="1ed942a7df4a1ed43e3bb13d7f5b376267176765" xml="tokens/code/converters/GetLatLngFromGoogleUsingAddress.php.xml"/>
+        <dir name="thirdparty">
+          <file name="Services_JSON.php" size="34784" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="b08ffb3c54cc5306c25f466e5db4d7f840e09a6a" xml="tokens/code/converters/thirdparty/Services_JSON.php.xml"/>
+        </dir>
+        <file name="BatchGeoAddressConverter.php" size="1363" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="fa054c8bd8e9a6a1f2d9cd5dc38bb7787b8223b4" xml="tokens/code/converters/BatchGeoAddressConverter.php.xml"/>
+        <file name="StaticMapSaverForHTTPS.php" size="635" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="ec00cc998a747a96b4157d96652483a641cb283f" xml="tokens/code/converters/StaticMapSaverForHTTPS.php.xml"/>
+      </dir>
+      <dir name="control">
+        <file name="GoogleMapDataResponse.php" size="15112" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="b0f9534b484310d3e73f09c1aaa5cadfe10598d1" xml="tokens/code/control/GoogleMapDataResponse.php.xml"/>
+        <file name="GoogleMapLocationsDOD_Controller.php" size="8536" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="ef8c992166954fe39a4b94f9d87cd9ab9c549403" xml="tokens/code/control/GoogleMapLocationsDOD_Controller.php.xml"/>
+      </dir>
+      <dir name="model">
+        <file name="GoogleMapSearchRecord.php" size="1264" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="3c0d53fae199d125e7d22a8f7d3e7bc68e207953" xml="tokens/code/model/GoogleMapSearchRecord.php.xml"/>
+        <file name="GetLatLngFromGoogleUsingAddressSearchRecord.php" size="183" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="1627cd3b6af01060039acf8df6683766db01b99e" xml="tokens/code/model/GetLatLngFromGoogleUsingAddressSearchRecord.php.xml"/>
+        <file name="GoogleMapLocationsObject.php" size="10942" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="da7d7a662df509856a4a41e22f130d7522e976bf" xml="tokens/code/model/GoogleMapLocationsObject.php.xml"/>
+      </dir>
+      <dir name="decorator">
+        <file name="GoogleMapSiteConfigDOD.php" size="282" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="dabe63a0829173e9e513252fb95ee1d307e00402" xml="tokens/code/decorator/GoogleMapSiteConfigDOD.php.xml"/>
+        <file name="GoogleMapLocationsDOD.php" size="3469" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="79dd3fb83e41c31f09c3e7dfb242119f5fa77e8f" xml="tokens/code/decorator/GoogleMapLocationsDOD.php.xml"/>
+      </dir>
+      <dir name="forms">
+        <file name="SearchByAddressForm.php" size="3804" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="3bd70cea98112ab093a43e3e939e1a29782bce19" xml="tokens/code/forms/SearchByAddressForm.php.xml"/>
+        <file name="AddressFinderField.php" size="1129" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="92337940c7ef1bc7a606cce51cae0ca026986565" xml="tokens/code/forms/AddressFinderField.php.xml"/>
+      </dir>
+      <dir name="viewableData">
+        <file name="GoogleMap.php" size="28683" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="f5cdd92c7610760aa5aab33f2b922e2a7184601c" xml="tokens/code/viewableData/GoogleMap.php.xml"/>
+      </dir>
+    </dir>
+  </dir>
+</source>

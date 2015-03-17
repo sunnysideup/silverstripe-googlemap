@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="GetLatLngFromGoogleUsingAddress" namespace="" name="GetLatLngFromGoogleUsingAddress" abstract="false" final="false" start="19" end="290">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/converters" file="GetLatLngFromGoogleUsingAddress.php" realpath="/var/www/_modules/googlemap/trunk/code/converters/GetLatLngFromGoogleUsingAddress.php" size="10454" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="1ed942a7df4a1ed43e3bb13d7f5b376267176765" relative="code/converters/GetLatLngFromGoogleUsingAddress.php"/>
+  <docblock>
+    <description compact="Geocode an address-string to a set of coordinates using Google's free geocoding services.">see: http://code.google.com/apis/maps/documentation/geocoding/index.html
+
+CHECKS IF CURL / file_get_contents is available
+Requirements: allow_url_fopen = on</description>
+    <author value="Ingo Schomme and Nicolaas Francken"/>
+    <todo value="Implement CURL with fopen fallback"/>
+    <todo value="Implement client-side selection when multiple results are found (through validation-errors and javasript)"/>
+    <see value="http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct">you can use
+GetLatLngFromGoogleUsingAddress::get_placemark_as_array()</see>
+  </docblock>
+  <extends full="Object" namespace="" name="Object"/>
+  <member name="debug" type="{unknown}" default="false" visibility="private" line="27">
+    <docblock>
+      <description compact="For debugging.">needs to be static because we use static methods
+in this class</description>
+      <var description="for debugging" type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="geocode_url" type="string" default="&quot;http://maps.googleapis.com/maps/api/geocode/json?address=%s&amp;sensor=false&quot;" visibility="private" line="34">
+    <docblock>
+      <description compact="location for API"/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <member name="default_to_first_result" type="{unknown}" default="true" visibility="private" line="41">
+    <docblock>
+      <description compact="default user to first result that is returned."/>
+      <var type="boolean"/>
+    </docblock>
+  </member>
+  <member name="server_side_available" type="{unknown}" default="true" visibility="private" line="50">
+    <docblock>
+      <description compact="tells you if CURL / file_get_contents is available set to true , unless it is not sure if CURL is available"/>
+      <var type="boolean"/>
+    </docblock>
+  </member>
+  <method name="get_placemark_as_array" start="59" end="104" abstract="false" final="false" static="true" visibility="public">
+    <docblock>
+      <description compact="Get first placemark as flat array"/>
+      <param type="string" variable="$q"/>
+      <param type="object" variable="$tryAnyway">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </param>
+      <return type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </return>
+    </docblock>
+    <parameter name="q" byreference="false" type="{unknown}"/>
+    <parameter name="tryAnyway" byreference="false" type="integer" default="0"/>
+    <inline>
+      <comment value="@ is important here!" line="71"/>
+    </inline>
+  </method>
+  <method name="get_placemark" start="114" end="129" abstract="false" final="false" static="true" visibility="protected">
+    <docblock>
+      <description compact="Get first placemark from google, or return false."/>
+      <param type="string" variable="$q"/>
+      <param type="object" variable="$tryAnyway">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </param>
+      <return description="Single placemark" type="object">
+        <type full="Object" namespace="" name="Object"/>
+      </return>
+    </docblock>
+    <parameter name="q" byreference="false" type="{unknown}"/>
+    <parameter name="tryAnyway" byreference="false" type="{unknown}" default="false"/>
+    <inline>
+      <comment value="we just take the first address!" line="121"/>
+    </inline>
+  </method>
+  <method name="get_geocode_obj" start="139" end="165" abstract="false" final="false" static="true" visibility="protected">
+    <docblock>
+      <description compact="Get geocode from google."/>
+      <see value="http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct"/>
+      <param description="Place name (e.g. 'Portland' or '30th Avenue, New York&quot;)" type="string" variable="$q"/>
+      <return description="Multiple Placemarks and status code" type="object">
+        <type full="Object" namespace="" name="Object"/>
+      </return>
+    </docblock>
+    <parameter name="q" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="json_decoder" start="174" end="176" abstract="false" final="false" static="true" visibility="private">
+    <docblock>
+      <description/>
+      <param type="object" variable="(JSON)">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <param type="object" variable="$assoc">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </param>
+      <return type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </return>
+    </docblock>
+    <parameter name="content" byreference="false" type="{unknown}"/>
+    <parameter name="assoc" byreference="false" type="{unknown}" default="false"/>
+  </method>
+  <method name="json_encoder" start="184" end="186" abstract="false" final="false" static="true" visibility="private">
+    <docblock>
+      <description/>
+      <param type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </param>
+      <return type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </return>
+    </docblock>
+    <parameter name="content" byreference="false" type="{unknown}"/>
+  </method>
+  <member name="google_2_ss_translation_array" type="array" visibility="protected" line="230">
+    <docblock>
+      <description compact="OGLE: reet_address indicates a precise street address.">ute indicates a named route (such as "US 101").
+tersection indicates a major intersection, usually of two major roads.
+litical indicates a political entity. Usually, this type indicates a polygon of some civil administration.
+untry indicates the national political entity, and is typically the highest order type returned by the Geocoder.
+ministrative_area_level_1 indicates a first-order civil entity below the country level. Within the United States, these administrative levels are states. Not all nations exhibit these administrative levels.
+ministrative_area_level_2 indicates a second-order civil entity below the country level. Within the United States, these administrative levels are counties. Not all nations exhibit these administrative levels.
+ministrative_area_level_3 indicates a third-order civil entity below the country level. This type indicates a minor civil division. Not all nations exhibit these administrative levels.
+lloquial_area indicates a commonly-used alternative name for the entity.
+cality indicates an incorporated city or town political entity.
+blocality indicates an first-order civil entity below a locality
+ighborhood indicates a named neighborhood
+emise indicates a named location, usually a building or collection of buildings with a common name
+bpremise indicates a first-order entity below a named location, usually a singular building within a collection of buildings with a common name
+stal_code indicates a postal code as used to address postal mail within the country.
+tural_feature indicates a prominent natural feature.
+rport indicates an airport.
+rk indicates a named park.
+int_of_interest indicates a named point of interest. Typically, these "POI"s are prominent local entities that don't easily fit in another category such as "Empire State Building" or "Statue of Liberty."
+
+st_box indicates a specific postal box.
+reet_number indicates the precise street number.
+oor indicates the floor of a building address.
+om indicates the room of a building address.
+
+:
+atitude' =&gt; 'Double(12,7)',
+ongitude' =&gt; 'Double(12,7)',
+ointString' =&gt; 'Text',
+ddress' =&gt; 'Text',
+ullAddress' =&gt; 'Text',
+ountryNameCode' =&gt; 'Varchar(3)',
+dministrativeAreaName' =&gt; 'Varchar(255)',
+ubAdministrativeAreaName' =&gt; 'Varchar(255)',
+ocalityName' =&gt; 'Varchar(255)',
+ostalCodeNumber' =&gt; 'Varchar(30)',</description>
+    </docblock>
+  </member>
+  <method name="google_2_ss" start="254" end="289" abstract="false" final="false" static="true" visibility="protected">
+    <docblock>
+      <description compact="Converts Google Response INTO Silverstripe Google Map Array that can be saved into a GoogleMapLocationsObject"/>
+      <param type="object" variable="(JSON)">
+        <type full="GoogleResponseObject" namespace="" name="GoogleResponseObject"/>
+      </param>
+      <return type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </return>
+    </docblock>
+    <parameter name="responseObj" byreference="false" type="{unknown}"/>
+    <inline>
+      <comment value="get address parts" line="255"/>
+      <comment value="get other data" line="284"/>
+    </inline>
+  </method>
+</class>

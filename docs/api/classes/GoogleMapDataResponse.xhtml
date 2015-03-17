@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>phpDox - GoogleMapDataResponse</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" media="screen"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  </head>
+  <body>
+    <nav class="topnav">
+      <ul>
+        <li>
+          <div class="logo"><span>/**</span>phpDox</div>
+        </li>
+        <li class="separator">
+          <a href="../index.xhtml">Overview</a>
+        </li>
+        <li class="separator">
+          <a href="../namespaces.xhtml">Namespaces</a>
+        </li>
+        <li>
+          <a href="../classes.xhtml">Classes</a>
+        </li>
+        <li class="separator">
+          <a href="../source/index.xhtml">Source</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="mainstage">
+      <div class="box">
+        <ul class="breadcrumb">
+          <li>
+            <a href="../index.xhtml">Overview</a>
+          </li>
+          <li class="separator">
+            <a href="../classes.xhtml">Classes</a>
+          </li>
+          <li class="separator">GoogleMapDataResponse</li>
+        </ul>
+      </div>
+      <nav class="box">
+        <ul>
+          <li>
+            <a href="#introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#synopsis">Synopsis</a>
+          </li>
+          <li>
+            <a href="#hierarchy">Hierarchy</a>
+          </li>
+          <li>
+            <a href="#members">Members</a>
+          </li>
+          <li>
+            <a href="#methods">Methods</a>
+          </li>
+          <li>
+            <a href="../source/code/control/GoogleMapDataResponse.php.xhtml#line39">Source</a>
+          </li>
+        </ul>
+      </nav>
+      <section>
+        <h1 id="introduction"><small>\</small>GoogleMapDataResponse</h1>
+        <h4>a controller that returns the Google Map You can show one point by adding ?i=123 Where 123 is the ID of a GoogleMapLocationsObject</h4>
+        <p>returns Data For Map ....<br/><br/>HERE are the options<br/>======================<br/><br/>'turnonstaticmaps' =&gt; start with static maps<br/><br/>'turnoffstaticmaps' =&gt; go straight to interactive maps<br/><br/>'showemptymap' =&gt; map without anything on it, fallback<br/><br/>'showpagepointsmapxml' =&gt; show points from the current page<br/><br/>'showchildpointsmapxml' =&gt; show points from the child pages<br/><br/>'showsearchpoint' =&gt;<br/><br/>'showcustompagesmapxml' =&gt;<br/><br/>'showcustomdosmapxml' =&gt;<br/><br/>'showdataobjects' =&gt;<br/><br/>'updatemexml' =&gt;<br/><br/>'showaroundmexml' =&gt;<br/><br/>'showpointbyid' =&gt;</p>
+        <ul/>
+        <h2 id="synopsis">Synopsis</h2>
+        <div class="synopsis">class GoogleMapDataResponse
+                extends <a title="Controller" href="../classes/Controller.xhtml">Controller</a>
+            {<br/><ul class="none"><li>// members</li><li>private array <a href="#members">$allowed_actions</a>;
+                    </li><li>private <span title="Array">Array</span> <a href="#members">$actions_without_owner</a>;
+                    </li><li>protected <span title="SiteTree">SiteTree</span> <a href="#members">$owner</a>;
+                    </li><li>protected <span title="Float">Float</span> <a href="#members">$lng</a>;
+                    </li><li>protected <span title="Float">Float</span> <a href="#members">$lat</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$title</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$sessionTitle</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$filter</a>;
+                    </li><li>protected <span title="GoogleMap">GoogleMap</span> <a href="#members">$map</a>;
+                    </li></ul><ul class="none"><li>// methods</li><li>public static void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/add_custom_google_map_session_data.xhtml">add_custom_google_map_session_data</a>()
+                    </li><li>public static void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/set_custom_google_map_session_data.xhtml">set_custom_google_map_session_data</a>()
+                    </li><li>public static Array <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/get_custom_google_map_session_data.xhtml">get_custom_google_map_session_data</a>()
+                    </li><li>public void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/init.xhtml">init</a>()
+                    </li><li>public void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setOwner.xhtml">setOwner</a>()
+                    </li><li>public void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setTitle.xhtml">setTitle</a>()
+                    </li><li>public void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setLng.xhtml">setLng</a>()
+                    </li><li>public void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setLat.xhtml">setLat</a>()
+                    </li><li>public void <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setFilter.xhtml">setFilter</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/index.xhtml">index</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/turnonstaticmaps.xhtml">turnonstaticmaps</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/turnoffstaticmaps.xhtml">turnoffstaticmaps</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showemptymap.xhtml">showemptymap</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showpagepointsmapxml.xhtml">showpagepointsmapxml</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showchildpointsmapxml.xhtml">showchildpointsmapxml</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showsearchpoint.xhtml">showsearchpoint</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showpointbyid.xhtml">showpointbyid</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showcustompagesmapxml.xhtml">showcustompagesmapxml</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showcustomdosmapxml.xhtml">showcustomdosmapxml</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showaroundmexml.xhtml">showaroundmexml</a>()
+                    </li><li>public String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/updatemexml.xhtml">updatemexml</a>()
+                    </li><li>public GoogleMap <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/GoogleMapController.xhtml">GoogleMapController</a>()
+                    </li><li>protected String <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/makeXMLData.xhtml">makeXMLData</a>()
+                    </li></ul>
+
+            }<br/></div>
+        <h2 id="hierarchy">Hierarchy</h2>
+        <div class="styled">
+          <h4>Extends</h4>
+          <ul>
+            <li>
+              <a href="../classes/Controller.xhtml">Controller</a>
+            </li>
+          </ul>
+        </div>
+        <h2 id="members">Members</h2>
+        <div class="styled members">
+          <h4>private</h4>
+          <ul class="members">
+            <li id="actions_without_owner"><strong>$actions_without_owner</strong>
+                —
+                <a href="#">Array</a></li>
+            <li id="allowed_actions">
+              <strong>$allowed_actions</strong>
+            </li>
+          </ul>
+          <h4>protected</h4>
+          <ul class="members">
+            <li id="filter"><strong>$filter</strong>
+                —
+                <a href="#">String</a></li>
+            <li id="lat"><strong>$lat</strong>
+                —
+                <a href="#">Float</a></li>
+            <li id="lng"><strong>$lng</strong>
+                —
+                <a href="#">Float</a></li>
+            <li id="map"><strong>$map</strong>
+                —
+                <a href="#">GoogleMap</a></li>
+            <li id="owner"><strong>$owner</strong>
+                —
+                <a href="#">SiteTree</a><br/><span class="indent">The Page that is displaying the</span></li>
+            <li id="sessionTitle"><strong>$sessionTitle</strong>
+                —
+                <a href="#">String</a></li>
+            <li id="title"><strong>$title</strong>
+                —
+                <a href="#">String</a></li>
+          </ul>
+        </div>
+        <h2 id="methods">Methods</h2>
+        <div class="styled">
+          <h4>protected</h4>
+          <ul>
+            <li id="makeXMLData">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/makeXMLData.xhtml">makeXMLData()</a>
+            </li>
+          </ul>
+          <h4>public</h4>
+          <ul>
+            <li id="GoogleMapController">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/GoogleMapController.xhtml">GoogleMapController()</a>
+            </li>
+            <li id="add_custom_google_map_session_data">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/add_custom_google_map_session_data.xhtml">add_custom_google_map_session_data()</a>
+            </li>
+            <li id="get_custom_google_map_session_data">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/get_custom_google_map_session_data.xhtml">get_custom_google_map_session_data()</a>
+            </li>
+            <li id="index">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/index.xhtml">index()</a>
+            </li>
+            <li id="init">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/init.xhtml">init()</a>
+            </li>
+            <li id="setFilter">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setFilter.xhtml">setFilter()</a>
+            </li>
+            <li id="setLat">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setLat.xhtml">setLat()</a>
+            </li>
+            <li id="setLng">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setLng.xhtml">setLng()</a>
+            </li>
+            <li id="setOwner">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setOwner.xhtml">setOwner()</a>
+            </li>
+            <li id="setTitle">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/setTitle.xhtml">setTitle()</a>
+            </li>
+            <li id="set_custom_google_map_session_data">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/set_custom_google_map_session_data.xhtml">set_custom_google_map_session_data()</a>
+            </li>
+            <li id="showaroundmexml"><a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showaroundmexml.xhtml">showaroundmexml()</a>
+                — Show what is around my points</li>
+            <li id="showchildpointsmapxml">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showchildpointsmapxml.xhtml">showchildpointsmapxml()</a>
+            </li>
+            <li id="showcustomdosmapxml"><a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showcustomdosmapxml.xhtml">showcustomdosmapxml()</a>
+                — load a custom set of GoogleMapLocationsObjects</li>
+            <li id="showcustompagesmapxml"><a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showcustompagesmapxml.xhtml">showcustompagesmapxml()</a>
+                — load data from session</li>
+            <li id="showemptymap">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showemptymap.xhtml">showemptymap()</a>
+            </li>
+            <li id="showpagepointsmapxml">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showpagepointsmapxml.xhtml">showpagepointsmapxml()</a>
+            </li>
+            <li id="showpointbyid">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showpointbyid.xhtml">showpointbyid()</a>
+            </li>
+            <li id="showsearchpoint">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/showsearchpoint.xhtml">showsearchpoint()</a>
+            </li>
+            <li id="turnoffstaticmaps">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/turnoffstaticmaps.xhtml">turnoffstaticmaps()</a>
+            </li>
+            <li id="turnonstaticmaps">
+              <a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/turnonstaticmaps.xhtml">turnonstaticmaps()</a>
+            </li>
+            <li id="updatemexml"><a title="GoogleMapDataResponse" href="../classes/GoogleMapDataResponse/updatemexml.xhtml">updatemexml()</a>
+                — URL must contain for GET variables i - ID of owner a - action x - lng y - lat</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <footer>
+      <span/>
+    </footer>
+  </body>
+</html>

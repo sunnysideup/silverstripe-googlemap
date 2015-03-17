@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<source xmlns="http://xml.phpdox.net/token">
+  <file xmlns="http://xml.phpdox.net/src" path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/converters" file="BatchGeoAddressConverter.php" realpath="/var/www/_modules/googlemap/trunk/code/converters/BatchGeoAddressConverter.php" size="1363" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="fa054c8bd8e9a6a1f2d9cd5dc38bb7787b8223b4" relative="code/converters/BatchGeoAddressConverter.php"/>
+  <line no="1">
+    <token name="T_OPEN_TAG">&lt;?php</token>
+  </line>
+  <line no="2"/>
+  <line no="3"/>
+  <line no="4">
+    <token name="T_DOC_COMMENT">/**</token>
+  </line>
+  <line no="5">
+    <token name="T_DOC_COMMENT"> * here is some old code that maybe of use.</token>
+  </line>
+  <line no="6">
+    <token name="T_DOC_COMMENT"> *</token>
+  </line>
+  <line no="7">
+    <token name="T_DOC_COMMENT"> *</token>
+  </line>
+  <line no="8">
+    <token name="T_DOC_COMMENT"> */</token>
+  </line>
+  <line no="9">
+    <token name="T_CLASS">class</token>
+    <token name="T_WHITESPACE"> </token>
+    <token name="T_STRING">BatchGeoAddressConverter</token>
+    <token name="T_WHITESPACE"> </token>
+    <token name="T_EXTENDS">extends</token>
+    <token name="T_WHITESPACE"> </token>
+    <token name="T_STRING">Object</token>
+    <token name="T_WHITESPACE"> </token>
+    <token name="T_PHPDOX_OPEN_CURLY">{</token>
+  </line>
+  <line no="10">
+    <token name="T_WHITESPACE">	</token>
+    <token name="T_COMMENT">/*</token>
+  </line>
+  <line no="11">
+    <token name="T_COMMENT">	static function convert($tableName, $fieldName, $idFieldName) {</token>
+  </line>
+  <line no="12">
+    <token name="T_COMMENT">		$data = self::getDataFromTable($tableName, $fieldName, $idFieldName);</token>
+  </line>
+  <line no="13">
+    <token name="T_COMMENT">		foreach($data as $row) {</token>
+  </line>
+  <line no="14">
+    <token name="T_COMMENT">			print_r($row);</token>
+  </line>
+  <line no="15">
+    <token name="T_COMMENT">			$address = str_replace('?', " ", $row[$fieldName]);</token>
+  </line>
+  <line no="16">
+    <token name="T_COMMENT">			if($address) {</token>
+  </line>
+  <line no="17">
+    <token name="T_COMMENT">				echo "checking ".$address."&lt;hr /&gt;";</token>
+  </line>
+  <line no="18">
+    <token name="T_COMMENT">				$newAddress = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address, true);</token>
+  </line>
+  <line no="19">
+    <token name="T_COMMENT">				if($newAddress["1"] || $newAddress[0] || $newAddress["address"]) {</token>
+  </line>
+  <line no="20">
+    <token name="T_COMMENT">					$sql = 'UPDATE \"'.$tableName.'\" SET \"'.$fieldName.'\" = "'.addslashes($newAddress["address"]).'" WHERE \"'.$idFieldName.'\" = "'.$row[$idFieldName].'" LIMIT 1;';</token>
+  </line>
+  <line no="21">
+    <token name="T_COMMENT">					mysql_query($sql);</token>
+  </line>
+  <line no="22">
+    <token name="T_COMMENT">					echo "&lt;hr /&gt;".$sql."&lt;hr /&gt;";</token>
+  </line>
+  <line no="23">
+    <token name="T_COMMENT">				}</token>
+  </line>
+  <line no="24">
+    <token name="T_COMMENT">				echo "**********************&lt;BR /&gt;";</token>
+  </line>
+  <line no="25">
+    <token name="T_COMMENT">				$sql = "UPDATE \"".$tableName."\" SET \"DONE\" = 1 WHERE \"".$idFieldName."\" = '".$row[$idFieldName]."' LIMIT 1;";</token>
+  </line>
+  <line no="26">
+    <token name="T_COMMENT">				mysql_query($sql);</token>
+  </line>
+  <line no="27">
+    <token name="T_COMMENT">			}</token>
+  </line>
+  <line no="28">
+    <token name="T_COMMENT">		}</token>
+  </line>
+  <line no="29">
+    <token name="T_COMMENT">		die("test");</token>
+  </line>
+  <line no="30">
+    <token name="T_COMMENT">	}</token>
+  </line>
+  <line no="31"/>
+  <line no="32">
+    <token name="T_COMMENT">	static function getDataFromTable($tableName, $fieldName, $idFieldName) {</token>
+  </line>
+  <line no="33">
+    <token name="T_COMMENT">		$sqlQuery = new SQLQuery();</token>
+  </line>
+  <line no="34">
+    <token name="T_COMMENT">		$sqlQuery-&gt;select = array($fieldName, $idFieldName);</token>
+  </line>
+  <line no="35">
+    <token name="T_COMMENT">		$sqlQuery-&gt;where = array("DONE &lt;&gt; 1");</token>
+  </line>
+  <line no="36">
+    <token name="T_COMMENT">		$sqlQuery-&gt;from = Array($tableName);</token>
+  </line>
+  <line no="37">
+    <token name="T_COMMENT">		$result = $sqlQuery-&gt;execute();</token>
+  </line>
+  <line no="38">
+    <token name="T_COMMENT">		return $result;</token>
+  </line>
+  <line no="39">
+    <token name="T_COMMENT">	}</token>
+  </line>
+  <line no="40">
+    <token name="T_COMMENT">*/</token>
+  </line>
+  <line no="41">
+    <token name="T_PHPDOX_CLOSE_CURLY">}</token>
+  </line>
+  <line no="42"/>
+  <line no="43"/>
+</source>

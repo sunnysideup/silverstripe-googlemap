@@ -1,0 +1,528 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="GoogleMap" namespace="" name="GoogleMap" abstract="false" final="false" start="19" end="842">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/viewableData" file="GoogleMap.php" realpath="/var/www/_modules/googlemap/trunk/code/viewableData/GoogleMap.php" size="28683" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="f5cdd92c7610760aa5aab33f2b922e2a7184601c" relative="code/viewableData/GoogleMap.php"/>
+  <docblock>
+    <description compact="This is the basic engine for the Google Map">There are three options
+1. setAddress: set address
+2. setPageDataObjectSet: set Page Data List (who have geo points as children)
+3. setGooglePointsDataObject: set Points Directly Class = GoogleMapLocationsObject
+
+Extras include:
+1. setDataObjectTitle: set title
+2. setWhereStatementDescription: set where statement
+3. setFilteredClassNameArray: set an array of classnames
+
+The static configs are explained in googlemap/_config/googlemap.yml.example</description>
+  </docblock>
+  <extends full="ViewableData" namespace="" name="ViewableData"/>
+  <member name="google_map_api_key" type="string" default="&quot;&quot;" visibility="private" line="29"/>
+  <member name="uses_sensor" type="{unknown}" default="true" visibility="private" line="30"/>
+  <member name="default_latitude" type="float" default="0.000000001" visibility="private" line="31"/>
+  <member name="default_longitude" type="float" default="0.0000000001" visibility="private" line="32"/>
+  <member name="default_zoom" type="integer" default="2" visibility="private" line="33"/>
+  <member name="google_map_width" type="integer" default="500" visibility="private" line="34"/>
+  <member name="google_map_height" type="integer" default="500" visibility="private" line="35"/>
+  <member name="map_type_default_zero_to_two" type="integer" default="0" visibility="private" line="38"/>
+  <member name="view_finder_size" type="integer" default="100" visibility="private" line="39"/>
+  <member name="map_add_type_control" type="{unknown}" default="false" visibility="private" line="40"/>
+  <member name="map_control_size_one_to_three" type="integer" default="3" visibility="private" line="41"/>
+  <member name="map_scale_info_size_in_pixels" type="integer" default="100" visibility="private" line="42"/>
+  <member name="default_title" type="string" default="&quot;&quot;" visibility="private" line="45"/>
+  <member name="default_where_statement_description" type="string" default="&quot;&quot;" visibility="private" line="46"/>
+  <member name="no_status_at_all" type="{unknown}" default="true" visibility="private" line="47"/>
+  <member name="add_kml_link" type="{unknown}" default="false" visibility="private" line="48"/>
+  <member name="hidden_layers_removed_from_list" type="{unknown}" default="false" visibility="private" line="49"/>
+  <member name="change_page_title" type="{unknown}" default="false" visibility="private" line="50"/>
+  <member name="number_of_items_before_showing_list" type="integer" default="1" visibility="private" line="51"/>
+  <member name="title_div_id" type="string" default="&quot;&quot;" visibility="private" line="52"/>
+  <member name="side_bar_div_id" type="string" default="&quot;&quot;" visibility="private" line="53"/>
+  <member name="drop_down_div_id" type="string" default="&quot;&quot;" visibility="private" line="54"/>
+  <member name="layer_list_div_id" type="string" default="&quot;&quot;" visibility="private" line="55"/>
+  <member name="directions_div_id" type="string" default="&quot;&quot;" visibility="private" line="56"/>
+  <member name="status_div_id" type="string" default="&quot;&quot;" visibility="private" line="57"/>
+  <member name="info_window_options" type="string" default="&quot;{maxWidth:280, zoomLevel:17, mapTypeId: google.maps.MapTypeId.HYBRID}&quot;" visibility="private" line="61"/>
+  <member name="add_antipodean" type="{unknown}" default="false" visibility="private" line="62"/>
+  <member name="add_directions" type="{unknown}" default="false" visibility="private" line="63"/>
+  <member name="add_current_address_finder" type="{unknown}" default="false" visibility="private" line="64"/>
+  <member name="add_zoom_in_button" type="{unknown}" default="true" visibility="private" line="65"/>
+  <member name="add_close_up_button" type="{unknown}" default="false" visibility="private" line="66"/>
+  <member name="add_close_window_button" type="{unknown}" default="false" visibility="private" line="67"/>
+  <member name="ajax_info_window_text" type="string" default="&quot;View Details&quot;" visibility="private" line="68"/>
+  <member name="add_points_to_map" type="{unknown}" default="false" visibility="private" line="71"/>
+  <member name="add_delete_marker_button" type="string" default="&quot;&quot;" visibility="private" line="72"/>
+  <member name="marker_options" type="string" default="&quot;{bouncy:true,title: \&quot;click me\&quot;}&quot;" visibility="private" line="73"/>
+  <member name="preload_images" type="{unknown}" default="false" visibility="private" line="74"/>
+  <member name="default_icon_url" type="string" default="&quot;&quot;" visibility="private" line="77"/>
+  <member name="icon_folder" type="string" default="&quot;/googlemap/images/icons/&quot;" visibility="private" line="78"/>
+  <member name="icon_width" type="integer" default="20" visibility="private" line="79"/>
+  <member name="icon_height" type="integer" default="34" visibility="private" line="80"/>
+  <member name="icon_image_map" type="string" default="&quot;[]&quot;" visibility="private" line="81"/>
+  <member name="icon_extension" type="string" default="&quot;png&quot;" visibility="private" line="82"/>
+  <member name="icon_max_count" type="integer" default="12" visibility="private" line="83"/>
+  <member name="line_colour" type="string" default="&quot;#000&quot;" visibility="private" line="86"/>
+  <member name="line_width" type="integer" default="12" visibility="private" line="87"/>
+  <member name="line_opacity" type="float" default="0.5" visibility="private" line="88"/>
+  <member name="fill_colour" type="string" default="&quot;#ffccff&quot;" visibility="private" line="89"/>
+  <member name="fill_opacity" type="float" default="0.5" visibility="private" line="90"/>
+  <member name="poly_icon" type="string" default="&quot;&quot;" visibility="private" line="91"/>
+  <member name="show_static_map_first" type="{unknown}" default="false" visibility="private" line="94"/>
+  <member name="static_map_settings" type="string" default="&quot;maptype=roadmap&quot;" visibility="private" line="95"/>
+  <member name="static_icon" type="string" default="&quot;&quot;" visibility="private" line="96"/>
+  <member name="save_static_map_locally" type="{unknown}" default="false" visibility="private" line="97"/>
+  <member name="add_address_finder" type="{unknown}" default="false" visibility="private" line="100"/>
+  <member name="default_country_code" type="string" default="&quot;NZ&quot;" visibility="private" line="101"/>
+  <member name="default_address_text" type="string" default="&quot; New Zealand&quot;" visibility="private" line="102"/>
+  <member name="number_shown_in_around_me" type="integer" default="7" visibility="private" line="103"/>
+  <member name="style_sheet_url" type="string" default="&quot;&quot;" visibility="private" line="106"/>
+  <member name="locale_for_results" type="string" default="&quot;en_NZ&quot;" visibility="private" line="107"/>
+  <member name="lng_form_field_id" type="string" default="&quot;&quot;" visibility="private" line="110"/>
+  <member name="lat_form_field_id" type="string" default="&quot;&quot;" visibility="private" line="111"/>
+  <method name="quick_static_map" start="134" end="158" abstract="false" final="false" static="true" visibility="public">
+    <docblock>
+      <description compact="var arrayOfLatitudeAndLongitude: Array (Latitude&quot; =&gt; 123, &quot;Longitude&quot; =&gt; 123, &quot;Marker&quot; =&gt; &quot;red1&quot;); Marker is optional"/>
+      <param type="object" variable="arrayOfLatitudeAndLongitude">
+        <type full="Array" namespace="" name="Array"/>
+      </param>
+      <param type="object" variable="title">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <return description="(HTML - img tag)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="arrayOfLatitudeAndLongitude" byreference="false" type="{unknown}"/>
+    <parameter name="title" byreference="false" type="{unknown}"/>
+    <inline>
+      <comment value="width" line="137"/>
+      <comment value="height" line="140"/>
+      <comment value="http://maps.google.com/maps/api/staticmap?sensor=true&amp;maptype=map&amp;size=209x310&amp;" line="145"/>
+      <comment value="markers=color:green%7Clabel:A%7C-45.0302,168.663" line="146"/>
+      <comment value="&amp;markers=color:red%7Clabel:Q%7C-36.8667,174.767" line="147"/>
+    </inline>
+  </method>
+  <method name="make_static_map_url_into_image" start="166" end="185" abstract="false" final="false" static="true" visibility="protected">
+    <docblock>
+      <description/>
+      <param type="object" variable="$staticMapURL">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <param type="object" variable="$title">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <return description="(HTML - img tag)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="staticMapURL" byreference="false" type="{unknown}"/>
+    <parameter name="title" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="Link" start="199" end="204" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <member name="myMapFunctionName" type="string" default="&quot;GMO&quot;" visibility="protected" line="211">
+    <docblock>
+      <description compact="function name for map..."/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setMyMapFunctionName" start="212" end="212" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="a" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="MyMapFunctionName" start="213" end="213" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="MyInstanceName" start="214" end="214" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="MyStaticFunctionName" start="215" end="215" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="MyStaticInstanceName" start="216" end="216" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="getMyMapFunctionName" start="217" end="228" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="instanceName" byreference="false" type="{unknown}" default="false"/>
+    <parameter name="staticVersion" byreference="false" type="{unknown}" default="false"/>
+  </method>
+  <member name="dataObjectTitle" type="string" default="&quot;&quot;" visibility="protected" line="234">
+    <docblock>
+      <description compact="title of map"/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setDataObjectTitle" start="235" end="235" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="DataObjectTitle" start="236" end="236" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="getDataObjectTitle" start="237" end="237" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="GoogleMapWidth" start="244" end="244" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="used for static and non-static maps, hence defined only once."/>
+      <return type="object">
+        <type full="Int" namespace="" name="Int"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="GoogleMapHeight" start="250" end="250" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="used for static and non-static maps, hence defined only once."/>
+      <return type="object">
+        <type full="Int" namespace="" name="Int"/>
+      </return>
+    </docblock>
+  </method>
+  <member name="dataPointsObjectSet" type="{unknown}" visibility="protected" line="256">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="ArrayList" namespace="" name="ArrayList"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setDataPointsObjectSet" start="257" end="257" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="DataPointsObjectSet" start="258" end="258" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="getDataPointsObjectSet" start="259" end="259" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="ShowStaticMapFirst" start="266" end="266" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="what is the user preference?"/>
+      <return type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </return>
+    </docblock>
+  </method>
+  <member name="dataPointsStaticMapHTML" type="{unknown}" visibility="protected" line="272">
+    <docblock>
+      <description/>
+      <var description="(HTML)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setDataPointsStaticMapHTML" start="273" end="273" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="DataPointsStaticMapHTML" start="274" end="274" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="getDataPointsStaticMapHTML" start="275" end="275" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="AddAddressFinder" start="281" end="281" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="CanEdit" start="286" end="286" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </return>
+    </docblock>
+    <parameter name="member" byreference="false" type="{unknown}" default="null"/>
+  </method>
+  <method name="TitleDivID" start="291" end="291" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="SideBarDivId" start="296" end="296" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="DropDownDivId" start="301" end="301" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="LayerListDivId" start="306" end="306" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="DirectionsDivId" start="311" end="311" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="StatusDivId" start="316" end="316" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="AllowAddPointsToMap" start="322" end="322" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </var>
+    </docblock>
+  </method>
+  <member name="dataPointsXML" type="{unknown}" visibility="protected" line="327">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="DataPointsXML" start="328" end="328" abstract="false" final="false" static="false" visibility="protected"/>
+  <method name="getDataPointsXML" start="329" end="329" abstract="false" final="false" static="false" visibility="protected"/>
+  <member name="extraLayersAsLinks" type="{unknown}" default="null" visibility="protected" line="354">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="ArrayList" namespace="" name="ArrayList"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setExtraLayersAsLinks" start="355" end="355" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="v" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getExtraLayersAsLinks" start="356" end="356" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="addExtraLayersAsLinks" start="362" end="367" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object" variable="$title">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <param type="object" variable="$link">
+        <type full="String" namespace="" name="String"/>
+      </param>
+    </docblock>
+    <parameter name="title" byreference="false" type="{unknown}"/>
+    <parameter name="link" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="AllExtraLayersAsLinks" start="373" end="377" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="ArrayList" namespace="" name="ArrayList"/>
+      </return>
+    </docblock>
+  </method>
+  <member name="linksForData" type="array" visibility="protected" line="382">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setLinksForData" start="383" end="383" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="a" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getLinksForData" start="384" end="384" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="addLayer" start="389" end="391" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param description="(Title, Link)" type="object" variable="$linkForData">
+        <type full="ArrayData" namespace="" name="ArrayData"/>
+      </param>
+    </docblock>
+    <parameter name="linkForData" byreference="false" type="{unknown}"/>
+  </method>
+  <member name="address" type="string" default="&quot;&quot;" visibility="protected" line="407">
+    <docblock>
+      <description compact="address being searched for"/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setAddress" start="408" end="408" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="v" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getAddress" start="409" end="409" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="v" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="setPageDataObjectSet" start="416" end="427" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="sets the list of points through a list of parent pages affected variable is: googlePointsDataObject"/>
+      <param description="| ArrayList $pageDataList" type="object">
+        <type full="DataList" namespace="" name="DataList"/>
+      </param>
+    </docblock>
+    <parameter name="pageDataList" byreference="false" type="{unknown}"/>
+  </method>
+  <member name="googlePointsDataObject" type="{unknown}" default="null" visibility="protected" line="433">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="DataList" namespace="" name="DataList"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setGooglePointsDataObject" start="434" end="434" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getGooglePointsDataObject" start="435" end="435" abstract="false" final="false" static="false" visibility="public"/>
+  <member name="whereStatementDescription" type="string" default="&quot;&quot;" visibility="protected" line="441">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setWhereStatementDescription" start="442" end="442" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getWhereStatementDescription" start="443" end="443" abstract="false" final="false" static="false" visibility="public"/>
+  <member name="fieldNameForGoogleDataObjectWithPages" type="string" default="&quot;GoogleDataPoints&quot;" visibility="protected" line="449">
+    <docblock>
+      <description compact="Method on an object that returns the datapoints"/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setFieldNameForGoogleDataObjectWithPages" start="450" end="450" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="s" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getFieldNameForGoogleDataObjectWithPages" start="451" end="451" abstract="false" final="false" static="false" visibility="public"/>
+  <member name="filteredClassNameArray" type="array" visibility="protected" line="457">
+    <docblock>
+      <description compact="filter for class names"/>
+      <var type="object">
+        <type full="Array" namespace="" name="Array"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setFilteredClassNameArray" start="458" end="458" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="a" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getFilteredClassNameArray" start="459" end="459" abstract="false" final="false" static="false" visibility="public"/>
+  <member name="updateServerUrlAddressSearchPoint" type="string" default="&quot;&quot;" visibility="protected" line="474">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setUpdateServerUrlAddressSearchPoint" start="475" end="475" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="v" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getUpdateServerURLAddressSearchPoint" start="476" end="476" abstract="false" final="false" static="false" visibility="public"/>
+  <member name="updateServerUrlDragend" type="string" default="&quot;&quot;" visibility="protected" line="481">
+    <docblock>
+      <description/>
+      <var type="object">
+        <type full="String" namespace="" name="String"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="setUpdateServerUrlDragend" start="482" end="482" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="v" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="getUpdateServerUrlDragend" start="483" end="483" abstract="false" final="false" static="false" visibility="public"/>
+  <member name="_includes_are_done" type="{unknown}" default="false" visibility="private" line="504">
+    <docblock>
+      <description compact="this is a hack to avoid having multiple includes"/>
+      <var type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </var>
+    </docblock>
+  </member>
+  <method name="loadGoogleMap" start="506" end="535" abstract="false" final="false" static="false" visibility="public"/>
+  <method name="orderItemsByLatitude" start="553" end="572" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="sorts points by Latitude"/>
+      <param type="object">
+        <type full="ArrayList" namespace="" name="ArrayList"/>
+      </param>
+      <return type="object">
+        <type full="ArrayList" namespace="" name="ArrayList"/>
+      </return>
+    </docblock>
+    <parameter name="unsortedSet" byreference="false" type="{unknown}" default="null"/>
+    <parameter name="reverse" byreference="false" type="{unknown}" default="false"/>
+    <inline>
+      <comment value="not sure why this is a bit counter intuitive." line="564"/>
+    </inline>
+  </method>
+  <method name="getDataPointCount" start="578" end="592" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="Int" namespace="" name="Int"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="EnoughPointsForAList" start="597" end="601" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <return type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </return>
+    </docblock>
+    <inline>
+      <comment value="we were using the line below, but that did not seem to work" line="598"/>
+      <comment value="return $this-&gt;getDataPointCount() &gt;= $this-&gt;Config()-&gt;get(&quot;number_of_items_before_showing_list&quot;) ? true : false;" line="599"/>
+    </inline>
+  </method>
+  <method name="createDataPoints" start="610" end="703" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description compact="must be public does not return the datapoints XML but loads it into variables..."/>
+      <return type="object">
+        <type full="Boolean" namespace="" name="Boolean"/>
+      </return>
+    </docblock>
+    <inline>
+      <comment value="width" line="616"/>
+      <comment value="height" line="619"/>
+      <comment value="the sort works, but Google Map does not seem to care..." line="631"/>
+      <comment value="$this-&gt;googlePointsDataObject = $this-&gt;orderItemsByLatitude($this-&gt;GooglePointsDataObject);" line="632"/>
+    </inline>
+  </method>
+  <method name="createJavascript" start="709" end="814" abstract="false" final="false" static="false" visibility="protected">
+    <docblock>
+      <description/>
+      <param type="object" variable="staticVariablename">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <return description="(Javascript)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+  </method>
+  <method name="showFalseOrTrue" start="821" end="828" abstract="false" final="false" static="false" visibility="protected">
+    <docblock>
+      <description compact="turns 0 into false and 1 into true"/>
+      <param type="object">
+        <type full="Mixed" namespace="" name="Mixed"/>
+      </param>
+      <return description="(true|false)" type="object">
+        <type full="String" namespace="" name="String"/>
+      </return>
+    </docblock>
+    <parameter name="v" byreference="false" type="{unknown}"/>
+  </method>
+  <method name="loadDefaults" start="833" end="840" abstract="false" final="false" static="false" visibility="protected">
+    <docblock>
+      <description compact="load some defaults"/>
+    </docblock>
+  </method>
+</class>

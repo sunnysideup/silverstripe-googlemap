@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <title>phpDox - GoogleMap</title>
+    <link rel="stylesheet" type="text/css" href="../css/style.css" media="screen"/>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  </head>
+  <body>
+    <nav class="topnav">
+      <ul>
+        <li>
+          <div class="logo"><span>/**</span>phpDox</div>
+        </li>
+        <li class="separator">
+          <a href="../index.xhtml">Overview</a>
+        </li>
+        <li class="separator">
+          <a href="../namespaces.xhtml">Namespaces</a>
+        </li>
+        <li>
+          <a href="../classes.xhtml">Classes</a>
+        </li>
+        <li class="separator">
+          <a href="../source/index.xhtml">Source</a>
+        </li>
+      </ul>
+    </nav>
+    <div id="mainstage">
+      <div class="box">
+        <ul class="breadcrumb">
+          <li>
+            <a href="../index.xhtml">Overview</a>
+          </li>
+          <li class="separator">
+            <a href="../classes.xhtml">Classes</a>
+          </li>
+          <li class="separator">GoogleMap</li>
+        </ul>
+      </div>
+      <nav class="box">
+        <ul>
+          <li>
+            <a href="#introduction">Introduction</a>
+          </li>
+          <li>
+            <a href="#synopsis">Synopsis</a>
+          </li>
+          <li>
+            <a href="#hierarchy">Hierarchy</a>
+          </li>
+          <li>
+            <a href="#members">Members</a>
+          </li>
+          <li>
+            <a href="#methods">Methods</a>
+          </li>
+          <li>
+            <a href="../source/code/viewableData/GoogleMap.php.xhtml#line19">Source</a>
+          </li>
+        </ul>
+      </nav>
+      <section>
+        <h1 id="introduction"><small>\</small>GoogleMap</h1>
+        <h4>This is the basic engine for the Google Map</h4>
+        <p>There are three options<br/>1. setAddress: set address<br/>2. setPageDataObjectSet: set Page Data List (who have geo points as children)<br/>3. setGooglePointsDataObject: set Points Directly Class = GoogleMapLocationsObject<br/><br/>Extras include:<br/>1. setDataObjectTitle: set title<br/>2. setWhereStatementDescription: set where statement<br/>3. setFilteredClassNameArray: set an array of classnames<br/><br/>The static configs are explained in googlemap/_config/googlemap.yml.example</p>
+        <ul/>
+        <h2 id="synopsis">Synopsis</h2>
+        <div class="synopsis">class GoogleMap
+                extends <a title="ViewableData" href="../classes/ViewableData.xhtml">ViewableData</a>
+            {<br/><ul class="none"><li>// members</li><li>private string <a href="#members">$google_map_api_key</a>;
+                    </li><li>private <a href="#members">$uses_sensor</a>;
+                    </li><li>private float <a href="#members">$default_latitude</a>;
+                    </li><li>private float <a href="#members">$default_longitude</a>;
+                    </li><li>private integer <a href="#members">$default_zoom</a>;
+                    </li><li>private integer <a href="#members">$google_map_width</a>;
+                    </li><li>private integer <a href="#members">$google_map_height</a>;
+                    </li><li>private integer <a href="#members">$map_type_default_zero_to_two</a>;
+                    </li><li>private integer <a href="#members">$view_finder_size</a>;
+                    </li><li>private <a href="#members">$map_add_type_control</a>;
+                    </li><li>private integer <a href="#members">$map_control_size_one_to_three</a>;
+                    </li><li>private integer <a href="#members">$map_scale_info_size_in_pixels</a>;
+                    </li><li>private string <a href="#members">$default_title</a>;
+                    </li><li>private string <a href="#members">$default_where_statement_description</a>;
+                    </li><li>private <a href="#members">$no_status_at_all</a>;
+                    </li><li>private <a href="#members">$add_kml_link</a>;
+                    </li><li>private <a href="#members">$hidden_layers_removed_from_list</a>;
+                    </li><li>private <a href="#members">$change_page_title</a>;
+                    </li><li>private integer <a href="#members">$number_of_items_before_showing_list</a>;
+                    </li><li>private string <a href="#members">$title_div_id</a>;
+                    </li><li>private string <a href="#members">$side_bar_div_id</a>;
+                    </li><li>private string <a href="#members">$drop_down_div_id</a>;
+                    </li><li>private string <a href="#members">$layer_list_div_id</a>;
+                    </li><li>private string <a href="#members">$directions_div_id</a>;
+                    </li><li>private string <a href="#members">$status_div_id</a>;
+                    </li><li>private string <a href="#members">$info_window_options</a>;
+                    </li><li>private <a href="#members">$add_antipodean</a>;
+                    </li><li>private <a href="#members">$add_directions</a>;
+                    </li><li>private <a href="#members">$add_current_address_finder</a>;
+                    </li><li>private <a href="#members">$add_zoom_in_button</a>;
+                    </li><li>private <a href="#members">$add_close_up_button</a>;
+                    </li><li>private <a href="#members">$add_close_window_button</a>;
+                    </li><li>private string <a href="#members">$ajax_info_window_text</a>;
+                    </li><li>private <a href="#members">$add_points_to_map</a>;
+                    </li><li>private string <a href="#members">$add_delete_marker_button</a>;
+                    </li><li>private string <a href="#members">$marker_options</a>;
+                    </li><li>private <a href="#members">$preload_images</a>;
+                    </li><li>private string <a href="#members">$default_icon_url</a>;
+                    </li><li>private string <a href="#members">$icon_folder</a>;
+                    </li><li>private integer <a href="#members">$icon_width</a>;
+                    </li><li>private integer <a href="#members">$icon_height</a>;
+                    </li><li>private string <a href="#members">$icon_image_map</a>;
+                    </li><li>private string <a href="#members">$icon_extension</a>;
+                    </li><li>private integer <a href="#members">$icon_max_count</a>;
+                    </li><li>private string <a href="#members">$line_colour</a>;
+                    </li><li>private integer <a href="#members">$line_width</a>;
+                    </li><li>private float <a href="#members">$line_opacity</a>;
+                    </li><li>private string <a href="#members">$fill_colour</a>;
+                    </li><li>private float <a href="#members">$fill_opacity</a>;
+                    </li><li>private string <a href="#members">$poly_icon</a>;
+                    </li><li>private <a href="#members">$show_static_map_first</a>;
+                    </li><li>private string <a href="#members">$static_map_settings</a>;
+                    </li><li>private string <a href="#members">$static_icon</a>;
+                    </li><li>private <a href="#members">$save_static_map_locally</a>;
+                    </li><li>private <a href="#members">$add_address_finder</a>;
+                    </li><li>private string <a href="#members">$default_country_code</a>;
+                    </li><li>private string <a href="#members">$default_address_text</a>;
+                    </li><li>private integer <a href="#members">$number_shown_in_around_me</a>;
+                    </li><li>private string <a href="#members">$style_sheet_url</a>;
+                    </li><li>private string <a href="#members">$locale_for_results</a>;
+                    </li><li>private string <a href="#members">$lng_form_field_id</a>;
+                    </li><li>private string <a href="#members">$lat_form_field_id</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$myMapFunctionName</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$dataObjectTitle</a>;
+                    </li><li>protected <span title="ArrayList">ArrayList</span> <a href="#members">$dataPointsObjectSet</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$dataPointsStaticMapHTML</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$dataPointsXML</a>;
+                    </li><li>protected <span title="ArrayList">ArrayList</span> <a href="#members">$extraLayersAsLinks</a>;
+                    </li><li>protected <span title="Array">Array</span> <a href="#members">$linksForData</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$address</a>;
+                    </li><li>protected <span title="DataList">DataList</span> <a href="#members">$googlePointsDataObject</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$whereStatementDescription</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$fieldNameForGoogleDataObjectWithPages</a>;
+                    </li><li>protected <span title="Array">Array</span> <a href="#members">$filteredClassNameArray</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$updateServerUrlAddressSearchPoint</a>;
+                    </li><li>protected <span title="String">String</span> <a href="#members">$updateServerUrlDragend</a>;
+                    </li><li>private <span title="Boolean">Boolean</span> <a href="#members">$_includes_are_done</a>;
+                    </li></ul><ul class="none"><li>// methods</li><li>public static String <a title="GoogleMap" href="../classes/GoogleMap/quick_static_map.xhtml">quick_static_map</a>()
+                    </li><li>protected static String <a title="GoogleMap" href="../classes/GoogleMap/make_static_map_url_into_image.xhtml">make_static_map_url_into_image</a>()
+                    </li><li>public String <a title="GoogleMap" href="../classes/GoogleMap/Link.xhtml">Link</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setMyMapFunctionName.xhtml">setMyMapFunctionName</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/MyMapFunctionName.xhtml">MyMapFunctionName</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/MyInstanceName.xhtml">MyInstanceName</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/MyStaticFunctionName.xhtml">MyStaticFunctionName</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/MyStaticInstanceName.xhtml">MyStaticInstanceName</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getMyMapFunctionName.xhtml">getMyMapFunctionName</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setDataObjectTitle.xhtml">setDataObjectTitle</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/DataObjectTitle.xhtml">DataObjectTitle</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getDataObjectTitle.xhtml">getDataObjectTitle</a>()
+                    </li><li>public Int <a title="GoogleMap" href="../classes/GoogleMap/GoogleMapWidth.xhtml">GoogleMapWidth</a>()
+                    </li><li>public Int <a title="GoogleMap" href="../classes/GoogleMap/GoogleMapHeight.xhtml">GoogleMapHeight</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setDataPointsObjectSet.xhtml">setDataPointsObjectSet</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/DataPointsObjectSet.xhtml">DataPointsObjectSet</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getDataPointsObjectSet.xhtml">getDataPointsObjectSet</a>()
+                    </li><li>public Boolean <a title="GoogleMap" href="../classes/GoogleMap/ShowStaticMapFirst.xhtml">ShowStaticMapFirst</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setDataPointsStaticMapHTML.xhtml">setDataPointsStaticMapHTML</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/DataPointsStaticMapHTML.xhtml">DataPointsStaticMapHTML</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getDataPointsStaticMapHTML.xhtml">getDataPointsStaticMapHTML</a>()
+                    </li><li>public Boolean <a title="GoogleMap" href="../classes/GoogleMap/AddAddressFinder.xhtml">AddAddressFinder</a>()
+                    </li><li>public Boolean <a title="GoogleMap" href="../classes/GoogleMap/CanEdit.xhtml">CanEdit</a>()
+                    </li><li>public String <a title="GoogleMap" href="../classes/GoogleMap/TitleDivID.xhtml">TitleDivID</a>()
+                    </li><li>public String <a title="GoogleMap" href="../classes/GoogleMap/SideBarDivId.xhtml">SideBarDivId</a>()
+                    </li><li>public String <a title="GoogleMap" href="../classes/GoogleMap/DropDownDivId.xhtml">DropDownDivId</a>()
+                    </li><li>public String <a title="GoogleMap" href="../classes/GoogleMap/LayerListDivId.xhtml">LayerListDivId</a>()
+                    </li><li>public String <a title="GoogleMap" href="../classes/GoogleMap/DirectionsDivId.xhtml">DirectionsDivId</a>()
+                    </li><li>public String <a title="GoogleMap" href="../classes/GoogleMap/StatusDivId.xhtml">StatusDivId</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/AllowAddPointsToMap.xhtml">AllowAddPointsToMap</a>()
+                    </li><li>protected void <a title="GoogleMap" href="../classes/GoogleMap/DataPointsXML.xhtml">DataPointsXML</a>()
+                    </li><li>protected void <a title="GoogleMap" href="../classes/GoogleMap/getDataPointsXML.xhtml">getDataPointsXML</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setExtraLayersAsLinks.xhtml">setExtraLayersAsLinks</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getExtraLayersAsLinks.xhtml">getExtraLayersAsLinks</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/addExtraLayersAsLinks.xhtml">addExtraLayersAsLinks</a>()
+                    </li><li>public ArrayList <a title="GoogleMap" href="../classes/GoogleMap/AllExtraLayersAsLinks.xhtml">AllExtraLayersAsLinks</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setLinksForData.xhtml">setLinksForData</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getLinksForData.xhtml">getLinksForData</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/addLayer.xhtml">addLayer</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setAddress.xhtml">setAddress</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getAddress.xhtml">getAddress</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setPageDataObjectSet.xhtml">setPageDataObjectSet</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setGooglePointsDataObject.xhtml">setGooglePointsDataObject</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getGooglePointsDataObject.xhtml">getGooglePointsDataObject</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setWhereStatementDescription.xhtml">setWhereStatementDescription</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getWhereStatementDescription.xhtml">getWhereStatementDescription</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setFieldNameForGoogleDataObjectWithPages.xhtml">setFieldNameForGoogleDataObjectWithPages</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getFieldNameForGoogleDataObjectWithPages.xhtml">getFieldNameForGoogleDataObjectWithPages</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setFilteredClassNameArray.xhtml">setFilteredClassNameArray</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getFilteredClassNameArray.xhtml">getFilteredClassNameArray</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setUpdateServerUrlAddressSearchPoint.xhtml">setUpdateServerUrlAddressSearchPoint</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getUpdateServerURLAddressSearchPoint.xhtml">getUpdateServerURLAddressSearchPoint</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/setUpdateServerUrlDragend.xhtml">setUpdateServerUrlDragend</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/getUpdateServerUrlDragend.xhtml">getUpdateServerUrlDragend</a>()
+                    </li><li>public void <a title="GoogleMap" href="../classes/GoogleMap/loadGoogleMap.xhtml">loadGoogleMap</a>()
+                    </li><li>public ArrayList <a title="GoogleMap" href="../classes/GoogleMap/orderItemsByLatitude.xhtml">orderItemsByLatitude</a>()
+                    </li><li>public Int <a title="GoogleMap" href="../classes/GoogleMap/getDataPointCount.xhtml">getDataPointCount</a>()
+                    </li><li>public Boolean <a title="GoogleMap" href="../classes/GoogleMap/EnoughPointsForAList.xhtml">EnoughPointsForAList</a>()
+                    </li><li>public Boolean <a title="GoogleMap" href="../classes/GoogleMap/createDataPoints.xhtml">createDataPoints</a>()
+                    </li><li>protected String <a title="GoogleMap" href="../classes/GoogleMap/createJavascript.xhtml">createJavascript</a>()
+                    </li><li>protected String <a title="GoogleMap" href="../classes/GoogleMap/showFalseOrTrue.xhtml">showFalseOrTrue</a>()
+                    </li><li>protected void <a title="GoogleMap" href="../classes/GoogleMap/loadDefaults.xhtml">loadDefaults</a>()
+                    </li></ul>
+
+            }<br/></div>
+        <h2 id="hierarchy">Hierarchy</h2>
+        <div class="styled">
+          <h4>Extends</h4>
+          <ul>
+            <li>
+              <a href="../classes/ViewableData.xhtml">ViewableData</a>
+            </li>
+          </ul>
+        </div>
+        <h2 id="members">Members</h2>
+        <div class="styled members">
+          <h4>private</h4>
+          <ul class="members">
+            <li id="_includes_are_done"><strong>$_includes_are_done</strong>
+                —
+                <a href="#">Boolean</a><br/><span class="indent">this is a hack to avoid having multiple includes</span></li>
+            <li id="add_address_finder">
+              <strong>$add_address_finder</strong>
+            </li>
+            <li id="add_antipodean">
+              <strong>$add_antipodean</strong>
+            </li>
+            <li id="add_close_up_button">
+              <strong>$add_close_up_button</strong>
+            </li>
+            <li id="add_close_window_button">
+              <strong>$add_close_window_button</strong>
+            </li>
+            <li id="add_current_address_finder">
+              <strong>$add_current_address_finder</strong>
+            </li>
+            <li id="add_delete_marker_button">
+              <strong>$add_delete_marker_button</strong>
+            </li>
+            <li id="add_directions">
+              <strong>$add_directions</strong>
+            </li>
+            <li id="add_kml_link">
+              <strong>$add_kml_link</strong>
+            </li>
+            <li id="add_points_to_map">
+              <strong>$add_points_to_map</strong>
+            </li>
+            <li id="add_zoom_in_button">
+              <strong>$add_zoom_in_button</strong>
+            </li>
+            <li id="ajax_info_window_text">
+              <strong>$ajax_info_window_text</strong>
+            </li>
+            <li id="change_page_title">
+              <strong>$change_page_title</strong>
+            </li>
+            <li id="default_address_text">
+              <strong>$default_address_text</strong>
+            </li>
+            <li id="default_country_code">
+              <strong>$default_country_code</strong>
+            </li>
+            <li id="default_icon_url">
+              <strong>$default_icon_url</strong>
+            </li>
+            <li id="default_latitude">
+              <strong>$default_latitude</strong>
+            </li>
+            <li id="default_longitude">
+              <strong>$default_longitude</strong>
+            </li>
+            <li id="default_title">
+              <strong>$default_title</strong>
+            </li>
+            <li id="default_where_statement_description">
+              <strong>$default_where_statement_description</strong>
+            </li>
+            <li id="default_zoom">
+              <strong>$default_zoom</strong>
+            </li>
+            <li id="directions_div_id">
+              <strong>$directions_div_id</strong>
+            </li>
+            <li id="drop_down_div_id">
+              <strong>$drop_down_div_id</strong>
+            </li>
+            <li id="fill_colour">
+              <strong>$fill_colour</strong>
+            </li>
+            <li id="fill_opacity">
+              <strong>$fill_opacity</strong>
+            </li>
+            <li id="google_map_api_key">
+              <strong>$google_map_api_key</strong>
+            </li>
+            <li id="google_map_height">
+              <strong>$google_map_height</strong>
+            </li>
+            <li id="google_map_width">
+              <strong>$google_map_width</strong>
+            </li>
+            <li id="hidden_layers_removed_from_list">
+              <strong>$hidden_layers_removed_from_list</strong>
+            </li>
+            <li id="icon_extension">
+              <strong>$icon_extension</strong>
+            </li>
+            <li id="icon_folder">
+              <strong>$icon_folder</strong>
+            </li>
+            <li id="icon_height">
+              <strong>$icon_height</strong>
+            </li>
+            <li id="icon_image_map">
+              <strong>$icon_image_map</strong>
+            </li>
+            <li id="icon_max_count">
+              <strong>$icon_max_count</strong>
+            </li>
+            <li id="icon_width">
+              <strong>$icon_width</strong>
+            </li>
+            <li id="info_window_options">
+              <strong>$info_window_options</strong>
+            </li>
+            <li id="lat_form_field_id">
+              <strong>$lat_form_field_id</strong>
+            </li>
+            <li id="layer_list_div_id">
+              <strong>$layer_list_div_id</strong>
+            </li>
+            <li id="line_colour">
+              <strong>$line_colour</strong>
+            </li>
+            <li id="line_opacity">
+              <strong>$line_opacity</strong>
+            </li>
+            <li id="line_width">
+              <strong>$line_width</strong>
+            </li>
+            <li id="lng_form_field_id">
+              <strong>$lng_form_field_id</strong>
+            </li>
+            <li id="locale_for_results">
+              <strong>$locale_for_results</strong>
+            </li>
+            <li id="map_add_type_control">
+              <strong>$map_add_type_control</strong>
+            </li>
+            <li id="map_control_size_one_to_three">
+              <strong>$map_control_size_one_to_three</strong>
+            </li>
+            <li id="map_scale_info_size_in_pixels">
+              <strong>$map_scale_info_size_in_pixels</strong>
+            </li>
+            <li id="map_type_default_zero_to_two">
+              <strong>$map_type_default_zero_to_two</strong>
+            </li>
+            <li id="marker_options">
+              <strong>$marker_options</strong>
+            </li>
+            <li id="no_status_at_all">
+              <strong>$no_status_at_all</strong>
+            </li>
+            <li id="number_of_items_before_showing_list">
+              <strong>$number_of_items_before_showing_list</strong>
+            </li>
+            <li id="number_shown_in_around_me">
+              <strong>$number_shown_in_around_me</strong>
+            </li>
+            <li id="poly_icon">
+              <strong>$poly_icon</strong>
+            </li>
+            <li id="preload_images">
+              <strong>$preload_images</strong>
+            </li>
+            <li id="save_static_map_locally">
+              <strong>$save_static_map_locally</strong>
+            </li>
+            <li id="show_static_map_first">
+              <strong>$show_static_map_first</strong>
+            </li>
+            <li id="side_bar_div_id">
+              <strong>$side_bar_div_id</strong>
+            </li>
+            <li id="static_icon">
+              <strong>$static_icon</strong>
+            </li>
+            <li id="static_map_settings">
+              <strong>$static_map_settings</strong>
+            </li>
+            <li id="status_div_id">
+              <strong>$status_div_id</strong>
+            </li>
+            <li id="style_sheet_url">
+              <strong>$style_sheet_url</strong>
+            </li>
+            <li id="title_div_id">
+              <strong>$title_div_id</strong>
+            </li>
+            <li id="uses_sensor">
+              <strong>$uses_sensor</strong>
+            </li>
+            <li id="view_finder_size">
+              <strong>$view_finder_size</strong>
+            </li>
+          </ul>
+          <h4>protected</h4>
+          <ul class="members">
+            <li id="address"><strong>$address</strong>
+                —
+                <a href="#">String</a><br/><span class="indent">address being searched for</span></li>
+            <li id="dataObjectTitle"><strong>$dataObjectTitle</strong>
+                —
+                <a href="#">String</a><br/><span class="indent">title of map</span></li>
+            <li id="dataPointsObjectSet"><strong>$dataPointsObjectSet</strong>
+                —
+                <a href="#">ArrayList</a></li>
+            <li id="dataPointsStaticMapHTML"><strong>$dataPointsStaticMapHTML</strong>
+                —
+                <a href="#">String</a></li>
+            <li id="dataPointsXML"><strong>$dataPointsXML</strong>
+                —
+                <a href="#">String</a></li>
+            <li id="extraLayersAsLinks"><strong>$extraLayersAsLinks</strong>
+                —
+                <a href="#">ArrayList</a></li>
+            <li id="fieldNameForGoogleDataObjectWithPages"><strong>$fieldNameForGoogleDataObjectWithPages</strong>
+                —
+                <a href="#">String</a><br/><span class="indent">Method on an object that returns the datapoints</span></li>
+            <li id="filteredClassNameArray"><strong>$filteredClassNameArray</strong>
+                —
+                <a href="#">Array</a><br/><span class="indent">filter for class names</span></li>
+            <li id="googlePointsDataObject"><strong>$googlePointsDataObject</strong>
+                —
+                <a href="#">DataList</a></li>
+            <li id="linksForData"><strong>$linksForData</strong>
+                —
+                <a href="#">Array</a></li>
+            <li id="myMapFunctionName"><strong>$myMapFunctionName</strong>
+                —
+                <a href="#">String</a><br/><span class="indent">function name for map...</span></li>
+            <li id="updateServerUrlAddressSearchPoint"><strong>$updateServerUrlAddressSearchPoint</strong>
+                —
+                <a href="#">String</a></li>
+            <li id="updateServerUrlDragend"><strong>$updateServerUrlDragend</strong>
+                —
+                <a href="#">String</a></li>
+            <li id="whereStatementDescription"><strong>$whereStatementDescription</strong>
+                —
+                <a href="#">String</a></li>
+          </ul>
+        </div>
+        <h2 id="methods">Methods</h2>
+        <div class="styled">
+          <h4>protected</h4>
+          <ul>
+            <li id="DataPointsXML">
+              <a title="GoogleMap" href="../classes/GoogleMap/DataPointsXML.xhtml">DataPointsXML()</a>
+            </li>
+            <li id="createJavascript">
+              <a title="GoogleMap" href="../classes/GoogleMap/createJavascript.xhtml">createJavascript()</a>
+            </li>
+            <li id="getDataPointsXML">
+              <a title="GoogleMap" href="../classes/GoogleMap/getDataPointsXML.xhtml">getDataPointsXML()</a>
+            </li>
+            <li id="loadDefaults"><a title="GoogleMap" href="../classes/GoogleMap/loadDefaults.xhtml">loadDefaults()</a>
+                — load some defaults</li>
+            <li id="make_static_map_url_into_image">
+              <a title="GoogleMap" href="../classes/GoogleMap/make_static_map_url_into_image.xhtml">make_static_map_url_into_image()</a>
+            </li>
+            <li id="showFalseOrTrue"><a title="GoogleMap" href="../classes/GoogleMap/showFalseOrTrue.xhtml">showFalseOrTrue()</a>
+                — turns 0 into false and 1 into true</li>
+          </ul>
+          <h4>public</h4>
+          <ul>
+            <li id="AddAddressFinder">
+              <a title="GoogleMap" href="../classes/GoogleMap/AddAddressFinder.xhtml">AddAddressFinder()</a>
+            </li>
+            <li id="AllExtraLayersAsLinks">
+              <a title="GoogleMap" href="../classes/GoogleMap/AllExtraLayersAsLinks.xhtml">AllExtraLayersAsLinks()</a>
+            </li>
+            <li id="AllowAddPointsToMap">
+              <a title="GoogleMap" href="../classes/GoogleMap/AllowAddPointsToMap.xhtml">AllowAddPointsToMap()</a>
+            </li>
+            <li id="CanEdit">
+              <a title="GoogleMap" href="../classes/GoogleMap/CanEdit.xhtml">CanEdit()</a>
+            </li>
+            <li id="DataObjectTitle">
+              <a title="GoogleMap" href="../classes/GoogleMap/DataObjectTitle.xhtml">DataObjectTitle()</a>
+            </li>
+            <li id="DataPointsObjectSet">
+              <a title="GoogleMap" href="../classes/GoogleMap/DataPointsObjectSet.xhtml">DataPointsObjectSet()</a>
+            </li>
+            <li id="DataPointsStaticMapHTML">
+              <a title="GoogleMap" href="../classes/GoogleMap/DataPointsStaticMapHTML.xhtml">DataPointsStaticMapHTML()</a>
+            </li>
+            <li id="DirectionsDivId">
+              <a title="GoogleMap" href="../classes/GoogleMap/DirectionsDivId.xhtml">DirectionsDivId()</a>
+            </li>
+            <li id="DropDownDivId">
+              <a title="GoogleMap" href="../classes/GoogleMap/DropDownDivId.xhtml">DropDownDivId()</a>
+            </li>
+            <li id="EnoughPointsForAList">
+              <a title="GoogleMap" href="../classes/GoogleMap/EnoughPointsForAList.xhtml">EnoughPointsForAList()</a>
+            </li>
+            <li id="GoogleMapHeight"><a title="GoogleMap" href="../classes/GoogleMap/GoogleMapHeight.xhtml">GoogleMapHeight()</a>
+                — used for static and non-static maps, hence defined only once.</li>
+            <li id="GoogleMapWidth"><a title="GoogleMap" href="../classes/GoogleMap/GoogleMapWidth.xhtml">GoogleMapWidth()</a>
+                — used for static and non-static maps, hence defined only once.</li>
+            <li id="LayerListDivId">
+              <a title="GoogleMap" href="../classes/GoogleMap/LayerListDivId.xhtml">LayerListDivId()</a>
+            </li>
+            <li id="Link">
+              <a title="GoogleMap" href="../classes/GoogleMap/Link.xhtml">Link()</a>
+            </li>
+            <li id="MyInstanceName">
+              <a title="GoogleMap" href="../classes/GoogleMap/MyInstanceName.xhtml">MyInstanceName()</a>
+            </li>
+            <li id="MyMapFunctionName">
+              <a title="GoogleMap" href="../classes/GoogleMap/MyMapFunctionName.xhtml">MyMapFunctionName()</a>
+            </li>
+            <li id="MyStaticFunctionName">
+              <a title="GoogleMap" href="../classes/GoogleMap/MyStaticFunctionName.xhtml">MyStaticFunctionName()</a>
+            </li>
+            <li id="MyStaticInstanceName">
+              <a title="GoogleMap" href="../classes/GoogleMap/MyStaticInstanceName.xhtml">MyStaticInstanceName()</a>
+            </li>
+            <li id="ShowStaticMapFirst"><a title="GoogleMap" href="../classes/GoogleMap/ShowStaticMapFirst.xhtml">ShowStaticMapFirst()</a>
+                — what is the user preference?</li>
+            <li id="SideBarDivId">
+              <a title="GoogleMap" href="../classes/GoogleMap/SideBarDivId.xhtml">SideBarDivId()</a>
+            </li>
+            <li id="StatusDivId">
+              <a title="GoogleMap" href="../classes/GoogleMap/StatusDivId.xhtml">StatusDivId()</a>
+            </li>
+            <li id="TitleDivID">
+              <a title="GoogleMap" href="../classes/GoogleMap/TitleDivID.xhtml">TitleDivID()</a>
+            </li>
+            <li id="addExtraLayersAsLinks">
+              <a title="GoogleMap" href="../classes/GoogleMap/addExtraLayersAsLinks.xhtml">addExtraLayersAsLinks()</a>
+            </li>
+            <li id="addLayer">
+              <a title="GoogleMap" href="../classes/GoogleMap/addLayer.xhtml">addLayer()</a>
+            </li>
+            <li id="createDataPoints"><a title="GoogleMap" href="../classes/GoogleMap/createDataPoints.xhtml">createDataPoints()</a>
+                — must be public does not return the datapoints XML but loads it into variables...</li>
+            <li id="getAddress">
+              <a title="GoogleMap" href="../classes/GoogleMap/getAddress.xhtml">getAddress()</a>
+            </li>
+            <li id="getDataObjectTitle">
+              <a title="GoogleMap" href="../classes/GoogleMap/getDataObjectTitle.xhtml">getDataObjectTitle()</a>
+            </li>
+            <li id="getDataPointCount">
+              <a title="GoogleMap" href="../classes/GoogleMap/getDataPointCount.xhtml">getDataPointCount()</a>
+            </li>
+            <li id="getDataPointsObjectSet">
+              <a title="GoogleMap" href="../classes/GoogleMap/getDataPointsObjectSet.xhtml">getDataPointsObjectSet()</a>
+            </li>
+            <li id="getDataPointsStaticMapHTML">
+              <a title="GoogleMap" href="../classes/GoogleMap/getDataPointsStaticMapHTML.xhtml">getDataPointsStaticMapHTML()</a>
+            </li>
+            <li id="getExtraLayersAsLinks">
+              <a title="GoogleMap" href="../classes/GoogleMap/getExtraLayersAsLinks.xhtml">getExtraLayersAsLinks()</a>
+            </li>
+            <li id="getFieldNameForGoogleDataObjectWithPages">
+              <a title="GoogleMap" href="../classes/GoogleMap/getFieldNameForGoogleDataObjectWithPages.xhtml">getFieldNameForGoogleDataObjectWithPages()</a>
+            </li>
+            <li id="getFilteredClassNameArray">
+              <a title="GoogleMap" href="../classes/GoogleMap/getFilteredClassNameArray.xhtml">getFilteredClassNameArray()</a>
+            </li>
+            <li id="getGooglePointsDataObject">
+              <a title="GoogleMap" href="../classes/GoogleMap/getGooglePointsDataObject.xhtml">getGooglePointsDataObject()</a>
+            </li>
+            <li id="getLinksForData">
+              <a title="GoogleMap" href="../classes/GoogleMap/getLinksForData.xhtml">getLinksForData()</a>
+            </li>
+            <li id="getMyMapFunctionName">
+              <a title="GoogleMap" href="../classes/GoogleMap/getMyMapFunctionName.xhtml">getMyMapFunctionName()</a>
+            </li>
+            <li id="getUpdateServerURLAddressSearchPoint">
+              <a title="GoogleMap" href="../classes/GoogleMap/getUpdateServerURLAddressSearchPoint.xhtml">getUpdateServerURLAddressSearchPoint()</a>
+            </li>
+            <li id="getUpdateServerUrlDragend">
+              <a title="GoogleMap" href="../classes/GoogleMap/getUpdateServerUrlDragend.xhtml">getUpdateServerUrlDragend()</a>
+            </li>
+            <li id="getWhereStatementDescription">
+              <a title="GoogleMap" href="../classes/GoogleMap/getWhereStatementDescription.xhtml">getWhereStatementDescription()</a>
+            </li>
+            <li id="loadGoogleMap">
+              <a title="GoogleMap" href="../classes/GoogleMap/loadGoogleMap.xhtml">loadGoogleMap()</a>
+            </li>
+            <li id="orderItemsByLatitude"><a title="GoogleMap" href="../classes/GoogleMap/orderItemsByLatitude.xhtml">orderItemsByLatitude()</a>
+                — sorts points by Latitude</li>
+            <li id="quick_static_map"><a title="GoogleMap" href="../classes/GoogleMap/quick_static_map.xhtml">quick_static_map()</a>
+                — var arrayOfLatitudeAndLongitude: Array (Latitude" =&gt; 123, "Longitude" =&gt; 123, "Marker" =&gt; "red1"); Marker is optional</li>
+            <li id="setAddress">
+              <a title="GoogleMap" href="../classes/GoogleMap/setAddress.xhtml">setAddress()</a>
+            </li>
+            <li id="setDataObjectTitle">
+              <a title="GoogleMap" href="../classes/GoogleMap/setDataObjectTitle.xhtml">setDataObjectTitle()</a>
+            </li>
+            <li id="setDataPointsObjectSet">
+              <a title="GoogleMap" href="../classes/GoogleMap/setDataPointsObjectSet.xhtml">setDataPointsObjectSet()</a>
+            </li>
+            <li id="setDataPointsStaticMapHTML">
+              <a title="GoogleMap" href="../classes/GoogleMap/setDataPointsStaticMapHTML.xhtml">setDataPointsStaticMapHTML()</a>
+            </li>
+            <li id="setExtraLayersAsLinks">
+              <a title="GoogleMap" href="../classes/GoogleMap/setExtraLayersAsLinks.xhtml">setExtraLayersAsLinks()</a>
+            </li>
+            <li id="setFieldNameForGoogleDataObjectWithPages">
+              <a title="GoogleMap" href="../classes/GoogleMap/setFieldNameForGoogleDataObjectWithPages.xhtml">setFieldNameForGoogleDataObjectWithPages()</a>
+            </li>
+            <li id="setFilteredClassNameArray">
+              <a title="GoogleMap" href="../classes/GoogleMap/setFilteredClassNameArray.xhtml">setFilteredClassNameArray()</a>
+            </li>
+            <li id="setGooglePointsDataObject">
+              <a title="GoogleMap" href="../classes/GoogleMap/setGooglePointsDataObject.xhtml">setGooglePointsDataObject()</a>
+            </li>
+            <li id="setLinksForData">
+              <a title="GoogleMap" href="../classes/GoogleMap/setLinksForData.xhtml">setLinksForData()</a>
+            </li>
+            <li id="setMyMapFunctionName">
+              <a title="GoogleMap" href="../classes/GoogleMap/setMyMapFunctionName.xhtml">setMyMapFunctionName()</a>
+            </li>
+            <li id="setPageDataObjectSet"><a title="GoogleMap" href="../classes/GoogleMap/setPageDataObjectSet.xhtml">setPageDataObjectSet()</a>
+                — sets the list of points through a list of parent pages affected variable is: googlePointsDataObject</li>
+            <li id="setUpdateServerUrlAddressSearchPoint">
+              <a title="GoogleMap" href="../classes/GoogleMap/setUpdateServerUrlAddressSearchPoint.xhtml">setUpdateServerUrlAddressSearchPoint()</a>
+            </li>
+            <li id="setUpdateServerUrlDragend">
+              <a title="GoogleMap" href="../classes/GoogleMap/setUpdateServerUrlDragend.xhtml">setUpdateServerUrlDragend()</a>
+            </li>
+            <li id="setWhereStatementDescription">
+              <a title="GoogleMap" href="../classes/GoogleMap/setWhereStatementDescription.xhtml">setWhereStatementDescription()</a>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <footer>
+      <span/>
+    </footer>
+  </body>
+</html>

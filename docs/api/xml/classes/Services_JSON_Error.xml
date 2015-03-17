@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="Services_JSON_Error" namespace="" name="Services_JSON_Error" abstract="false" final="false" start="795" end="802">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/converters/thirdparty" file="Services_JSON.php" realpath="/var/www/_modules/googlemap/trunk/code/converters/thirdparty/Services_JSON.php" size="34784" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="b08ffb3c54cc5306c25f466e5db4d7f840e09a6a" relative="code/converters/thirdparty/Services_JSON.php"/>
+  <docblock>
+    <description/>
+    <todo value="Ultimately, this class shall be descended from PEAR_Error"/>
+  </docblock>
+  <method name="Services_JSON_Error" start="797" end="801" abstract="false" final="false" static="false" visibility="public">
+    <parameter name="message" byreference="false" type="string" default="'unknown error'"/>
+    <parameter name="code" byreference="false" type="{unknown}" default="null"/>
+    <parameter name="mode" byreference="false" type="{unknown}" default="null"/>
+    <parameter name="options" byreference="false" type="{unknown}" default="null"/>
+    <parameter name="userinfo" byreference="false" type="{unknown}" default="null"/>
+  </method>
+</class>

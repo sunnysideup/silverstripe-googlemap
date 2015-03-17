@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class xmlns="http://xml.phpdox.net/src" full="StaticMapSaverForHTTPS" namespace="" name="StaticMapSaverForHTTPS" abstract="false" final="false" start="9" end="32">
+  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/converters" file="StaticMapSaverForHTTPS.php" realpath="/var/www/_modules/googlemap/trunk/code/converters/StaticMapSaverForHTTPS.php" size="635" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="ec00cc998a747a96b4157d96652483a641cb283f" relative="code/converters/StaticMapSaverForHTTPS.php"/>
+  <docblock>
+    <description compact="save a map to a local file."/>
+  </docblock>
+  <extends full="Object" namespace="" name="Object"/>
+  <member name="save_dir" type="string" default="&quot;assets&quot;" visibility="private" line="11"/>
+  <member name="overwrite" type="{unknown}" default="false" visibility="private" line="13"/>
+  <method name="convert_to_local_file" start="19" end="31" abstract="false" final="false" static="false" visibility="public">
+    <docblock>
+      <description/>
+      <param type="object" variable="$url">
+        <type full="String" namespace="" name="String"/>
+      </param>
+      <param type="object" variable="$filename">
+        <type full="String" namespace="" name="String"/>
+      </param>
+    </docblock>
+    <parameter name="url" byreference="false" type="{unknown}"/>
+    <parameter name="filename" byreference="false" type="{unknown}"/>
+  </method>
+</class>
