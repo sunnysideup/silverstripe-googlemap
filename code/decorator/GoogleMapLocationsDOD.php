@@ -31,7 +31,10 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 	function updateCMSFields(FieldList $fields) {
 		if($this->classHasGoogleMap()) {
 			$fields->addFieldToTab("Root", new Tab("Map"));
-			$fields->addFieldToTab("Root.Map", new CheckboxField("HasGeoInfo", _t("GoogleMapLocationsDOD.HAS_ADDRESSES", "Has Address(es)? - save and reload this page to start data-entry")));
+			$fields->addFieldToTab("Root.Map", $hasGeoInfoBox = new CheckboxField("HasGeoInfo", _t("GoogleMapLocationsDOD.HAS_ADDRESSES", "Has Address(es)?")));
+			if(!$this->owner->HasGeoInfo) {
+				$hasGeoInfoBox->setDescription(_t("GoogleMap.HasGeoInfoSTART", "tick and save this page to start data-entry ..."));
+			}
 			if($this->owner->HasGeoInfo) {
 				$dataObject = new GoogleMapLocationsObject();
 				$source = $this->owner->GeoPoints();

@@ -109,7 +109,8 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	*
 	* @param string $q
 	* @param Boolean $tryAnyway
-	* @return Object Single placemark
+	*
+	* @return Object Single placemark | false
 	*/
 	protected static function get_placemark($q, $tryAnyway = false) {
 		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","server_side_available") || $tryAnyway) {
@@ -125,7 +126,6 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 				}
 			}
 		}
-		user_error("Could not find address", E_USER_NOTICE);
 	}
 
 
