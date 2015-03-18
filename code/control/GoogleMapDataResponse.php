@@ -431,7 +431,6 @@ class GoogleMapDataResponse extends Controller {
 				foreach($objects as $point) {
 					$lng += $point->Longitude;
 					$lat += $point->Latitude;
-					$excludeIDList[] = $point->ID;
 				}
 				$lng = $lng / $count;
 				$lat = $lat / $count;

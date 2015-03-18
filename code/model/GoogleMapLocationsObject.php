@@ -74,21 +74,25 @@ class GoogleMapLocationsObject extends DataObject {
 	 * The method returns a string for use in queries
 	 * The query snippet returns the distance between the GoogleMapLocationsObject and the latitude and longitude provided
 	 * NOTE: 6378.137 is the radius of the earth in kilometers
-	 * @param Double $lon - longitude of location
+	 * @param Double $lng - longitude of location
 	 * @param Double $lat - latitude of location
 	 * @return String
 	 */
-	public static function radiusDefinition($lon, $lat) {
-		return "(6378.137 * ACOS( ( SIN( PI( ) * ".$lat." /180 ) * SIN( PI( ) * \"GoogleMapLocationsObject\".\"Latitude\" /180 ) ) + ( COS( PI( ) * ".$lat." /180 ) * cos( PI( ) * \"GoogleMapLocationsObject\".\"Latitude\" /180 ) * COS( (PI( ) * \"GoogleMapLocationsObject\".\"Longitude\" /180 ) - ( PI( ) * $lon / 180 ) ) ) ) )";
+	public static function radiusDefinition($lng, $lat) {
+		return "( 6378.137 * ACOS( COS( RADIANS('.$lat.') ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Longitude\" ) - RADIANS('.$lng.') ) + SIN( RADIANS('.$lat.') ) * SIN( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) ) )";
 	}
 
-	public static function radiusDefinitionOtherTable($lon, $lat, $table, $latitudeField, $longitudeField) {
-		return "(6378.137 * ACOS( ( SIN( PI( ) * ".$lat." /180 ) * SIN( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) ) + ( COS( PI( ) * ".$lat." /180 ) * cos( PI( ) * \"".$table."\".\"".$latitudeField."\" /180 ) * COS( (PI( ) * \"".$table."\".\"".$longitudeField."\" / 180 ) - ( PI( ) * $lon / 180 ) ) ) ) ) ";
+	public static function radiusDefinitionOtherTable($lng, $lat, $table, $latitudeField, $longitudeField) {
+		$str = self::radiusDefinition($lng, $lat);
+		$str = str_replace("\"GoogleMapLocationsObject\"", "\"$table\"", $str);
+		$str = str_replace("\"Latitude\"", "\"$latitudeField\"", $str);
+		$str = str_replace("\"Longitude\"", "\"$longitudeField\"", $str);
+		return $str;
 	}
 
 	/**
-	 * @param Int $longitude
-	 * @param Int $latitude
+	 * @param Int $lng
+	 * @param Int $lat
 	 *
 	 * return GoogleMapLocationsObject | Null
 	 */
