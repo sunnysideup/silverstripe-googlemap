@@ -547,7 +547,7 @@ class GoogleMap extends ViewableData {
 		if($this->getDataPointsObjectSet()) {
 			return $this->dataPointsObjectSet->count();
 		}
-		elseif($this->googlePointsDataObject->count()){
+		elseif($this->googlePointsDataObject){
 			return $this->googlePointsDataObject->count();
 		}
 		elseif(isset($_SESSION["addCustomGoogleMap"])) {
@@ -563,9 +563,7 @@ class GoogleMap extends ViewableData {
 	 * @return Boolean
 	 */
 	public function EnoughPointsForAList() {
-		//we were using the line below, but that did not seem to work
-		//return $this->getDataPointCount() >= $this->Config()->get("number_of_items_before_showing_list") ? true : false;
-		return true;
+		return $this->getDataPointCount() >= $this->Config()->get("number_of_items_before_showing_list") ? true : false;
 	}
 
 

@@ -30,7 +30,6 @@ var GoogleMapTranslatableUserMessages = {
 	drag_instructions: "marker can be dragged to new location once this info window has been closed.",
 	partial_obscuring: "this marker (partially) obscures the following point(s):",
 	and_with_spaces: " and ",
-	zoom_in: "ZOOM IN",
 	error_in_zoom: "Error in MaxZoomService",
 	select_this_point: "select this point",
 	clear_last_route: "clear Last Route",
@@ -551,6 +550,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				function() {
 					infowindow.open(GMO.mapObject, m);
 					GMO.lastMarker = m;
+					GMO.lastInfoWindow = infowindow;
 				}
 			);
 			google.maps.event.addListener(
@@ -711,7 +711,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			var html = '<div id="infoWindowTab1" class="infoWindowTab">' + obscuringLinks + '<div>'+desc+'</div>';
 			if(this.opts.addZoomInButton) {
 				infoTabExtraLinksArray.push(
-					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">'+GMO._t.zoom_in+'</a>'
+					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">'+this.opts.addZoomInButton+'</a>'
 				);
 			}
 			if(this.opts.addDeleteMarkerButton) {
@@ -1273,7 +1273,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @todo ???
 		 */
 		createDropDown: function(sideBarArray) {
-			if(this.opts.dropBoxId) {
+			if(this.opts.dropBoxId && sideBarArray.length > 1) {
 				var el;
 				if(el = document.getElementById(this.opts.dropBoxId)) {
 					var html = '<select onchange="GMO.showMarkerFromList(this.value);">'
@@ -1863,10 +1863,17 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @todo test
 		 */
 		showMarkerFromList: function(selectedId) {
+			GMO.closeLastInfoWindow();
 			if(selectedId > -1){
 				google.maps.event.trigger(this.gmarkers[selectedId],'click');
 			}
 		},
+
+		closeLastInfoWindow: function(){
+			if(GMO.lastInfoWindow) {
+				GMO.lastInfoWindow.close();
+			}
+		}
 
 		/**
 		 * drills hole to the other side of the world from marker clicked on
@@ -2159,8 +2166,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @return Mixed
 		 */
 		getVar: function( name ) {
-			if ( geocodingFieldVars.hasOwnProperty( name ) ) {
-				return geocodingFieldVars[ name ];
+			if ( GMO.hasOwnProperty( name ) ) {
+				return GMO[ name ];
 			}
 		},
 
@@ -2171,7 +2178,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @return Mixed
 		 */
 		setVar: function(name, value) {
-			geocodingFieldVars[name] = value;
+			GMO[name] = value;
 			return this;
 		},
 
@@ -2424,3 +2431,4 @@ function xmlParse(str) {
 	}
 	return createElement('div', null);
 }
+
