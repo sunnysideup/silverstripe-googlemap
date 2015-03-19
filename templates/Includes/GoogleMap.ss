@@ -28,9 +28,6 @@
 	<div id="GoogleMapDiv" style="width: {$GoogleMapWidth}px; height: {$GoogleMapHeight}px;"></div>
 
 	<div id="extraMapOptions" class="typography">
-		<div id="MapControlsOutsideMap" class="MapExtraInformation">
-			<a href="#GoogleMapDiv" onclick="initiateGoogleMap(); return false;">reset map</a>
-		</div>
 
 		<% if AllExtraLayersAsLinks %>
 		<div id="GoogleMapExtraLayersAsList" class="MapExtraInformation">

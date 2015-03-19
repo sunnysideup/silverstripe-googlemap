@@ -493,7 +493,7 @@ class GoogleMap extends ViewableData {
 			$instanceName = $this->getMyMapFunctionName(true);
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
-			Requirements::javascript("http://maps.googleapis.com/maps/api/js?v=3.16&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
+			Requirements::javascript("//maps.googleapis.com/maps/api/js?v=3.16&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
 			Requirements::javascript("googlemap/javascript/googleMaps.js");
 			$js .= "\r\n\t\t\tjQuery(document).ready( function() { initiateGoogleMap();} );\r\n";
 			$js .= $this->createJavascript();

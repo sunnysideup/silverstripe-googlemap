@@ -317,4 +317,9 @@ class GoogleMapLocationsObject extends DataObject {
 			$this->write();
 		}
 	}
+
+	function DirectionsLink(){
+
+	}
+
 }
