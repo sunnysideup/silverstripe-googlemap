@@ -79,7 +79,7 @@ class GoogleMapLocationsObject extends DataObject {
 	 * @return String
 	 */
 	public static function radiusDefinition($lng, $lat) {
-		return "( 6378.137 * ACOS( COS( RADIANS('.$lat.') ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Longitude\" ) - RADIANS('.$lng.') ) + SIN( RADIANS('.$lat.') ) * SIN( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) ) )";
+		return "( 6378.137 * ACOS( COS( RADIANS(".$lat.") ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Longitude\" ) - RADIANS(".$lng.") ) + SIN( RADIANS(".$lat.") ) * SIN( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) ) )";
 	}
 
 	public static function radiusDefinitionOtherTable($lng, $lat, $table, $latitudeField, $longitudeField) {
@@ -318,8 +318,12 @@ class GoogleMapLocationsObject extends DataObject {
 		}
 	}
 
+	/**
+	 * provides a links to Google Maps to search for directions
+	 * @return String
+	 */
 	function DirectionsLink(){
-
+		return "https://www.google.co.nz/maps/dir//".urlencode($this->Address);
 	}
 
 }

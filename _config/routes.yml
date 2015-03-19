@@ -4,4 +4,4 @@ After: framework/routes#coreroutes
 ---
 Director:
   rules:
-    'googlemap//$Action/$OwnerID/$Title' : 'GoogleMapDataResponse'
+    'googlemap//$Action/$OwnerID/$Title/$Longitude/$Latitude/$Filter' : 'GoogleMapDataResponse'

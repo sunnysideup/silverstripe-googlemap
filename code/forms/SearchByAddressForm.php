@@ -49,7 +49,7 @@ class SearchByAddressForm extends Form {
 			$controller,
 			"SearchByAddressForm",
 			new FieldList(
-				$addressField = new GoogleAddressField("FindNearAddress", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->defaultAddress),
+				$addressField = new TextField("FindNearAddress", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->defaultAddress),
 				new HiddenField("ClassNamesSearchedFor", "ClassName", $classNamesAsString)
 			),
 			new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),

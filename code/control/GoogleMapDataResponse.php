@@ -42,7 +42,7 @@ class GoogleMapDataResponse extends Controller {
 	 * Default URL handlers - (Action)/(ID)/(OtherID)
 	 */
 	private static $url_handlers = array(
-		'$Action//$OwnerID/$Title/$Longitude/$Latitude/$Filter' => 'handleAction',
+		'/$Action//$OwnerID/$Title/$Longitude/$Latitude/$Filter' => 'handleAction',
 	);
 
 
@@ -267,7 +267,7 @@ class GoogleMapDataResponse extends Controller {
 	 * @return String (XML)
 	 */
 	public function showemptymap($request) {
-		return $this->makeXMLData(null, null, $this->title, _t("GoogleMap.POINT_RELATED_TO", "Points related to ").$this->title);
+		return $this->makeXMLData(null, null, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
 	}
 
 	/**
@@ -278,7 +278,7 @@ class GoogleMapDataResponse extends Controller {
 	public function showpagepointsmapxml($request) {
 		$data = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->owner->ID));
 		if($data->count()) {
-			return $this->makeXMLData(null, $data, $this->title, $this->title);
+			return $this->makeXMLData(null, $data, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
 		}
 		return $this->showemptymap($request);
 	}
@@ -290,7 +290,7 @@ class GoogleMapDataResponse extends Controller {
 	 */
 	public function showchildpointsmapxml($request) {
 		if($children = $this->owner->getChildrenOfType($this->owner, null)) {
-			return $this->makeXMLData($children, null, "Points related to ".$this->title, "Points related to ".$this->title);
+			return $this->makeXMLData($children, null, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
 		}
 		return $this->showemptymap($request);
 	}
@@ -393,6 +393,7 @@ class GoogleMapDataResponse extends Controller {
 		$lng = 0;
 		$lat = 0;
 		$excludeIDList = array();
+
 		if($this->lng && $this->lat) {
 			$lng = $this->lng;
 			$lat = $this->lat;
@@ -443,7 +444,10 @@ class GoogleMapDataResponse extends Controller {
 				);
 			}
 		}
-		return $this->showemptymap($request);
+		else {
+			die("GGG");
+			return $this->showemptymap($request);
+		}
 	}
 
 	/**

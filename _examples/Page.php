@@ -1,6 +1,10 @@
 <?php
 class Page extends SiteTree {
 
+	function CustomAjaxInfoWindow(){
+		return "my custom message";
+	}
+
 }
 class Page_Controller extends ContentController {
 
@@ -17,10 +21,6 @@ class Page_Controller extends ContentController {
 		//$this->addUpdateServerUrlDragend(...);
 		//$this->clearCustomMaps(...);
 		//$this->addCustomMap(...);
-	}
-
-function CustomAjaxInfoWindow(){
-		return "my custom message";
 	}
 
 }

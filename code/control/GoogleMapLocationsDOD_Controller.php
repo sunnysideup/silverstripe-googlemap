@@ -175,7 +175,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 				$title = $pointArray["FullAddress"];
 				$lng = $pointArray["Longitude"];
 				$lat = $pointArray["Latitude"];
-				$this->addMap("showaroundmexml", $title, $lng, $lat, $filter );
+				$this->owner->addMap("showaroundmexml", $title, $lng, $lat, $filter );
 			}
 		}
 		else {
