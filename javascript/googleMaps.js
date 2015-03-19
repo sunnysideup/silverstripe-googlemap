@@ -708,7 +708,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				obscuringLinks += "</span></p>";
 			}
 			//basic html
-			var html = '<div id="infoWindowTab1" class="infoWindowTab">' + obscuringLinks + '<h1>'+name+'</h1><div>'+desc+'</div>';
+			var html = '<div id="infoWindowTab1" class="infoWindowTab">' + obscuringLinks + '<div>'+desc+'</div>';
 			if(this.opts.addZoomInButton) {
 				infoTabExtraLinksArray.push(
 					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">'+GMO._t.zoom_in+'</a>'
@@ -869,7 +869,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				);
 			}
 			//basic html
-			var html = '<div id="infoWindowTab1" class="infoWindowTab"><h1>'+name+'</h1><div>'+desc+'</div>'
+			var html = '<div id="infoWindowTab1" class="infoWindowTab">'
+				+ '<div>'+desc+'</div>'
 				+ '<p class="infoTabBasicLinks">'
 				+ '<a href="javascript:void(0)" onclick="'+this.variableName+'.mapObject.closeInfoWindow();">'+GMO._t.close+'</a>'
 				+ ', <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickHideMe\')">'+GMO._t.remove+'</a>'
