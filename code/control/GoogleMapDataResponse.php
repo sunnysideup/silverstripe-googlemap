@@ -10,9 +10,6 @@
  * HERE are the options
  * ======================
  *
- * 'turnonstaticmaps' => start with static maps
- *
- * 'turnoffstaticmaps' => go straight to interactive maps
  *
  * 'showemptymap' => map without anything on it, fallback
  *
@@ -107,8 +104,6 @@ class GoogleMapDataResponse extends Controller {
 	 * @inherited
 	 */
 	private static $allowed_actions = array(
-		'turnonstaticmaps',
-		'turnoffstaticmaps',
 		'showemptymap',
 		'showpagepointsmapxml',
 		'showchildpointsmapxml',
@@ -125,8 +120,6 @@ class GoogleMapDataResponse extends Controller {
 	 * @var Array
 	 */
 	private static $actions_without_owner = array(
-		'turnonstaticmaps',
-		'turnoffstaticmaps',
 		'showemptymap'
 	);
 
@@ -266,26 +259,6 @@ class GoogleMapDataResponse extends Controller {
 	 */
 	function index($request) {
 		return $this->showemptymap($request);
-	}
-
-	/**
-	 * @param SS_HTTPRequest
-	 *
-	 * @return String
-	 */
-	public function turnonstaticmaps($request) {
-		Session::set("StaticMapsOff", 0);
-		return _t("GoogleMap.STATIC_MAPS_LOADED_FIRST", "static maps will be loaded first");
-	}
-
-	/**
-	 * @param SS_HTTPRequest
-	 *
-	 * @return String
-	 */
-	public function turnoffstaticmaps($request) {
-		Session::set("StaticMapsOff", 1);
-		return _t("GoogleMap.INTERACTIVE_MAPS_LOADED_IMMEDIATELY", "interactive maps will be loaded immediately");
 	}
 
 	/**
@@ -598,14 +571,10 @@ class GoogleMapDataResponse extends Controller {
 		elseif($GooglePointsDataObject) {
 			$this->map->setGooglePointsDataObject($GooglePointsDataObject);
 		}
-		else {
-			$this->staticMapHTML = "<p>No points found</p>";
-		}
 		$data = $this->map->createDataPoints();
 
 		if(Director::is_ajax() || $this->owner->ID) {
 			//$this->dataPointsXML = $data[1];
-			$this->turnoffstaticmaps(null);
 			$this->response->addHeader("Content-Type", "text/xml; charset=\"utf-8\"");
 			return $this->renderWith("GoogleMapXml");
 		}

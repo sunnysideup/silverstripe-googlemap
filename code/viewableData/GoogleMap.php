@@ -35,7 +35,7 @@ class GoogleMap extends ViewableData {
 	private static $google_map_height = 500;
 
 	/* MAP CONTROLS*/
-	private static $map_type_default_zero_to_two = 0; //MOVE TO SITECONFIG
+	private static $map_type_default = 0; //MOVE TO SITECONFIG
 	private static $view_finder_size = 100; //MOVE TO SITECONFIG
 	private static $map_add_type_control = false; //MOVE TO SITECONFIG
 	private static $map_control_size_one_to_three = 3; //MOVE TO SITECONFIG
@@ -63,8 +63,6 @@ class GoogleMap extends ViewableData {
 	private static $add_directions = false; //MOVE TO SITECONFIG
 	private static $add_current_address_finder = false; //MOVE TO SITECONFIG
 	private static $add_zoom_in_button = true; //MOVE TO SITECONFIG
-	private static $add_close_up_button = false; //MOVE TO SITECONFIG
-	private static $add_close_window_button = false; //MOVE TO SITECONFIG
 	private static $ajax_info_window_text = "View Details"; //MOVE TO SITECONFIG
 
 	/* MARKERS */
@@ -78,7 +76,6 @@ class GoogleMap extends ViewableData {
 	private static $icon_folder = "/googlemap/images/icons/";
 	private static $icon_width = 20;
 	private static $icon_height = 34;
-	private static $icon_image_map = "[]";
 	private static $icon_extension = "png";
 	private static $icon_max_count = 12;
 
@@ -91,7 +88,6 @@ class GoogleMap extends ViewableData {
 	private static $poly_icon = "";
 
 	/* STATIC MAP */
-	private static $show_static_map_first = false; //MOVE TO SITECONFIG
 	private static $static_map_settings = "maptype=roadmap";
 	private static $static_icon = "";
 	private static $save_static_map_locally = false;
@@ -209,19 +205,14 @@ class GoogleMap extends ViewableData {
 	 */
 	protected $myMapFunctionName = "GMO";
 		public function setMyMapFunctionName($a){$this->myMapFunctionName = $s;}
-		public function MyMapFunctionName(){return $this->getMyMapFunctionName(false, false);}
-		public function MyInstanceName(){return $this->getMyMapFunctionName(true, false);}
-		public function MyStaticFunctionName(){return $this->getMyMapFunctionName(false, true);}
-		public function MyStaticInstanceName(){return $this->getMyMapFunctionName(true, true);}
-		public function getMyMapFunctionName($instanceName = false, $staticVersion = false){
+		public function MyMapFunctionName(){return $this->getMyMapFunctionName(false);}
+		public function MyInstanceName(){return $this->getMyMapFunctionName(true);}
+		public function getMyMapFunctionName($instanceName = false){
 			if($instanceName) {
 				$var = 'load_my_map_'.$this->myMapFunctionName;
 			}
 			else {
 				$var = $this->myMapFunctionName;
-			}
-			if($staticVersion) {
-				$var .= "_static";
 			}
 			return $var;
 		}
@@ -256,26 +247,6 @@ class GoogleMap extends ViewableData {
 		public function setDataPointsObjectSet($s){$this->dataPointsObjectSet = $s;}
 		public function DataPointsObjectSet(){return $this->getDataPointsObjectSet();}
 		public function getDataPointsObjectSet(){return $this->dataPointsObjectSet;}
-
-
-	/**
-	 * what is the user preference?
-	 * @return Boolean
-	 */
-	public function ShowStaticMapFirst() {
-		return (
-			Config::inst()->get("GoogleMap", "show_static_map_first") && !Session::get("StaticMapsOff")
-		) ? true : false;
-	}
-
-
-	/**
-	 * @var String (HTML)
-	 */
-	protected $dataPointsStaticMapHTML;
-		public function setDataPointsStaticMapHTML($s){$this->dataPointsStaticMapHTML = $s;}
-		public function DataPointsStaticMapHTML(){return $this->getDataPointsStaticMapHTML();}
-		public function getDataPointsStaticMapHTML(){return $this->dataPointsStaticMapHTML;}
 
 
 	/**
@@ -382,9 +353,7 @@ class GoogleMap extends ViewableData {
 		 * @return ArrayList
 		 */
 		public function AllExtraLayersAsLinks() {
-			if(!$this->ShowStaticMapFirst()) {
-				return $this->getExtraLayersAsLinks();
-			}
+			return $this->getExtraLayersAsLinks();
 		}
 
 	/**
@@ -520,26 +489,14 @@ class GoogleMap extends ViewableData {
 		if(!self::$_includes_are_done) {
 			Requirements::themedCSS("googleMap");
 			Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-			Requirements::javascript("googlemap/javascript/googleMapStatic.js");
 			$variableName = $this->getMyMapFunctionName(false);
 			$instanceName = $this->getMyMapFunctionName(true);
-			$staticInstanceName = $this->getMyMapFunctionName(true, true);
-			$js .= "\r\n\t\t\t". $staticInstanceName." = new googleMapStatic();".
-				"\r\n\t\t\t".$staticInstanceName.".init();".
-				"\r\n\t\t\t".$staticInstanceName.".setVar('variableName', '".$instanceName."');\r\n";
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
-			if(!$this->ShowStaticMapFirst()) {
-				Requirements::javascript("http://maps.googleapis.com/maps/api/js?v=3.16&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
-				Requirements::javascript("googlemap/javascript/googleMaps.js");
-				$js .= "\r\n\t\t\t".$staticInstanceName.".setVar('scriptsLoaded', true);"
-					."\r\n\t\t\tjQuery(document).ready( function() { initiateGoogleMap();} );\r\n";
-			}
-			else {
-				$js .= "\r\n\t\t\t\t".$staticInstanceName.".setVar('scriptsLoaded', false);\r\n";
-				Requirements::javascript('http://www.google.com/jsapi?key='.Config::inst()->get("GoogleMap", "google_map_api_key"));//
-			}
-			$js .= $this->createJavascript($staticInstanceName);
+			Requirements::javascript("http://maps.googleapis.com/maps/api/js?v=3.16&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
+			Requirements::javascript("googlemap/javascript/googleMaps.js");
+			$js .= "\r\n\t\t\tjQuery(document).ready( function() { initiateGoogleMap();} );\r\n";
+			$js .= $this->createJavascript();
 			Requirements::customScript($js, "GoogleMapCustomScript");
 			self::$_includes_are_done = true;
 		}
@@ -619,7 +576,6 @@ class GoogleMap extends ViewableData {
 	 * @return Boolean
 	 */
 	public function createDataPoints() {
-		$this->dataPointsStaticMapHTML = '';
 		$this->dataPointsXML = '';
 		$this->dataPointsObjectSet = new ArrayList();
 		$this->loadDefaults();
@@ -628,12 +584,6 @@ class GoogleMap extends ViewableData {
 		$averageLatitude = 0;
 		$averageLongitude = 0;
 		//width
-		$staticMapWidth = $this->GoogleMapWidth();
-		if($staticMapWidth > 512) { $staticMapWidth = 512;}
-		//height
-		$staticMapHeight = $this->GoogleMapHeight();
-		if($staticMapHeight > 512) { $staticMapHeight = 512;}
-		$this->dataPointsStaticMapHTML = "size=".$staticMapWidth."x".$staticMapHeight;
 		$totalCount = 0;
 		if($this->googlePointsDataObject) {
 			$totalCount = $this->googlePointsDataObject->count();
@@ -641,10 +591,6 @@ class GoogleMap extends ViewableData {
 		if($totalCount > 0  && $totalCount < 500) {
 			$count = 0;
 			$pointsXml = '';
-			$this->dataPointsStaticMapHTML .= '&amp;markers=';
-			if($iconURLForStatic = $this->Config()->get("default_icon_url")) {
-				$this->dataPointsStaticMapHTML .= 'icon:'.urlencode($iconURLForStatic).'|';
-			}
 			//the sort works, but Google Map does not seem to care...
 			//$this->googlePointsDataObject = $this->orderItemsByLatitude($this->GooglePointsDataObject);
 			foreach($this->googlePointsDataObject as $dataPoint) {
@@ -663,17 +609,10 @@ class GoogleMap extends ViewableData {
 						else {
 							$staticIcon = $this->Config()->get("static_icon");
 						}
-						if($count) {
-						 $this->dataPointsStaticMapHTML .= '|';
-						}
 						$center = round($dataPoint->Latitude, 6).",".round($dataPoint->Longitude, 6);
 						//get the center IF there is only one point...
 						if(!$count) {
 							$defaultCenter = $center;
-						}
-						$this->dataPointsStaticMapHTML .= $center;
-						if($staticIcon) {
-							$this->dataPointsStaticMapHTML .= ",".$staticIcon;
 						}
 						$pointsXml .=
 									'<Placemark>'.
@@ -689,9 +628,6 @@ class GoogleMap extends ViewableData {
 					}
 				}
 				$idArray[$dataPoint->ID] = $dataPoint->ID;
-			}
-			if($count == 1) {
-				$this->dataPointsStaticMapHTML .= '&amp;center='.$defaultCenter.'&amp;zoom='.$this->Config()->get("default_zoom");
 			}
 			if(!$averageLongitude) {
 				$averageLongitude = $this->config()->get("default_longitude");
@@ -709,26 +645,6 @@ class GoogleMap extends ViewableData {
 						.'</mapinfo>'
 						.$pointsXml;
 		}
-		else {
-			if($averageLongitude) {
-				$averageLongitude = $averageLongitude / $count;
-			}
-			else {
-				$averageLongitude = $this->config()->get("default_longitude");
-			}
-			if($averageLatitude) {
-				$averageLatitude = $averageLatitude / $count;
-			}
-			else {
-				$averageLatitude = $this->config()->get("default_latitude");
-			}
-			$this->dataPointsStaticMapHTML .=
-				"&amp;center=".$averageLongitude.",".$averageLatitude.
-				"&amp;zoom=".$bestZoom;
-		}
-		$this->dataPointsStaticMapHTML = self::make_static_map_url_into_image(
-			$this->getDataPointsStaticMapHTML(),
-			$this->getDataObjectTitle());
 		return true;
 	}
 
@@ -739,7 +655,6 @@ class GoogleMap extends ViewableData {
 	protected function createJavascript() {
 			$variableName = $this->getMyMapFunctionName(false);
 			$instanceName = $this->getMyMapFunctionName(true);
-			$staticInstanceName = $this->getMyMapFunctionName(true, true);
 		$js = '
 			var '.$instanceName.' = new GoogleMapConstructor(
 				"GoogleMapDiv",
@@ -767,8 +682,6 @@ class GoogleMap extends ViewableData {
 					addDirections:'.$this->showFalseOrTrue($this->config()->get("add_directions")).',
 					addCurrentAddressFinder:'.$this->showFalseOrTrue($this->config()->get("add_current_address_finder")).',
 					addZoomInButton:"'.$this->config()->get("add_zoom_in_button").'",
-					addCloseUpButton:"'.$this->config()->get("add_close_up_button").'",
-					addCloseWindowButton:"'.$this->config()->get("add_close_window_button").'",
 
 					/* MARKER */
 					addPointsToMap:'.$this->showFalseOrTrue($this->config()->get("add_points_to_map")).',
@@ -781,7 +694,6 @@ class GoogleMap extends ViewableData {
 					iconFolder: "'.$this->config()->get("icon_folder").'",
 					iconWidth:'.$this->config()->get("icon_width").',
 					iconHeight:'.$this->config()->get("icon_height").',
-					iconImageMap:'.$this->config()->get("icon_image_map").',
 					iconExtension:"'.$this->config()->get("icon_extension").'",
 					iconMaxCount:'.$this->config()->get("icon_max_count").',
 
@@ -794,7 +706,7 @@ class GoogleMap extends ViewableData {
 					polyIcon: "'.$this->config()->get("poly_icon").'",
 
 					/* MAP*/
-					mapTypeDefaultZeroToTwo: '.intval($this->config()->get("map_type_default_zero_to_two")-0).',
+					mapTypeDefault: '.intval($this->config()->get("map_type_default")-0).',
 					viewFinderSize:'.intval($this->config()->get("view_finder_size") - 0).',
 					mapAddTypeControl:'.$this->showFalseOrTrue($this->config()->get("map_add_type_control")).',
 					mapControlSizeOneToThree:'.$this->config()->get("map_control_size_one_to_three").',
@@ -821,23 +733,18 @@ class GoogleMap extends ViewableData {
 				}
 			);
 			function initiateGoogleMap() {
-				if(!'.$staticInstanceName.'.getVar(\'scriptsLoaded\')) {
-					alert("load interactive map by clicking on it");
-				}
-				else {
-					'.$instanceName.'.init();';
+				'.$instanceName.'.init();';
 		if($this->linksForData && count($this->linksForData)) {
 			foreach($this->linksForData as $link) {
 				$js .= '
-					'.$instanceName.'.addLayer("'.Director::absoluteBaseURL().$link.'");';
+				'.$instanceName.'.addLayer("'.Director::absoluteBaseURL().$link.'");';
 			}
 		}
 		elseif($this->address) {
 			$js .= '
-					'.$instanceName.'.findAddress(\''.$this->address.'\')';
+				'.$instanceName.'.findAddress(\''.$this->address.'\')';
 		}
 		$js .= '
-				}
 			}';
 		return $js;
 	}

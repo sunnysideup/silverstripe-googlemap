@@ -124,25 +124,14 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		if(!$title) {
 			$title = $this->owner->Title;
 		}
-		$linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filter);
-		//where the magic happens...
-		$this->googleMap->addLayer($linkForData);
-		if(!Director::is_ajax()) {
-			if($this->hasStaticMaps()) {
-				$controller = new GoogleMapDataResponse();
-				$allowedActions = Config::inst()->get("GoogleMapDataResponse", "allowed_actions");
-				if(isset($allowedActions[$action])) {
-					$controller->setOwner($this->owner);
-					$controller->setTitle($title);
-					$controller->setLng($lng);
-					$controller->setLat($lat);
-					$controller->setFilter($filter);
-					return $controller->$action();
-				}
-				else {
-					user_error("Could not find $action action in GoogleMapDataResponse", E_USER_NOTICE );
-				}
-			}
+		$allowedActions = Config::inst()->get("GoogleMapDataResponse", "allowed_actions");
+		if(isset($allowedActions[$action]) || in_array($action, $allowedActions)) {
+			$linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filter);
+			//where the magic happens...
+			$this->googleMap->addLayer($linkForData);
+		}
+		else {
+			user_error("Could not find $action action in GoogleMapDataResponse", E_USER_NOTICE );
 		}
 		return Array();
 	}
@@ -274,12 +263,6 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		return Array();
 	}
 
-	/**
-	 * return Boolean
-	 */
-	protected function hasStaticMaps() {
-		return (!Session::get("StaticMapsOff") && $this->googleMap->ShowStaticMapFirst()) ? true : false;
-	}
 
 	/**
 	 * initialise GoogleMap
@@ -337,9 +320,6 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		}
 		elseif($pageDataList) {
 			$this->googleMap->setPageDataObjectSet($pageDataList);
-		}
-		else {
-			$this->googleMap->staticMapHTML = "<p>"._t("GoogleMap.NO_POINTS_FOUND", "no points found")."</p>";
 		}
 		$data = $this->googleMap->createDataPoints();
 		return $this->owner->renderWith("GoogleMapXml");

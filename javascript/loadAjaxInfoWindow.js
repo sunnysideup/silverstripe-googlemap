@@ -13,12 +13,3 @@ function loadAjaxInfoWindow(el, page) {
 	return true;
 }
 
-function turnOnStaticMaps(el, page) {
-	var completeURL = jQuery('base').attr("href") + "googlemap/turnonstaticmaps/"; //NOTE THAT jQuery('base').attr('href') should work as the base tag should be included in your header.
-	jQuery(el).load(completeURL, {},
-		function() {
-			jQuery(el).html("stopped");
-		}
-	);
-	return true;
-}

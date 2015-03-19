@@ -2,12 +2,6 @@
 <div class="googleMapHolder">
 	<% with GoogleMapController %>
 
-		<% if ShowStaticMapFirst %>
-	<div class="loadInteractiveMap">
-		<a href="#" onclick="loadMapScripts(); return false;">load interactive map</a>
-	</div>
-		<% end_if %>
-
 		<% if AddAddressFinder %>
 	<div class="findAddressHtml">
 		<a class="searchForAddress" href="#GoogleMapDiv" onclick="jQuery('#googleMapAddressFinderFieldSet').slideToggle(); return false;">search for address/location</a>
@@ -31,16 +25,11 @@
 
 	<% if TitleDivId %><h4 id="$TitleDivId" class="MapExtraInformation"></h4><% end_if %>
 
-	<div id="GoogleMapDiv" style="width: {$GoogleMapWidth}px; height: {$GoogleMapHeight}px;">
-		<% if ShowStaticMapFirst %><a href="#" id="loadMapNowWithinMap" onclick="loadMapScripts(); return false;">$DataPointsStaticMapHTML</a><% end_if %>
-	</div>
+	<div id="GoogleMapDiv" style="width: {$GoogleMapWidth}px; height: {$GoogleMapHeight}px;"></div>
 
 	<div id="extraMapOptions" class="typography">
 		<div id="MapControlsOutsideMap" class="MapExtraInformation">
-			<a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.savePosition();">save map position</a> |
-			<a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.goToSavedPosition();">back to saved map position</a> |
-			<a href="#GoogleMapDiv" onclick="initiateGoogleMap(); return false;">reset map</a> |
-			<a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.turnOnStaticMaps(this, '{$Link}')" title="without loading dynamic maps (stop maps) - pages load faster">stop maps</a>
+			<a href="#GoogleMapDiv" onclick="initiateGoogleMap(); return false;">reset map</a>
 		</div>
 
 		<% if AllExtraLayersAsLinks %>

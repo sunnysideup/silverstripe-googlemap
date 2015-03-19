@@ -44,8 +44,8 @@ GoogleMap:
   # MAP CONTROLS
   #####################################
 
-  # "0" => "normal", "1" => "satellite", "2" => "satellite with markings", "3" => "natural"
-  map_type_default_zero_to_two: 3
+  # "1" => "roadmap", "2 => "satellite", "3" => "hybrid", "4" => "terrain"
+  map_type_default: 3
 
   #size of the view finder in pixels (e.g. 250)
   view_finder_size: 200
@@ -124,12 +124,6 @@ GoogleMap:
   #add a "zoom in" link on info window, should be emptry string or text for button.
   add_zoom_in_button: ""
 
-  #add a "close-up" link on info window, shouldbe emptry string or text for button.
-  add_close_up_button: ""
-
-  #add a "close window" link on info window, shouldbe emptry string or text for button.
-  add_close_window_button: ""
-
   # the text that links through to the details for the marker
   ajax_info_window_text: "view details"
 
@@ -139,12 +133,14 @@ GoogleMap:
   # MARKER
   #####################################
 
+  #allow user to add points to the map
   add_points_to_map: true
 
-  add_delete_marker_button: "remove this location"
+  #allow user to remove points from the map
+  add_delete_marker_button: "remove me"
 
   #marker options (see http: https://developers.google.com/maps/documentation/javascript/reference#MarkerOptions for details)
-  marker_options: "{opacity: 1.0}"
+  marker_options: "{opacity: 1.0, anchorPoint: 12, icon: '/images/icon.png', shape: new google.maps.MarkerShape({coords: [0,0,50,50], type: 'rect'})}"
 
 
   #####################################
@@ -159,9 +155,6 @@ GoogleMap:
   icon_width: 20
 
   icon_height: 34
-
-  # can leave blank by setting it to []
-  icon_image_map: "[0,0 , 3,2 , 7,7]"
 
   #default icon extension (e.g. png, gif or jpg)
   icon_extension: "png"
@@ -197,9 +190,6 @@ GoogleMap:
   #####################################
   # STATIC MAP
   #####################################
-
-  #if set to 1, the map will load as a picture rather than an interactive map, with the opportunity to start an interactive map - you need to set this to 1 (true)
-  show_static_map_first: 0
 
   static_map_settings: "maptype=terrain"
 

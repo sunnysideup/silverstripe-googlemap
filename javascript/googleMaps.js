@@ -231,10 +231,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 */
 		mapTypesArray: function(i){
 			var a = new Array();
-			a[0] = google.maps.MapTypeId.HYBRID;
 			a[1] = google.maps.MapTypeId.ROADMAP;
 			a[2] = google.maps.MapTypeId.SATELLITE;
-			a[3] = google.maps.MapTypeId.TERRAIN;
+			a[3] = google.maps.MapTypeId.HYBRID;
+			a[4] = google.maps.MapTypeId.TERRAIN;
 			return a[i];
 		},
 
@@ -261,7 +261,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			var mapOptions = {
 				center: new google.maps.LatLng(this.opts.defaultLatitude, this.opts.defaultLongitude),
 				zoom: this.opts.defaultZoom,
-				mapTypeId: google.maps.MapTypeId.TERRAIN,
 
 				// Add map type control
 				mapTypeControl: this.opts.mapAddTypeControl,
@@ -715,19 +714,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">'+GMO._t.zoom_in+'</a>'
 				);
 			}
-			if(this.opts.addCloseUpButton) {
-				infoTabExtraLinksArray.push(
-					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickCloseUp\')">'+this.opts.addCloseUpButton+'</a>'
-				);
-			}
 			if(this.opts.addDeleteMarkerButton) {
 				infoTabExtraLinksArray.push(
 					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickRemoveMe\')">'+this.opts.addDeleteMarkerButton+'</a>'
-				);
-			}
-			if(this.opts.addCloseWindowButton) {
-				infoTabExtraLinksArray.push(
-					'<a href="javascript:void(0)" onclick="infowindow.close();">'+this.opts.addCloseWindowButton+'</a>'
 				);
 			}
 			if(infoTabExtraLinksArray.length) {
@@ -745,9 +734,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						GMO.mapObject.setCenter(m.position);
 					}
 				});
-			});
-			google.maps.event.addListener(m, "clickCloseUp", function() {
-				m.showMapBlowup();//zoom into marker
 			});
 			google.maps.event.addListener(m, "clickRemoveMe", function() {
 				m.setMap(null);
@@ -2294,9 +2280,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			var latLng = new google.maps.LatLng(GMO.opts.defaultLatitude, GMO.opts.defaultLongitude, false);
 			GMO.zoomTo(latLng, GMO.opts.defaultZoom);
 			GMO.mapObject.clearOverlays(GMO.markersArray);
-			if(GMO.opts.mapTypeDefaultZeroToTwo) {
-				var mapType = GMO.mapTypesArray(GMO.opts.mapTypeDefaultZeroToTwo-0);
-				//GMO.mapObject.setMapTypeId();
+			if(GMO.opts.mapTypeDefault) {
+				var mapType = GMO.mapTypesArray(GMO.opts.mapTypeDefault-0);
+				GMO.mapObject.setMapTypeId(mapType);
 			}
 			if(GMO.defaultUrl) {
 				GMO.downloadXml(GMO.defaultUrl);
