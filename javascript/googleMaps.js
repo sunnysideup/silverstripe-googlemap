@@ -497,7 +497,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @param URL iconUrl
 		 * @todo make private
 		 */
-		createMarker: function(point,name,desc, serverId, iconUrl) {// Create Marker
+		createMarker: function(point, name, desc, serverId, iconUrl) {// Create Marker
 			var currentLayerId = this.layerInfo.length - 1;
 			//marker options
 			var markerOpts = this.opts.markerOptions || {};
