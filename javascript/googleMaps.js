@@ -1873,7 +1873,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			if(GMO.lastInfoWindow) {
 				GMO.lastInfoWindow.close();
 			}
-		}
+		},
 
 		/**
 		 * drills hole to the other side of the world from marker clicked on
