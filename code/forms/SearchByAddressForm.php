@@ -33,8 +33,8 @@ class SearchByAddressForm extends Form {
 	 *
 	 * @param Controller $controller
 	 * @param String $name
-	 * @param Array $classNamesSearchedFor
 	 * @param String $defaultAddress
+	 * @param Array $classNamesSearchedFor
 	 *
 	 * @return Form
 	 */
@@ -77,7 +77,7 @@ class SearchByAddressForm extends Form {
 		//$form->Fields()->fieldByName("Address")->setValue($pointArray["address"]); //does not work ....
 		//$this->owner->addMap($action = "showsearchpoint", "Your search", $lng, $lat);
 		$action = "showaroundmexml";
-		$title = _t("GoogleMap.CLOSESTS_TO_YOUR_SEARCH", "Closests to")." ".$this->address;
+		$title = _t("GoogleMap.CLOSEST_TO_YOUR_SEARCH", "Closest to")." ".$this->address;
 		$this->getController()->addMap($action, $title, $lng, $lat, $classNames);
 		return array();
 	}
