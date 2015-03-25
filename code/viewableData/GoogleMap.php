@@ -367,7 +367,9 @@ class GoogleMap extends ViewableData {
 		 * @param ArrayData $linkForData (Title, Link)
 		 */
 		function addLayer($linkForData) {
-			$this->linksForData[] = $linkForData;
+			if(!in_array($linkForData, $this->linksForData)) {
+				$this->linksForData[] = $linkForData;
+			}
 		}
 
 

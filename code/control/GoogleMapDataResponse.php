@@ -445,7 +445,6 @@ class GoogleMapDataResponse extends Controller {
 			}
 		}
 		else {
-			die("GGG");
 			return $this->showemptymap($request);
 		}
 	}

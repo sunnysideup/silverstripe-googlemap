@@ -56,7 +56,7 @@ var GoogleMapTranslatableUserMessages = {
 	no_location_could_be_found: "No locations could be found.",
 	updating_lists: "Updating lists . . .",
 	you_added: "You added",
-	select_a_location: " - Select a location - ",
+	select_a_location: " - Highlight a Location on the Map - ",
 	kml: "kml",
 	hide: "hide [x]",
 	show_help: "show help",
@@ -70,7 +70,7 @@ var GoogleMapTranslatableUserMessages = {
 	no_valid_start: "No valid start location has been selected.",
 	no_valid_end: "No valid end location has been selected.",
 	searching_for_route: "Searching for Route . . .",
-	no_route_could_be_found: "No Route Could Be Found . . .",
+	no_route_could_be_found: "No Route could be Found . . .",
 	from: "from",
 	to: "to",
 	do_next: "do next"
