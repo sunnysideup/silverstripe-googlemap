@@ -544,6 +544,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			var infoWindowSettings = this.opts.infoWindowOptions || {};
 			infoWindowSettings.content = contentString;
 			var infowindow = new google.maps.InfoWindow(infoWindowSettings);
+			//GMO.spiderCode.addListener(
 			google.maps.event.addListener(
 				m,
 				"click",
@@ -579,6 +580,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			marker.setMap(GMO.mapObject);
 			this.gmarkers.push(m);
 			this.gmarkers.push(m);
+			//GMO.spiderCode.addMarker(m);
 			return m;
 		},
 
@@ -2298,7 +2300,12 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			//GMO.mapOriginalSize = GMO.mapObject.getSize();
 			GMO.mapOriginalSize = {width: GMO.mapObject.getDiv().offsetWidth, height: GMO.mapObject.getDiv().offsetHeight};
 			GMO.updateStatus(GMO._t.map_ready);
-
+			//GMO.spiderCode = new OverlappingMarkerSpiderfier(GMO.map);
+			//GMO.spiderCode.addListener('spiderfy',
+			//	function(markers) {
+			//		iw.close();
+			//	}
+			//);
 		}
 	}
 
@@ -2432,3 +2439,6 @@ function xmlParse(str) {
 	return createElement('div', null);
 }
 
+
+
+//overlapping spider to be added
