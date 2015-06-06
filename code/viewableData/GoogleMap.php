@@ -26,6 +26,7 @@ class GoogleMap extends ViewableData {
 
 
 	/* BASIC MAP SETTINGS */
+	private static $api_version = "3.20";
 	private static $google_map_api_key = "";
 	private static $uses_sensor = true;
 	private static $default_latitude = 0.000000001; //MOVE TO SITECONFIG
@@ -495,7 +496,7 @@ class GoogleMap extends ViewableData {
 			$instanceName = $this->getMyMapFunctionName(true);
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
-			Requirements::javascript("//maps.googleapis.com/maps/api/js?v=3.16&sensor=".$this->showFalseOrTrue(self::$uses_sensor));
+			Requirements::javascript("//maps.googleapis.com/maps/api/js?v=".Config::inst()->get("GoogleMap", "api_version")."&libraries=places&sensor=".$this->showFalseOrTrue(Config::inst()->get("GoogleMap", "uses_sensor")));
 			Requirements::javascript("googlemap/javascript/googleMaps.js");
 			$js .= "\r\n\t\t\tjQuery(document).ready( function() { initiateGoogleMap();} );\r\n";
 			$js .= $this->createJavascript();

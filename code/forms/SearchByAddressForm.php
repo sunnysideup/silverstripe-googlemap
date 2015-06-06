@@ -27,6 +27,18 @@ class SearchByAddressForm extends Form {
 	 */
 	public function setClassNamesSearchedFor($a) {$this->classNamesSearchedFor = $a;}
 
+	/**
+	 *
+	 * @var Boolean
+	 */
+	protected $useAutocomplete = true;
+
+	/**
+	 *
+	 * @param Boolean
+	 */
+	public function setUseAutocomplete($a) {$this->useAutocomplete = $b;}
+
 
 
 	/**
@@ -49,13 +61,30 @@ class SearchByAddressForm extends Form {
 			$controller,
 			"SearchByAddressForm",
 			new FieldList(
-				$addressField = new TextField("FindNearAddress", _t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),$this->defaultAddress),
+				$addressField = new TextField(
+					"FindNearAddress",
+					_t("GoogleMapLocationsDOD.ENTERLOCATION", "Enter your location"),
+					$this->defaultAddress
+				),
 				new HiddenField("ClassNamesSearchedFor", "ClassName", $classNamesAsString)
 			),
 			new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
 			new RequiredFields("FindNearAddress")
 		);
 		$addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your address or zip code here.")) ;
+		if($this->useAutocomplete) {
+			Requirements::javascript("//maps.googleapis.com/maps/api/js?v=".Config::inst()->get("GoogleMap", "api_version")."&libraries=places&sensor=".$this->showFalseOrTrue(Config::inst()->get("GoogleMap", "uses_sensor")));
+			Requirements::customScript('
+				function init_search_by_address_form() {
+					var input = document.getElementById("'.$this->getName()."_".$this->getName().'_FindNearAddress");
+					var options = {};
+					new google.maps.places.Autocomplete(input, options);
+				}
+				google.maps.event.addDomListener(window, "load", init_search_by_address_form);
+				',
+				"SearchByAddressFormInit"
+			);
+		}
 		return $this;
 	}
 
@@ -65,8 +94,12 @@ class SearchByAddressForm extends Form {
 		$pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
 		if(!$pointArray || !isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
 			GoogleMapSearchRecord::create_new($address, $this->getController()->dataRecord->ID, false);
-			$this->addErrorMessage('FindNearAddress', _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND", "Sorry, address could not be found..."), 'warning');
-			return;
+			$this->addErrorMessage(
+				'FindNearAddress',
+				_t("GoogleMapLocationsDOD.ADDRESSNOTFOUND","Sorry, address could not be found..."),
+				'warning'
+			);
+			return array();
 		}
 		else {
 			GoogleMapSearchRecord::create_new(Convert::raw2sql($address), $this->getController()->dataRecord->ID);
@@ -80,6 +113,20 @@ class SearchByAddressForm extends Form {
 		$title = _t("GoogleMap.CLOSEST_TO_YOUR_SEARCH", "Closest to your search");
 		$this->getController()->addMap($action, $title, $lng, $lat, $classNames);
 		return array();
+	}
+
+	/**
+	 * turns 0 into false and 1 into true
+	 * @param Mixed
+	 * @return String (true|false)
+	 */
+	protected function showFalseOrTrue($v) {
+		if($v === true || 1 == $v) {
+			return "true";
+		}
+		else{
+			return "false";
+		}
 	}
 
 }

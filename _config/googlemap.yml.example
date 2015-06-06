@@ -18,7 +18,10 @@ GoogleMap:
   # BASIC MAP SETTINGS
   #####################################
 
-  ###### IMPORTANT
+  # check settings e.g. 3.15 or 3.exp
+  api_version: ""
+
+  # not always needed
   google_map_api_key: ""
 
   # use sensor from mobile phone
