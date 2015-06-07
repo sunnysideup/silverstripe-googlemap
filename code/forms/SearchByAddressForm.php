@@ -93,7 +93,11 @@ class SearchByAddressForm extends Form {
 		$classNames = Convert::raw2sql($data["ClassNamesSearchedFor"]);
 		$pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
 		if(!$pointArray || !isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
-			GoogleMapSearchRecord::create_new($address, $this->getController()->dataRecord->ID, false);
+			GoogleMapSearchRecord::create_new(
+				Convert::raw2slq($address),
+				$this->getController()->dataRecord->ID,
+				false
+			);
 			$this->addErrorMessage(
 				'FindNearAddress',
 				_t("GoogleMapLocationsDOD.ADDRESSNOTFOUND","Sorry, address could not be found..."),
@@ -102,7 +106,11 @@ class SearchByAddressForm extends Form {
 			return array();
 		}
 		else {
-			GoogleMapSearchRecord::create_new(Convert::raw2sql($address), $this->getController()->dataRecord->ID);
+			GoogleMapSearchRecord::create_new(
+				Convert::raw2sql($address),
+				$this->getController()->dataRecord->ID,
+				(isset($pointArray["GetLatLngFromGoogleUsingAddressSearchRecord"]) ? $pointArray["GetLatLngFromGoogleUsingAddressSearchRecord"] : false);
+			);
 		}
 		$this->address = $pointArray["FullAddress"];
 		$lng = $pointArray["Longitude"];

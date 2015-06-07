@@ -90,6 +90,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 						$searchRecord->SearchPhrase = Convert::raw2sql($q);
 					}
 					$searchRecord->ResultArray = serialize($resultArray);
+					$resultArray["GetLatLngFromGoogleUsingAddressSearchRecord"] = $searchRecord;
 					$searchRecord->write();
 					return $resultArray;
 				}
