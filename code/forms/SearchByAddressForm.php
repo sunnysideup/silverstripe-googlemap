@@ -109,7 +109,7 @@ class SearchByAddressForm extends Form {
 			GoogleMapSearchRecord::create_new(
 				Convert::raw2sql($address),
 				$this->getController()->dataRecord->ID,
-				(isset($pointArray["GetLatLngFromGoogleUsingAddressSearchRecord"]) ? $pointArray["GetLatLngFromGoogleUsingAddressSearchRecord"] : false)
+				false
 			);
 		}
 		$this->address = $pointArray["FullAddress"];

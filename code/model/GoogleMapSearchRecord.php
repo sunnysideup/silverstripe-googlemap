@@ -18,19 +18,18 @@ class GoogleMapSearchRecord extends DataObject {
 		$obj = new GoogleMapSearchRecord();
 		$obj->SearchedFor = $searchedFor;
 		$obj->ParentID = $parentID;
-		if(!$addGoogleMapLocationsObjectOrItsID ) {
-			//do nothing
-		}
-		elseif($addGoogleMapLocationsObjectOrItsID === true || $addGoogleMapLocationsObjectOrItsID === 1) {
-			//create object
-			$location = new GoogleMapLocationsObject();
-			$location->Address = $searchedFor;
-			$location->Manual = false;
-			$location->write();
-			$obj->GoogleMapLocationsObjectID = $location->ID;
-		}
-		elseif($addGoogleMapLocationsObjectOrItsID instanceof GetLatLngFromGoogleUsingAddressSearchRecord) {
-			$obj->GoogleMapLocationsObjectID = $addGoogleMapLocationsObjectOrItsID;
+		if($addGoogleMapLocationsObjectOrItsID ) {
+			if($addGoogleMapLocationsObjectOrItsID === true || $addGoogleMapLocationsObjectOrItsID === 1) {
+				//create object
+				$location = new GoogleMapLocationsObject();
+				$location->Address = $searchedFor;
+				$location->Manual = false;
+				$location->write();
+				$obj->GoogleMapLocationsObjectID = $location->ID;
+			}
+			else {
+				$obj->GoogleMapLocationsObjectID = intval($addGoogleMapLocationsObjectOrItsID);
+			}
 		}
 		$obj->write();
 		return $obj;
