@@ -29,7 +29,7 @@ class GoogleMapSearchRecord extends DataObject {
 			$location->write();
 			$obj->GoogleMapLocationsObjectID = $location->ID;
 		}
-		else {
+		elseif($addGoogleMapLocationsObjectOrItsID instanceof GetLatLngFromGoogleUsingAddressSearchRecord) {
 			$obj->GoogleMapLocationsObjectID = $addGoogleMapLocationsObjectOrItsID;
 		}
 		$obj->write();

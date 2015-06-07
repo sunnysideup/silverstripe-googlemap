@@ -75,6 +75,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 					$searchRecord->write();
 				}
 				if(isset($result["FullAddress"]) && isset($result["Longitude"]) && isset($result["Latitude"])) {
+					$result["GetLatLngFromGoogleUsingAddressSearchRecord"] = $searchRecord;
 					return $result;
 				}
 				$result = null;
@@ -90,8 +91,8 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 						$searchRecord->SearchPhrase = Convert::raw2sql($q);
 					}
 					$searchRecord->ResultArray = serialize($resultArray);
-					$resultArray["GetLatLngFromGoogleUsingAddressSearchRecord"] = $searchRecord;
 					$searchRecord->write();
+					$resultArray["GetLatLngFromGoogleUsingAddressSearchRecord"] = $searchRecord;
 					return $resultArray;
 				}
 				else {
