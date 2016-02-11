@@ -23,17 +23,15 @@ STEP-BY-STEP
 
 5.	The page type (lets call it TestPage for which you want to add a location must contain in the controller class:
 
-```php
-	public function init() {
-		parent::init();
-		if($this->HasGeoInfo) {
-			$this->addMap("showPagePointsMapXML");
+	```php
+		public function init() {
+			parent::init();
+			if($this->HasGeoInfo) {
+				$this->addMap("showPagePointsMapXML");
+			}
 		}
-	}
 
-```
-
-6.	Run a dev/build
+	```
 
 7.	Create a new page "TestPage"
 
@@ -41,7 +39,7 @@ STEP-BY-STEP
 
 9.	Find your template file and add the following: <% include GoogleMap %>
 
-10. to customise information in pop-ups, add the following function to your pages with map: CustomAjaxInfoWindow
+10. 	to customise information in pop-ups, add the following function to your pages with map: CustomAjaxInfoWindow
 
 
 
