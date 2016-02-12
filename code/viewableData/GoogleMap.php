@@ -601,7 +601,7 @@ class GoogleMap extends ViewableData {
 						$dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
 						$link = '';
 						if($dataPoint->Link) {
-							$link = $dataPoint->AjaxInfoWindowLink;
+							$link = $dataPoint->getAjaxInfoWindowLink();
 						}
 						$staticIcon = '';
 						if($dataPoint->staticIcon) {
@@ -620,7 +620,7 @@ class GoogleMap extends ViewableData {
 									'<id>'.$dataPoint->ID.'</id>'.
 									'<name>'.Convert::raw2xml($dataPoint->Name).'</name>'.
 									$dataLine.
-									'<description><![CDATA[ '.$dataPoint->AjaxInfoWindowLink.']]></description>'.
+									'<description><![CDATA[ '.$dataPoint->getAjaxInfoWindowLink().']]></description>'.
 									'</Placemark>';
 						$this->dataPointsObjectSet->push($dataPoint);
 						$averageLatitude = $dataPoint->Longitude;

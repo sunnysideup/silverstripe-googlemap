@@ -710,10 +710,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				obscuringLinks += "</span></p>";
 			}
 			//basic html
-			var html = '<div id="infoWindowTab1" class="infoWindowTab">' + obscuringLinks + '<div>'+desc+'</div>';
+			var html = '<div id="infoWindowTab1" class="infoWindowTab"><h1>'+name+'</h1>' + obscuringLinks + '<div>'+desc+'</div>';
 			if(this.opts.addZoomInButton) {
 				infoTabExtraLinksArray.push(
-					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">'+this.opts.addZoomInButton+'</a>'
+					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">zoom in</a>'
 				);
 			}
 			if(this.opts.addDeleteMarkerButton) {
@@ -822,8 +822,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				google.maps.event.addListener(m, "findAddressFromLngLat",
 					function() {
 						GMO.geocoder = new google.maps.Geocoder();
+						return;
 						GMO.geocoder.getLocations(
-							m.getLatLng(),
+							m.position,
 							function(response) {
 								var html = '<p>'+GMO._t.address_not_found+'</p>';
 								if (!response || response.Status.code != 200) {

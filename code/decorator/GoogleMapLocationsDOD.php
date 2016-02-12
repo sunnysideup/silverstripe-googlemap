@@ -55,7 +55,7 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 	 * @return String (HTML)
 	 */
 	public function AjaxInfoWindowLink() {
-		if($this->owner->hasMethod("CustomAjaxInfoWindow") || 1 == 1) {
+		if($this->owner->hasMethod("CustomAjaxInfoWindow")) {
 			return $this->owner->CustomAjaxInfoWindow();
 		}
 		if($this->owner->hasMethod("ajaxinfowindowreturn")) {

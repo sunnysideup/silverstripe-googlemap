@@ -182,8 +182,12 @@ class GoogleMapLocationsObject extends DataObject {
 			return '<p>'.$this->CustomPopUpWindowInfo.'</p>';
 		}
 		elseif($parent = $this->getParentData()) {
-			return $parent->AjaxInfoWindowLink();
+			$html = $parent->AjaxInfoWindowLink();
 		}
+		if(!$html) {
+			$html = $this->FullAddress;
+		}
+		return $html;
 	}
 
 	/**
