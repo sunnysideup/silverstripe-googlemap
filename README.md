@@ -28,7 +28,9 @@ STEP-BY-STEP
 			parent::init();
 			$zoom = $this->DefaultZoom ? $this->DefaultZoom : 15;
 			Config::inst()->update("GoogleMap", "default_zoom", $zoom);
-			$this->addMap("showpagepointsmapxml");
+			if($this->HasGeoInfo) {
+				$this->addMap("showpagepointsmapxml");
+			}
 		}
 
 	```
