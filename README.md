@@ -26,9 +26,9 @@ STEP-BY-STEP
 	```php
 		public function init() {
 			parent::init();
-			if($this->HasGeoInfo) {
-				$this->addMap("showPagePointsMapXML");
-			}
+			$zoom = $this->DefaultZoom ? $this->DefaultZoom : 15;
+			Config::inst()->update("GoogleMap", "default_zoom", $zoom);
+			$this->addMap("showpagepointsmapxml");
 		}
 
 	```
@@ -37,9 +37,7 @@ STEP-BY-STEP
 
 8.	Go to the TestPage in the CMS and find the Map tab, add a full address, save and publish
 
-9.	Find your template file and add the following: <% include GoogleMap %>
-
-10. 	to customise information in pop-ups, add the following function to your pages with map: CustomAjaxInfoWindow
+9.	Find your template file and add the following: `<% include GoogleMap %>`
 
 
 
