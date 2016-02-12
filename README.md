@@ -21,7 +21,8 @@ STEP-BY-STEP
 
 3.	Run a dev/build
 
-5.	The page type (lets call it TestPage for which you want to add a location must contain in the controller class:
+5.	The page type (lets call it TestPage), for which you want to add one more more locations, 
+	add the following to the controller class:
 
 	```php
 		public function init() {
@@ -34,12 +35,19 @@ STEP-BY-STEP
 		}
 
 	```
+	on the parent page controller of the TestPage you can add something like - to show all the points of all child pages ...:
+	```php
+		public function init() {
+			parent::init();
+			$this->HasGeoInfo = true;
+			$this->addMap("showchildpointsmapxml");
+		}	
+	```
 
-7.	Create a new page "TestPage"
+6.	Find your TestPage Layout template file and add the following: `<% include GoogleMap %>`
 
-8.	Go to the TestPage in the CMS and find the Map tab, add a full address, save and publish
+7.	load page ?flush=all to see the map
 
-9.	Find your template file and add the following: `<% include GoogleMap %>`
 
 
 
