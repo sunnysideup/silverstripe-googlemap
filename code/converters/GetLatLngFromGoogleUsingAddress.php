@@ -50,6 +50,12 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	private static $server_side_available = true;
 
 	/**
+	 * alternative to api key
+	 * @var string
+	 */
+	private static $google_client_id = "";
+
+	/**
 	 * Get first placemark as flat array
 	 *
 	 * @param string $q
@@ -138,15 +144,18 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 */
 	protected static function get_geocode_obj($q) {
 		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
-		if(!Config::inst()->get("GoogleMap", "google_map_api_key")) {
-			//user_error('Please define a valid Google Maps API Key: google_map_api_key', E_USER_ERROR);
-		}
 		$q = trim($q);
 		if($debug) {
 			var_dump($q);
 		}
 		if(empty($q)) return false;
 		$url = sprintf(Config::inst()->get("GetLatLngFromGoogleUsingAddress","geocode_url"), urlencode($q));
+		if($clientID = Config::inst()->get("GetLatLngFromGoogleUsingAddress","google_client_id")) {
+			$url .= "&client=".$clientID;
+		}
+		elseif($api = Config::inst()->get("GoogleMap", "google_map_api_key")) {
+			$url .= "&key=".$api;
+		}
 		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 			debug::show(print_r($url, 1));
 		}

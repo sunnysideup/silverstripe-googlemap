@@ -228,27 +228,22 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		$this->initiateMap();
 		$sessionTitle = preg_replace('/[^a-zA-Z0-9]/', '', $title);
 		$isGoogleMapLocationsObject = true;
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
+
 		if($pagesOrGoogleMapLocationsObjects) {
-			if(!$retainOldSessionData) {
-				$this->clearCustomMaps();
+			if($retainOldSessionData) {
+				$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
 			}
 			else {
-				if(is_array($addCustomGoogleMapArray)) {
-					$customMapCount = count($addCustomGoogleMapArray);
-				}
+				$this->clearCustomMaps();
+			}
+			if(!isset($addCustomGoogleMapArray[$title])) {
+				$addCustomGoogleMapArray[$title] = array();
 			}
 			foreach($pagesOrGoogleMapLocationsObjects as $obj) {
 				if($obj instanceof SiteTree) {
 					$isGoogleMapLocationsObject = false;
 				}
-				if(!$obj->ID) {
-					user_error("Page provided to addCustomMap that does not have an ID", E_USER_ERROR);
-				}
-				if(!isset($addCustomGoogleMapArray[$title])) {
-					$addCustomGoogleMapArray[$title] = array();
-				}
-				$addCustomGoogleMapArray[$title][] = $obj->ID;
+				$addCustomGoogleMapArray[$title][$obj->ID] = $obj->ID;
 			}
 		}
 		GoogleMapDataResponse::set_custom_google_map_session_data($addCustomGoogleMapArray);
