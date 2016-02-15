@@ -4,6 +4,10 @@
  * Map Location Object
  * onBeforeWrite, it automagically adds all the details.
  *
+ * To create a new GoogleMapLocationsObject 
+ * set the Address field and write.  All other fields
+ * are completed automatically...
+ * 
  */
 
 class GoogleMapLocationsObject extends DataObject {
@@ -277,8 +281,10 @@ class GoogleMapLocationsObject extends DataObject {
 	}
 
 	/**
-	 *
-	 * @return this
+	 * test to see if address is found.  If address if found then
+	 * it will write the object, otherwise it returns null.
+	 * 
+	 * @return this || null
 	 */
 	public function findGooglePointsAndWriteIfFound() {
 		$this->findGooglePoints(true);
@@ -286,7 +292,6 @@ class GoogleMapLocationsObject extends DataObject {
 			$this->write();
 			return $this;
 		}
-		return false;
 	}
 
 	/**

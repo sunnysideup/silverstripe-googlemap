@@ -9,9 +9,13 @@
 
 class GoogleMapLocationsDOD extends SiteTreeExtension {
 
-	private static $db = array("HasGeoInfo" => "Boolean");
+	private static $db = array(
+		"HasGeoInfo" => "Boolean"
+	);
 
-	private static $has_many = array("GeoPoints" => "GoogleMapLocationsObject");
+	private static $has_many = array(
+		"GeoPoints" => "GoogleMapLocationsObject"
+	);
 
 	/**
 	 * list of pages types without a map
@@ -113,7 +117,6 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 			}
 		}
 		return ($childrenOfType) ? $childrenOfType : new ArrayList();
-
 	}
 
 }

@@ -312,11 +312,13 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						GMO.directionsOnLoad();
 				});
 				google.maps.event.addListener(GMO.directions, "error", this.directionsHandleErrors);
+				//start icon
 				G_START_ICON = "";
 				G_START_ICON.iconSize = new google.maps.Size(0, 0);
 				G_START_ICON.image="";
 				G_START_ICON.shadow = "";
-				G_END_ICON = "";""
+				//end icon
+				G_END_ICON = "";
 				G_END_ICON.iconSize = new google.maps.Size(0, 0);
 				G_END_ICON.image="";
 				G_END_ICON.shadow = "";
@@ -501,7 +503,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			//marker options
 			var markerOpts = this.opts.markerOptions || {};
 			if(!iconUrl) {
-				iconUrl = this.layerInfo[currentLayerId].iconUrl[0];
+				iconUrl = "http://maps.google.com/mapfiles/marker_yellow"+name[0].toUpperCase()+".png";
 			}
 			var icon = this.createStandardIcon(iconUrl);
 			markerOpts.icon = icon;
@@ -1046,7 +1048,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						styleLocationId = placemarks[i].getElementsByTagName("styleUrl")[0];
 						styleLocationId = styleLocationId.substring(1, styleLocationId.length);
 					}
-					var newIconURL = iconUrl;
+					var newIconURL = ""; //use standard one => iconUrl;
 					if(styleLocationId) {
 						//<Style id="randomColorIcon"><IconStyle><Icon>URL here
 						var IconStyleDoc = xmlDoc.getElementsByTagName("Style");

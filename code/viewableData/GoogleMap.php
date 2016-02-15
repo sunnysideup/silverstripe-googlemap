@@ -181,10 +181,6 @@ class GoogleMap extends ViewableData {
 	}
 
 
-
-
-
-
 	################################
 	# TEMPATE METHODS
 	################################

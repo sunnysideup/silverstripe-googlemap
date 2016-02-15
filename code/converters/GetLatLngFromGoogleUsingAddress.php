@@ -86,7 +86,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 					$resultArray = self::google_2_ss($result);
 					if($debug) {debug::show(print_r($resultArray, 1));}
 					if(!isset($searchRecord) || !$searchRecord) {
-						$searchRecord = new GetLatLngFromGoogleUsingAddressSearchRecord();
+						$searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::create();
 						$searchRecord->SearchPhrase = Convert::raw2sql($q);
 					}
 					$searchRecord->ResultArray = serialize($resultArray);
