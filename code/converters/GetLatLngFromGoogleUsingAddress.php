@@ -71,9 +71,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 				->filter(array("SearchPhrase" => Convert::raw2sql($q)))
 				->First();
 			if($searchRecord && $searchRecord->ResultArray) {
-				if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
-					debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");
-				}
+				if($debug) {debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");}
 				//@ is important here!
 				$result = @unserialize($searchRecord->ResultArray);
 				if($result === null) {
@@ -121,9 +119,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	protected static function get_placemark($q, $tryAnyway = false) {
 		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","server_side_available") || $tryAnyway) {
 			$responseObj = self::get_geocode_obj($q);
-			if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
-				debug::show(print_r($responseObj, 1));
-			}
+			if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {debug::show(print_r($responseObj, 1));}
 			if($responseObj && $responseObj->status == 'OK' && isset($responseObj->results[0])) {
 				//we just take the first address!
 				if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","default_to_first_result") || count($responseObj->results) ==1) {
@@ -145,9 +141,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	protected static function get_geocode_obj($q) {
 		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
 		$q = trim($q);
-		if($debug) {
-			var_dump($q);
-		}
+		if($debug) {debug::show(print_r($q, 1));}
 		if(empty($q)) return false;
 		$url = sprintf(Config::inst()->get("GetLatLngFromGoogleUsingAddress","geocode_url"), urlencode($q));
 		if($clientID = Config::inst()->get("GetLatLngFromGoogleUsingAddress","google_client_id")) {
