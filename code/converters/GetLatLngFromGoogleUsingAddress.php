@@ -31,7 +31,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 *
 	 * @var String
 	 */
-	private static $geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
+	private static $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
 
 	 /**
 		* default user to first result that is returned.
