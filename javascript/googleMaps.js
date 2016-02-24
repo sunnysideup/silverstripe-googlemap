@@ -1404,15 +1404,15 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				}
 				else {
 					var zoomLinkLabel = 'full-screen';
-					var hideAction = '| <a href="javascript:void(0)" onclick="GMO.hideStatus();">' + GMO._t.hide + '</a>';
+					var hideAction = '<span>|</span> <a href="javascript:void(0)" onclick="GMO.hideStatus();">' + GMO._t.hide + '</a> ';
 				}
 			}
 			var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
 			// depreciated
 			if(this.opts.addAddressFinder) {
-				fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">' + GMO._t.find_address + '</a> |'
+				fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">' + GMO._t.find_address + '</a> <span>|</span>'
 			}
-			fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');"> ' + GMO._t.show_help + ' </a> |'
+			fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');"> ' + GMO._t.show_help + ' </a> <span>|</span>'
 			+ ' <a href="javascript:void(0)" onclick="GMO.enlargeMap();" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
 			+ hideAction
 			+ '</p>'+ html;
