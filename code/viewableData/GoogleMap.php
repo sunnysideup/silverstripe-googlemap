@@ -585,7 +585,7 @@ class GoogleMap extends ViewableData {
 		if($this->googlePointsDataObject) {
 			$totalCount = $this->googlePointsDataObject->count();
 		}
-		if($totalCount > 0  && $totalCount < 500) {
+		if($totalCount > 0  && $totalCount < 10000) {
 			$count = 0;
 			$pointsXml = '';
 			//the sort works, but Google Map does not seem to care...
