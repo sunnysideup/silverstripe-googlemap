@@ -159,6 +159,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	public function addExtraLayersAsLinks($title, $link) {
 		$this->initiateMap();
 		$this->googleMap->addExtraLayersAsLinks($title, $link);
+		$this->googleMap->addLayer($link);
 	}
 
 
