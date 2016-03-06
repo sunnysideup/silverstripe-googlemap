@@ -237,6 +237,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param String $title
 	 */
 	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '') {
+		$filterCode = $this->ID."_".$this->request->
 		$this->initiateMap();
 		$isGoogleMapLocationsObject = true;
 		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($this->owner->ID, "addCustomMap");
