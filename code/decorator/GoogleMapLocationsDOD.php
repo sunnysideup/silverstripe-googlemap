@@ -1,6 +1,7 @@
 <?php
+
 /**
- * add to sitetree
+ * Additions to Site Tree
  *
  *
  *
@@ -35,9 +36,17 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 	function updateCMSFields(FieldList $fields) {
 		if($this->classHasGoogleMap()) {
 			$fields->addFieldToTab("Root", new Tab("Map"));
-			$fields->addFieldToTab("Root.Map", $hasGeoInfoBox = new CheckboxField("HasGeoInfo", _t("GoogleMapLocationsDOD.HAS_ADDRESSES", "Has Address(es)?")));
+			$fields->addFieldToTab(
+				"Root.Map",
+				$hasGeoInfoBox = CheckboxField::create(
+					"HasGeoInfo",
+					_t("GoogleMapLocationsDOD.HAS_ADDRESSES", "Has Address(es)?")
+				)
+			);
 			if(!$this->owner->HasGeoInfo) {
-				$hasGeoInfoBox->setDescription(_t("GoogleMap.HasGeoInfoSTART", "tick and save this page to start data-entry ..."));
+				$hasGeoInfoBox->setDescription(
+					_t("GoogleMap.HasGeoInfoSTART", "tick and save this page to start data-entry ...")
+				);
 			}
 			if($this->owner->HasGeoInfo) {
 				$dataObject = new GoogleMapLocationsObject();
@@ -63,7 +72,11 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 			return $this->owner->CustomAjaxInfoWindow();
 		}
 		if($this->owner->hasMethod("ajaxinfowindowreturn")) {
-			return '<div class="viewMoreInformationHolder"><a href="'.$this->owner->Link().'" onclick="return !loadAjaxInfoWindow(this,\''.$this->owner->Link().'ajaxinfowindowreturn/\');">'. Config::inst()->get("GoogleMap", "ajax_info_window_text") .'</a><div class="loadAjaxInfoWindowSpan"></div></div>';
+			return '
+				<div class="viewMoreInformationHolder">
+					<a href="'.$this->owner->Link().'" onclick="return !loadAjaxInfoWindow(this,\''.$this->owner->Link().'ajaxinfowindowreturn/\');">'. Config::inst()->get("GoogleMap", "ajax_info_window_text") .'</a>
+					<div class="loadAjaxInfoWindowSpan"></div>
+				</div>';
 		}
 	}
 
@@ -90,8 +103,6 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 		}
 		return $result;
 	}
-
-
 
 	/**
 	 * Recursively search children of current page to find a particular classtype

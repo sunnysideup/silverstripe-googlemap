@@ -1,21 +1,23 @@
 <?php
-	/**
-	 * Geocode an address-string to a set of coordinates using Google's free
-	 * geocoding services.
-	 *
-	 * see: http://code.google.com/apis/maps/documentation/geocoding/index.html
-	 *
-	 * CHECKS IF CURL / file_get_contents is available
-	 * Requirements: allow_url_fopen = on
-	 *
-	 * @author Ingo Schomme and Nicolaas Francken
-	 * @todo Implement CURL with fopen fallback
-	 * @todo Implement client-side selection when multiple results are found (through validation-errors and javasript)
-	 * @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
-	 *
-	 * you can use
-	 * GetLatLngFromGoogleUsingAddress::get_placemark_as_array()
-	 */
+
+/**
+ * Geocode an address-string to a set of coordinates using Google's free
+ * geocoding services.
+ *
+ * see: http://code.google.com/apis/maps/documentation/geocoding/index.html
+ *
+ * CHECKS IF CURL / file_get_contents is available
+ * Requirements: allow_url_fopen = on
+ *
+ * @author Ingo Schomme and Nicolaas Francken
+ * @todo Implement CURL with fopen fallback
+ * @todo Implement client-side selection when multiple results are found (through validation-errors and javasript)
+ * @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
+ *
+ * you can use
+ * GetLatLngFromGoogleUsingAddress::get_placemark_as_array()
+ */
+
 class GetLatLngFromGoogleUsingAddress extends Object {
 
 	/**
@@ -31,7 +33,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 *
 	 * @var String
 	 */
-	private static $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
+	private static $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s";
 
 	 /**
 		* default user to first result that is returned.

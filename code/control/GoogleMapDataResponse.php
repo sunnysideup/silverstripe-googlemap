@@ -436,7 +436,7 @@ class GoogleMapDataResponse extends Controller {
 			$title = _t("GoogleMap.CLOSES_TO_ME", "Closest to me");
 		}
 		if($lng && $lat) {
-			$orderByRadius = GoogleMapLocationsObject::radiusDefinition($lng, $lat);
+			$orderByRadius = GoogleMapLocationsObject::radius_definition($lng, $lat);
 			$where = "(".$orderByRadius.") > 0 AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
 			if($classNameForParent && !is_object($classNameForParent)) {
 				$where .= " AND \"SiteTree_Live\".\"ClassName\" = '".$classNameForParent."'";
@@ -601,5 +601,4 @@ class GoogleMapDataResponse extends Controller {
 			return "error";
 		}
 	}
-
 }

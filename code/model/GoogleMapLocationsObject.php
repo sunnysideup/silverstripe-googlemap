@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * Map Location Object
@@ -82,12 +83,12 @@ class GoogleMapLocationsObject extends DataObject {
 	 * @param Double $lat - latitude of location
 	 * @return String
 	 */
-	public static function radiusDefinition($lng, $lat) {
+	public static function radius_definition($lng, $lat) {
 		return "( 6378.137 * ACOS( COS( RADIANS(".$lat.") ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Longitude\" ) - RADIANS(".$lng.") ) + SIN( RADIANS(".$lat.") ) * SIN( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) ) )";
 	}
 
-	public static function radiusDefinitionOtherTable($lng, $lat, $table, $latitudeField, $longitudeField) {
-		$str = self::radiusDefinition($lng, $lat);
+	public static function radius_definition_other_table($lng, $lat, $table, $latitudeField, $longitudeField) {
+		$str = self::radius_definition($lng, $lat);
 		$str = str_replace("\"GoogleMapLocationsObject\"", "\"$table\"", $str);
 		$str = str_replace("\"Latitude\"", "\"$latitudeField\"", $str);
 		$str = str_replace("\"Longitude\"", "\"$longitudeField\"", $str);
@@ -100,7 +101,7 @@ class GoogleMapLocationsObject extends DataObject {
 	 *
 	 * return GoogleMapLocationsObject | Null
 	 */
-	public static function pointExists($lng, $lat) {
+	public static function point_exists($lng, $lat) {
 		return GoogleMapLocationsObject::get()->filter(array(
 			"Longitude" => floatval($lng),
 			"Latitude" => floatval($lat)

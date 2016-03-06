@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * saves all places searched for on the site.
+ *
+ *
+ */ 
 
 class GoogleMapSearchRecord extends DataObject {
 
