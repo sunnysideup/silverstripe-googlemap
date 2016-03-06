@@ -46,9 +46,9 @@
 
 		<% if SideBarDivId %>
 		<div id="$SideBarDivId" class="MapExtraInformation <% if EnoughPointsForAList %><% else %>hideMe<% end_if %>" >
-			<% if DataPointsObjectSet %>
+			<% if ProcessedDataPointsForTemplate %>
 			<ul>
-				<% loop orderItemsByLatitude %><li>$Title $AjaxInfoWindowLink</li><% end_loop %>
+				<% loop ProcessedDataPointsForTemplate %><li>$Title $AjaxInfoWindowLink</li><% end_loop %>
 			</ul>
 			<% end_if %>
 		</div>

@@ -43,7 +43,7 @@ class GoogleMapDataResponse extends Controller {
 	 * Default URL handlers - (Action)/(ID)/(OtherID)
 	 */
 	private static $url_handlers = array(
-		'/$Action//$OwnerID/$Title/$Longitude/$Latitude/$Filter' => 'handleAction',
+		'/$Action//$OwnerID/$Title/$Longitude/$Latitude/$FilterCode' => 'handleAction',
 	);
 
 
@@ -54,8 +54,11 @@ class GoogleMapDataResponse extends Controller {
 	# SESSION MANAGEMENT
 	#################
 
-	protected static session_var_name($id = 0, $action = "") {
-		return "addCustomGoogleMap_".$id."_".$action;
+	protected static session_var_name($filterCode = "") {
+		if(!$filterCode) {
+			$filterCode = $this->filterCode;
+		}
+		return "addCustomGoogleMap_".$filterCode;
 	} 
 
 	/**
@@ -66,10 +69,10 @@ class GoogleMapDataResponse extends Controller {
 	 * @param string $action
 	 * 
 	 */
-	public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW, $id = 0, $action = ""){
-		$addCustomGoogleMapArrayOLD = Session::get(self::session_var_name($id, $action));
+	public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW, $filterCode = ""){
+		$addCustomGoogleMapArrayOLD = Session::get(self::session_var_name($filterCode));
 		$addCustomGoogleMapArrayNEW = array_merge($addCustomGoogleMapArrayOLD, $addCustomGoogleMapArrayNEW);
-		Session::set(Session::get(self::session_var_name($id, $action), serialize($addCustomGoogleMapArrayNEW));
+		Session::set(Session::get(self::session_var_name($filterCode), serialize($addCustomGoogleMapArrayNEW));
 	}
 
 	/**
@@ -79,22 +82,11 @@ class GoogleMapDataResponse extends Controller {
 	 * @param int $id
 	 * @param string $action
 	 */
-	public static function set_custom_google_map_session_data($addCustomGoogleMapArray, $id = 0, $action = ""){
+	public static function set_custom_google_map_session_data($addCustomGoogleMapArray, $filterCode = ""){
 		if(!is_array($addCustomGoogleMapArray)) {
 			user_error("addCustomGoogleMapArray should be an array!");
 		}
-		Session::set(self::session_var_name($id, $action), serialize($addCustomGoogleMapArray));
-	}
-
-	/**
-	 * we use the ID and the action to set unique session names
-	 * so that you dont get mixups
-	 * @param Array $addCustomGoogleMapArray
-	 * @param int $id
-	 * @param string $action
-	 */
-	public static function clear_custom_google_map_session_data($id = 0, $action = ""){
-		Session::clear(self::session_var_name($id, $action));
+		Session::set(self::session_var_name($filterCode), serialize($addCustomGoogleMapArray));
 	}
 
 	/**
@@ -103,8 +95,8 @@ class GoogleMapDataResponse extends Controller {
 	 * 
 	 * @return Array
 	 */
-	public static function get_custom_google_map_session_data(){
-		$data = Session::get(self::session_var_name($id, $action));
+	public static function get_custom_google_map_session_data($filterCode = ""){
+		$data = Session::get(self::session_var_name($filterCode));
 		if(is_array($data)) {
 			$addCustomGoogleMapArray = $data;
 		}
@@ -119,6 +111,16 @@ class GoogleMapDataResponse extends Controller {
 		return $addCustomGoogleMapArray;
 	}
 
+	/**
+	 * we use the ID and the action to set unique session names
+	 * so that you dont get mixups
+	 * 
+	 * @param int $id
+	 * @param string $action
+	 */
+	public static function clear_custom_google_map_session_data($filterCode = ""){
+		Session::clear(self::session_var_name($filterCode));
+	}
 
 
 
@@ -177,7 +179,7 @@ class GoogleMapDataResponse extends Controller {
 	/**
 	 * @var String
 	 */
-	protected $filter = "";
+	protected $filterCode = "";
 
 	/**
 	 * @var GoogleMap
@@ -237,36 +239,36 @@ class GoogleMapDataResponse extends Controller {
 		$this->title = urldecode($this->request->param("Title"));
 		$this->lng = floatval($this->request->param("Longitude"));
 		$this->lat = floatval($this->request->param("Latitude"));
-		$this->filter = urldecode($this->request->param("Filter"));
+		$this->filterCode = urldecode($this->request->param("FilterCode"));
 		if(!$this->title && $this->owner) {
 			$this->title = $this->owner->Title;
 		}
 	}
 
 	/**
-	 * @param String
+	 * @param object $owner
 	 */
 	function setOwner($owner) {$this->owner = $owner;}
 
 	/**
-	 * @param String
+	 * @param String $title
 	 */
 	function setTitle($title) {$this->title = $title;}
 
 	/**
-	 * @param Float
+	 * @param float $lng
 	 */
 	function setLng($lng) {$this->lng = $lng;}
 
 	/**
-	 * @param Float
+	 * @param Float $lat
 	 */
 	function setLat($lat) {$this->lat = $lat;}
 
 	/**
-	 * @param String
+	 * @param string $filterCode
 	 */
-	function setFilter($filter) {$this->filter = $filter;}
+	function setFilterCode($filterCode) {$this->filterCode = $filterCode;}
 
 
 
@@ -382,7 +384,7 @@ class GoogleMapDataResponse extends Controller {
 	 * @return String (XML)
 	 */
 	public function showcustompagesmapxml($request) {
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($this->owner->ID, "addCustomMap");
+		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
 		$pages = SiteTree::get()->filter(array("ID" => $addCustomGoogleMapArray));
 		return $this->makeXMLData($pages, null, $this->title, $this->title);
 	}
@@ -432,7 +434,7 @@ class GoogleMapDataResponse extends Controller {
 			}
 		}
 		$classNameForParent = '';
-		if($otherClass = $this->filter) {
+		if($otherClass = $this->filterCode) {
 			$classNameForParent = $otherClass;
 		}
 		if($this->title) {
@@ -591,18 +593,17 @@ class GoogleMapDataResponse extends Controller {
 		$selectionStatement = ''
 	) {
 		$this->map = GoogleMap::create();
-		$this->map->setDataObjectTitle($title);
+		$this->map->setTitleOfMap($title);
 		$this->map->setWhereStatementDescription($selectionStatement);
 		if($pages) {
 			$this->map->setPageDataObjectSet($pages);
 		}
 		elseif($dataPoints) {
-			$this->map->setGooglePointsDataObject($dataPoints);
+			$this->map->setPoints($dataPoints);
 		}
 		$data = $this->map->createDataPoints();
 
 		if(Director::is_ajax() || $this->owner->ID) {
-			//$this->dataPointsXML = $data[1];
 			$this->response->addHeader("Content-Type", "text/xml; charset=\"utf-8\"");
 			return $this->renderWith("GoogleMapXml");
 		}

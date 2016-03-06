@@ -5,10 +5,10 @@
  * There are three options
  * 1. setAddress: set address
  * 2. setPageDataObjectSet: set Page Data List (who have geo points as children)
- * 3. setGooglePointsDataObject: set Points Directly Class = GoogleMapLocationsObject
+ * 3. setPoints: set Points Directly Class = GoogleMapLocationsObject
  *
  * Extras include:
- * 1. setDataObjectTitle: set title
+ * 1. setTitleOfMap: set title
  * 2. setWhereStatementDescription: set where statement
  * 3. setFilteredClassNameArray: set an array of classnames
  *
@@ -28,7 +28,6 @@ class GoogleMap extends ViewableData {
 	/* BASIC MAP SETTINGS */
 	private static $api_version = "3.20";
 	private static $google_map_api_key = "";
-	private static $uses_sensor = true;
 	private static $default_latitude = 0.000000001; //MOVE TO SITECONFIG
 	private static $default_longitude = 0.0000000001; //MOVE TO SITECONFIG
 	private static $default_zoom = 2; //MOVE TO SITECONFIG
@@ -56,7 +55,6 @@ class GoogleMap extends ViewableData {
 	private static $layer_list_div_id = "";
 	private static $directions_div_id = "";
 	private static $status_div_id = "";
-
 
 	/* INFOWINDOW*/
 	private static $info_window_options = "{maxWidth:280, zoomLevel:17, mapTypeId: google.maps.MapTypeId.HYBRID}";
@@ -112,75 +110,6 @@ class GoogleMap extends ViewableData {
 
 
 
-
-
-	################################
-	# STATIC QUICK ACCESS
-	################################
-
-	/**
-	 * var arrayOfLatitudeAndLongitude: Array (Latitude" => 123, "Longitude" => 123, "Marker" => "red1");
-	 * Marker is optional
-	 * @param Array arrayOfLatitudeAndLongitude
-	 * @param String title
-	 *
-	 * @return String (HTML - img tag)
-	 */
-
-	public static function quick_static_map($arrayOfLatitudeAndLongitude, $title) {
-		$staticMapURL = '';
-		$count = 0;
-		//width
-		$staticMapWidth = Config::inst()->get("GoogleMap", "google_map_width");
-		if($staticMapWidth > 512) { $staticMapWidth = 512;}
-		//height
-		$staticMapHeight = Config::inst()->get("GoogleMap", "google_map_height");
-		if($staticMapHeight > 512) { $staticMapHeight = 512;}
-		$staticMapURL = "size=".$staticMapWidth."x".$staticMapHeight;
-		if(count($arrayOfLatitudeAndLongitude)) {
-			//http://maps.google.com/maps/api/staticmap?sensor=true&maptype=map&size=209x310&
-			//markers=color:green%7Clabel:A%7C-45.0302,168.663
-			//&markers=color:red%7Clabel:Q%7C-36.8667,174.767
-			foreach($arrayOfLatitudeAndLongitude as $row) {
-				$staticMapURL .= '&amp;markers=color:'.$row["Colour"].'%7Clabel:'.$row["Label"].'%7C';
-				$staticMapURL .= round($row["Latitude"], 6).",".round($row["Longitude"], 6);
-				$count++;
-			}
-			if($count == 1) {
-				$staticMapURL .= '&amp;center='.$defaultCenter.'&amp;zoom='. Config::inst()->get("GoogleMap", "default_zoom");
-			}
-		}
-		return self::make_static_map_url_into_image($staticMapURL, $title);
-	}
-
-	/**
-	 * @param String $staticMapURL
-	 * @param String $title
-	 *
-	 * @return String (HTML - img tag)
-	 */
-	protected static function make_static_map_url_into_image($staticMapURL, $title) {
-		$fullStaticMapURL  = '';
-		$uses_sensor = "false";
-		if(Config::inst()->get("GoogleMap", "uses_sensor")) {
-			$uses_sensor = "true";
-		}
-		$fullStaticMapURL =
-			'http://maps.google.com/maps/api/staticmap?'
-				.'sensor='.$uses_sensor.'&amp;'
-				.Config::inst()->get("GoogleMap", "static_map_settings").'&amp;'
-				.$staticMapURL.'&amp;'
-				.'key='.Config::inst()->get("GoogleMap", "google_map_api_key");
-		if(Config::inst()->get("GoogleMap", "save_static_map_locally")) {
-			$fileName = str_replace(array('&', '|', ',', '=', ';'), array('', '', '', '', ''), $staticMapURL);
-			$length = strlen($fileName);
-			$fileName = "_sGMap".substr(hash("md5", $fileName), 0, 35)."_".$length.".gif";
-			$fullStaticMapURL = StaticMapSaverForHTTPS::convert_to_local_file(str_replace('&amp;', '&', $fullStaticMapURL), $fileName);
-		}
-		return '<img class="staticGoogleMap" src="'.$fullStaticMapURL.'" alt="map: '.Convert::raw2att($title).'" />';
-	}
-
-
 	################################
 	# TEMPATE METHODS
 	################################
@@ -218,10 +147,10 @@ class GoogleMap extends ViewableData {
 	 * title of map
 	 * @var String
 	 */
-	protected $dataObjectTitle = "";
-		public function setDataObjectTitle($s){$this->dataObjectTitle = $s;}
-		public function DataObjectTitle(){return $this->getDataObjectTitle();}
-		public function getDataObjectTitle(){return $this->dataObjectTitle;}
+	protected $titleOfMap = "";
+		public function setTitleOfMap($s){$this->titleOfMap = $s;}
+		public function TitleOfMap(){return $this->getTitleOfMap();}
+		public function getTitleOfMap(){return $this->titleOfMap;}
 
 
 	/**
@@ -236,16 +165,6 @@ class GoogleMap extends ViewableData {
 	 */
 	public function GoogleMapHeight() {return Config::inst()->get("GoogleMap", "google_map_height");}
 
-
-	/**
-	 * @var ArrayList
-	 */
-	protected $dataPointsObjectSet;
-		public function setDataPointsObjectSet($s){$this->dataPointsObjectSet = $s;}
-		public function DataPointsObjectSet(){return $this->getDataPointsObjectSet();}
-		public function getDataPointsObjectSet(){return $this->dataPointsObjectSet;}
-
-
 	/**
 	 * @return Boolean
 	 */
@@ -254,7 +173,13 @@ class GoogleMap extends ViewableData {
 	/**
 	 * @return Boolean
 	 */
-	public function CanEdit($member = null) {if($this->getUpdateServerUrlDragend()) {return true;} }
+	public function CanEdit($member = null) {
+		if($this->getUpdateServerUrlDragend()) {
+			if(Injector::inst()->get("GoogleMapLocationsObject")->canEdit($member)) {
+				return true;
+			}
+		}
+	}
 
 	/**
 	 * @return String
@@ -293,14 +218,19 @@ class GoogleMap extends ViewableData {
 	public function AllowAddPointsToMap() {$this->Config()->update("add_points_to_map", true);}
 
 	/**
+	 * @var ArrayList
+	 */
+	protected $processedDataPointsForTemplate;
+		public function setProcessedDataPointsForTemplate($s){$this->processedDataPointsForTemplate = $s;}
+		public function ProcessedDataPointsForTemplate(){return $this->getProcessedDataPointsForTemplate();}
+		public function getProcessedDataPointsForTemplate(){return $this->processedDataPointsForTemplate;}
+
+	/**
 	 * @var String
 	 */
 	protected $dataPointsXML;
 		protected function DataPointsXML(){return $this->getDataPointsXML();}
 		protected function getDataPointsXML(){return $this->dataPointsXML;}
-
-
-
 
 
 
@@ -389,7 +319,7 @@ class GoogleMap extends ViewableData {
 
 		/**
 		 * sets the list of points through a list of parent pages
-		 * affected variable is: googlePointsDataObject
+		 * affected variable is: points
 		 * @param DataList | ArrayList $pageDataList
 		 */
 		public function setPageDataObjectSet($pageDataList) {
@@ -397,10 +327,13 @@ class GoogleMap extends ViewableData {
 				if($pageDataList instanceof ArrayList) {
 					$array = $pageDataList->map("ID", "ID");
 				}
-				else {
+				elseif($pageDataList instanceof DataList) {
 					$array = $pageDataList->map("ID", "ID")->toArray();
 				}
-				$this->googlePointsDataObject = GoogleMapLocationsObject::get()->filter(array("ParentID" => $array));
+				else {
+					user_error("Wrong format for pageDataList")
+				}
+				$this->points = GoogleMapLocationsObject::get()->filter(array("ParentID" => $array));
 				$pageDataList = null;
 			}
 		}
@@ -409,25 +342,24 @@ class GoogleMap extends ViewableData {
 	/**
 	 * @var DataList
 	 */
-	protected $googlePointsDataObject = null;
-		public function setGooglePointsDataObject($s) {$this->googlePointsDataObject = $s;}
-		public function getGooglePointsDataObject() {return $this->googlePointsDataObject;}
+	protected $points = null;
+		public function setPoints($s) {$this->points = $s;}
+		public function getPoints() {
+			if(!$this->points) {
+				$this->points = get_custom_google_map_session_data($this->sessionId, $this->sessionAction);
+			}
+			return $this->points;
+		}
+				
 
 
 	/**
+	 * a description of how the points were selected ...
 	 * @var String
 	 */
 	protected $whereStatementDescription = "";
 		public function setWhereStatementDescription($s) {$this->whereStatementDescription = $s;}
 		public function getWhereStatementDescription() {return $this->whereStatementDescription;}
-
-	/**
-	 * Method on an object that returns the datapoints
-	 * @var String
-	 */
-	protected $fieldNameForGoogleDataObjectWithPages = "GoogleDataPoints";
-		public function setFieldNameForGoogleDataObjectWithPages($s) {$this->fieldNameForGoogleDataObjectWithPages = $s;}
-		public function getFieldNameForGoogleDataObjectWithPages() {return $this->fieldNameForGoogleDataObjectWithPages;}
 
 	/**
 	 * filter for class names
@@ -460,9 +392,6 @@ class GoogleMap extends ViewableData {
 	protected $updateServerUrlDragend = "";
 		public function setUpdateServerUrlDragend($v) {$this->updateServerUrlDragend = Director::absoluteBaseURL().$v;}
 		public function getUpdateServerUrlDragend() {return $this->updateServerUrlDragend;}
-		/**
-		 * @return Boolean
-		 */
 
 
 
@@ -492,7 +421,11 @@ class GoogleMap extends ViewableData {
 			$instanceName = $this->getMyMapFunctionName(true);
 			Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
 			Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
-			Requirements::javascript("//maps.googleapis.com/maps/api/js?v=".Config::inst()->get("GoogleMap", "api_version")."&libraries=places&sensor=".$this->showFalseOrTrue(Config::inst()->get("GoogleMap", "uses_sensor")));
+			Requirements::javascript(
+				"//maps.googleapis.com/maps/api/js?"
+				."v=".Config::inst()->get("GoogleMap", "api_version")
+				."&libraries=places"
+			);
 			Requirements::javascript("googlemap/javascript/googleMaps.js");
 			$js .= "\r\n\t\t\tjQuery(document).ready( function() { initiateGoogleMap();} );\r\n";
 			$js .= $this->createJavascript();
@@ -513,13 +446,13 @@ class GoogleMap extends ViewableData {
 
 	/**
 	 * sorts points by Latitude
-	 * @param ArrayList
+	 * @param boolean $reverse
 	 *
 	 * @return ArrayList
 	 */
-	public function orderItemsByLatitude($unsortedSet = null, $reverse = false) {
+	protected function orderItemsByLatitude($reverse = false) {
 		if(!$unsortedSet) {
-			$unsortedSet = $this->getDataPointsObjectSet();
+			$unsortedSet = $this->getProcessedDataPointsForTemplate();
 		}
 		$sortedSet = new ArrayList();
 		if($unsortedSet->count()) {
@@ -529,6 +462,7 @@ class GoogleMap extends ViewableData {
 		}
 		ksort($tempArray);
 		//not sure why this is a bit counter intuitive.
+		//north to south is from high to low ... 
 		if(!$reverse) {
 			$tempArray = array_reverse($tempArray);
 		}
@@ -542,18 +476,12 @@ class GoogleMap extends ViewableData {
 	 *
 	 * @return Int
 	 */
-	public function getDataPointCount() {
-		if($this->getDataPointsObjectSet()) {
-			return $this->dataPointsObjectSet->count();
+	public function getPointCount() {
+		if($this->getProcessedDataPointsForTemplate()) {
+			return $this->processedDataPointsForTemplate->count();
 		}
-		elseif($this->googlePointsDataObject){
-			return $this->googlePointsDataObject->count();
-		}
-		elseif(isset($_SESSION["addCustomGoogleMap"])) {
-			return count($_SESSION["addCustomGoogleMap"]);
-		}
-		elseif($a = Session::get("addCustomGoogleMap")) {
-			return count($a);
+		elseif($points = $this->getPoints()){
+			return $points->count();
 		}
 		return 0;
 	}
@@ -562,7 +490,7 @@ class GoogleMap extends ViewableData {
 	 * @return Boolean
 	 */
 	public function EnoughPointsForAList() {
-		return $this->getDataPointCount() >= $this->Config()->get("number_of_items_before_showing_list") ? true : false;
+		return $this->getPointCount() >= $this->Config()->get("number_of_items_before_showing_list") ? true : false;
 	}
 
 
@@ -574,58 +502,60 @@ class GoogleMap extends ViewableData {
 	 */
 	public function createDataPoints() {
 		$this->dataPointsXML = '';
-		$this->dataPointsObjectSet = new ArrayList();
+		$this->processedDataPointsForTemplate = new ArrayList();
 		$this->loadDefaults();
 		$idArray = array();
 		$bestZoom = $this->Config()->get("default_zoom");
 		$averageLatitude = 0;
 		$averageLongitude = 0;
 		//width
-		$totalCount = 0;
-		if($this->googlePointsDataObject) {
-			$totalCount = $this->googlePointsDataObject->count();
-		}
+		$totalCount = $this->getPointCount();
+		$filterFree = count($this->filteredClassNameArray) ? false : true;
+		$averageLongitudeArray = array();
+		$averageLatitudeArray = array();
 		if($totalCount > 0  && $totalCount < 10000) {
 			$count = 0;
 			$pointsXml = '';
-			//the sort works, but Google Map does not seem to care...
-			//$this->googlePointsDataObject = $this->orderItemsByLatitude($this->GooglePointsDataObject);
-			foreach($this->googlePointsDataObject as $dataPoint) {
+			foreach($this->getPoints() as $dataPoint) {
 				$dataPoint->addParentData();
-				if(!count($this->filteredClassNameArray) || in_array($dataPoint->ClassName, $this->filteredClassNameArray)) {
+				if($filterFree || in_array($dataPoint->ClassName, $this->filteredClassNameArray)) {
 					if(!in_array($dataPoint->ID, $idArray)) {
-						$dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
-						$link = '';
-						if($dataPoint->Link) {
-							$link = $dataPoint->getAjaxInfoWindowLink();
+						if($dataPoint->Longitude && $dataPoint->Latitude) {
+							$dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
+							$link = '';
+							if($dataPoint->Link) {
+								$link = $dataPoint->getAjaxInfoWindowLink();
+							}
+							$staticIcon = '';
+							if($dataPoint->staticIcon) {
+								$staticIcon = $dataPoint->staticIcon;
+							}
+							else {
+								$staticIcon = $this->Config()->get("static_icon");
+							}
+							$center = round($dataPoint->Latitude, 6).",".round($dataPoint->Longitude, 6);
+							//get the center IF there is only one point...
+							if(!$count) {
+								$defaultCenter = $center;
+							}
+							$pointsXml .=
+										'<Placemark>'.
+										'<id>'.$dataPoint->ID.'</id>'.
+										'<name>'.Convert::raw2xml($dataPoint->Name).'</name>'.
+										$dataLine.
+										'<description><![CDATA[ '.$dataPoint->getAjaxInfoWindowLink().']]></description>'.
+										'</Placemark>';
+							$this->processedDataPointsForTemplate->push($dataPoint);
+							$averageLatitudeArray[] = $dataPoint->Longitude;
+							$averageLongitudeArray[] = $dataPoint->Latitude;
+							$count++;
 						}
-						$staticIcon = '';
-						if($dataPoint->staticIcon) {
-							$staticIcon = $dataPoint->staticIcon;
-						}
-						else {
-							$staticIcon = $this->Config()->get("static_icon");
-						}
-						$center = round($dataPoint->Latitude, 6).",".round($dataPoint->Longitude, 6);
-						//get the center IF there is only one point...
-						if(!$count) {
-							$defaultCenter = $center;
-						}
-						$pointsXml .=
-									'<Placemark>'.
-									'<id>'.$dataPoint->ID.'</id>'.
-									'<name>'.Convert::raw2xml($dataPoint->Name).'</name>'.
-									$dataLine.
-									'<description><![CDATA[ '.$dataPoint->getAjaxInfoWindowLink().']]></description>'.
-									'</Placemark>';
-						$this->dataPointsObjectSet->push($dataPoint);
-						$averageLatitude = $dataPoint->Longitude;
-						$averageLongitude = $dataPoint->Latitude;
-						$count++;
 					}
 				}
 				$idArray[$dataPoint->ID] = $dataPoint->ID;
 			}
+			$averageLongitude = array_sum($averageLongitudeArray) / count($averageLongitudeArray);
+			$averageLatitude = array_sum($averageLatitudeArray) / count($averageLatitudeArray);
 			if(!$averageLongitude) {
 				$averageLongitude = $this->config()->get("default_longitude");
 			}
@@ -633,7 +563,7 @@ class GoogleMap extends ViewableData {
 				$averageLatitude = $this->config()->get("default_latitude");
 			}
 			$this->dataPointsXML =
-						'<mapinfo>'.'<title>'.$this->getDataObjectTitle().'</title>'
+						'<mapinfo>'.'<title>'.$this->getTitleOfMap().'</title>'
 						.'<longitude>'.number_format($averageLongitude - 0 , 12, ".", "").'</longitude>'
 						.'<latitude>'.number_format($averageLatitude - 0 , 9, ".", "").'</latitude>'
 						.'<zoom>'.$bestZoom.'</zoom>'
@@ -641,6 +571,7 @@ class GoogleMap extends ViewableData {
 						.'<info>'.$this->getWhereStatementDescription().'</info>'
 						.'</mapinfo>'
 						.$pointsXml;
+			$this->processedDataPointsForTemplate = $this->orderItemsByLatitude($this->processedDataPointsForTemplate);
 		}
 		return true;
 	}
@@ -749,10 +680,10 @@ class GoogleMap extends ViewableData {
 	/**
 	 * turns 0 into false and 1 into true
 	 * @param Mixed
-	 * @return String (true|false)
+	 * @return string (true|false)
 	 */
 	protected function showFalseOrTrue($v) {
-		if($v === true || 1 == $v) {
+		if($v && $v !== "false" && $v !== "0" && $v !== 0) {
 			return "true";
 		}
 		else{
@@ -767,8 +698,8 @@ class GoogleMap extends ViewableData {
 		if(!isset($this->whereStatementDescription)) {
 			$this->whereStatementDescription = $this->Config()->get("default_where_statement_description");
 		}
-		if(!isset($this->dataObjectTitle) || !$this->dataObjectTitle) {
-			$this->dataObjectTitle = $this->Config()->get("default_title");
+		if(!isset($this->titleOfMap) || !$this->titleOfMap) {
+			$this->titleOfMap = $this->Config()->get("default_title");
 		}
 	}
 

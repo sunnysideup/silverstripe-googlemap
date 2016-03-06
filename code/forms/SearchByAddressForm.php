@@ -82,7 +82,11 @@ class SearchByAddressForm extends Form {
 		);
 		$addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your address or zip code here.")) ;
 		if($this->useAutocomplete) {
-			Requirements::javascript("//maps.googleapis.com/maps/api/js?v=".Config::inst()->get("GoogleMap", "api_version")."&libraries=places&sensor=".$this->showFalseOrTrue(Config::inst()->get("GoogleMap", "uses_sensor")));
+			Requirements::javascript("
+				//maps.googleapis.com/maps/api/js?"
+				."v=".Config::inst()->get("GoogleMap", "api_version")
+				."&libraries=places"
+			);
 			Requirements::customScript('
 				function init_search_by_address_form() {
 					var input = document.getElementById("'.$this->getName()."_".$this->getName().'_FindNearAddress");
