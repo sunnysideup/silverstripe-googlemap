@@ -1,17 +1,16 @@
 <?php
 
 /**
- * a controller that returns the Google Map
+ * The way the map works is that you open a page, which loads the initial page
+ * with the map points being loaded as a separate XML doc.
+ * 
+ * This controller returns the Google Map data XML sheet
  * You can show one point by adding ?i=123
  * Where 123 is the ID of a GoogleMapLocationsObject
  *
- * returns Data For Map ....
+ * Here are other return options for the Map .... *
  *
- * HERE are the options
- * ======================
- *
- *
- * 'showemptymap' => map without anything on it, fallback
+ * 'index' / 'showemptymap' => map without anything on it, fallback
  *
  * 'showpagepointsmapxml' => show points from the current page
  *
@@ -21,7 +20,7 @@
  *
  * 'showsearchpoint' =>
  *
- * 'showcustompagesmapxml' =>
+ * 'showcustompagesmapxml' => these are sitetree elements loaded by session
  *
  * 'showcustomdosmapxml' =>
  *
@@ -48,36 +47,64 @@ class GoogleMapDataResponse extends Controller {
 	);
 
 
+
+
+
 	#################
-	# UPDATE SESSION
+	# SESSION MANAGEMENT
 	#################
+
+	protected static session_var_name($id = 0, $action = "") {
+		return "addCustomGoogleMap_".$id."_".$action;
+	} 
+
 	/**
-	 *
+	 * we use the ID and the action to set unique session names
+	 * so that you dont get mixups
 	 * @param Array $addCustomGoogleMapArrayNEW
+	 * @param int $id
+	 * @param string $action
+	 * 
 	 */
-	public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW){
-		$addCustomGoogleMapArrayOLD = Session::get("addCustomGoogleMap");
+	public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW, $id = 0, $action = ""){
+		$addCustomGoogleMapArrayOLD = Session::get(self::session_var_name($id, $action));
 		$addCustomGoogleMapArrayNEW = array_merge($addCustomGoogleMapArrayOLD, $addCustomGoogleMapArrayNEW);
-		Session::set("addCustomGoogleMap", serialize($addCustomGoogleMapArrayNEW));
+		Session::set(Session::get(self::session_var_name($id, $action), serialize($addCustomGoogleMapArrayNEW));
 	}
 
 	/**
-	 *
+	 * we use the ID and the action to set unique session names
+	 * so that you dont get mixups
 	 * @param Array $addCustomGoogleMapArray
+	 * @param int $id
+	 * @param string $action
 	 */
-	public static function set_custom_google_map_session_data($addCustomGoogleMapArray){
+	public static function set_custom_google_map_session_data($addCustomGoogleMapArray, $id = 0, $action = ""){
 		if(!is_array($addCustomGoogleMapArray)) {
 			user_error("addCustomGoogleMapArray should be an array!");
 		}
-		Session::set("addCustomGoogleMap", serialize($addCustomGoogleMapArray));
+		Session::set(self::session_var_name($id, $action), serialize($addCustomGoogleMapArray));
 	}
 
 	/**
-	 *
+	 * we use the ID and the action to set unique session names
+	 * so that you dont get mixups
+	 * @param Array $addCustomGoogleMapArray
+	 * @param int $id
+	 * @param string $action
+	 */
+	public static function clear_custom_google_map_session_data($id = 0, $action = ""){
+		Session::clear(self::session_var_name($id, $action));
+	}
+
+	/**
+	 * @param int $id
+	 * @param string $action
+	 * 
 	 * @return Array
 	 */
 	public static function get_custom_google_map_session_data(){
-		$data = Session::get("addCustomGoogleMap");
+		$data = Session::get(self::session_var_name($id, $action));
 		if(is_array($data)) {
 			$addCustomGoogleMapArray = $data;
 		}
@@ -150,11 +177,6 @@ class GoogleMapDataResponse extends Controller {
 	/**
 	 * @var String
 	 */
-	protected $sessionTitle = "";
-
-	/**
-	 * @var String
-	 */
 	protected $filter = "";
 
 	/**
@@ -201,13 +223,18 @@ class GoogleMapDataResponse extends Controller {
 				"Title" => Convert::raw2sql($this->request->param("Title"))
 			))->First();
 		}
-		if(!$this->owner  & !in_array($this->request->param("Action"), self::$actions_without_owner)) {
-			//user_error("no owner has been identified for GoogleMapDataResponse", E_USER_NOTICE);
+		if($this->owner || in_array($this->request->param("Action"), self::$actions_without_owner)) {
+			//all ok
+		}
+		elseif(in_array($this->request->param("Action"), self::$actions_without_owner)) {
+			//ok too
 			$this->owner = SiteTree::get()->First();
+		}
+		else {
+			user_error("no owner has been identified for GoogleMapDataResponse", E_USER_NOTICE);
 		}
 		//END HACK
 		$this->title = urldecode($this->request->param("Title"));
-		$this->sessionTitle = $sessionTitle = preg_replace('/[^a-zA-Z0-9]/', '', $this->title. "_" . $this->owner->ID);
 		$this->lng = floatval($this->request->param("Longitude"));
 		$this->lat = floatval($this->request->param("Latitude"));
 		$this->filter = urldecode($this->request->param("Filter"));
@@ -355,19 +382,8 @@ class GoogleMapDataResponse extends Controller {
 	 * @return String (XML)
 	 */
 	public function showcustompagesmapxml($request) {
-		$array = Array(-1);
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
-		if(isset($addCustomGoogleMapArray[$this->title])) {
-			$array = $addCustomGoogleMapArray[$this->title];
-		}
-		//print_r($array);
-		if(is_array($array) && count($array)) {
-			$where = " \"SiteTree_Live\".\"ID\" IN (".implode(",",$array).")";
-		}
-		else {
-			$where = " \"SiteTree_Live\".\"ID\" < 0";
-		}
-		$pages = Versioned::get_by_stage("SiteTree", "Live", $where);
+		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($this->owner->ID, "addCustomMap");
+		$pages = SiteTree::get()->filter(array("ID" => $addCustomGoogleMapArray));
 		return $this->makeXMLData($pages, null, $this->title, $this->title);
 	}
 
@@ -379,21 +395,8 @@ class GoogleMapDataResponse extends Controller {
 	 * @return String (XML)
 	 */
 	public function showcustomdosmapxml($request) {
-		$array = Array(-1);
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
-		if(isset($addCustomGoogleMapArray[$this->title])) {
-			$array = $addCustomGoogleMapArray[$this->title];
-		}
-		//print_r($array);
-		if(is_array($array) && count($array)) {
-			$where = array("GoogleMapLocationsObject.ID" => $array);
-		}
-		else {
-				//3.0TODO check this
-			$where = array("GoogleMapLocationsObject.ID:LessThan" => 0);
-			//$where = " \"GoogleMapLocationsObject\".\"ID\" < 0";
-		}
-		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter($where);
+		$array = GoogleMapDataResponse::get_custom_google_map_session_data($this->owner->ID, "addCustomMap");
+		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $addCustomGoogleMapArray);
 		return $this->makeXMLData(null, $googleMapLocationsObjects, $this->title, $this->title);
 	}
 
@@ -408,7 +411,10 @@ class GoogleMapDataResponse extends Controller {
 		$lng = 0;
 		$lat = 0;
 		$excludeIDList = array();
-
+		$stage = '';
+		if(Versioned::current_stage() == "Live") {
+			$stage = "_Live";
+		}
 		if($this->lng && $this->lat) {
 			$lng = $this->lng;
 			$lat = $this->lat;
@@ -439,16 +445,15 @@ class GoogleMapDataResponse extends Controller {
 			$orderByRadius = GoogleMapLocationsObject::radius_definition($lng, $lat);
 			$where = "(".$orderByRadius.") > 0 AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
 			if($classNameForParent && !is_object($classNameForParent)) {
-				$where .= " AND \"SiteTree_Live\".\"ClassName\" = '".$classNameForParent."'";
+				$where .= " AND \"SiteTree".$stage."\".\"ClassName\" = '".$classNameForParent."'";
 			}
 			if(count($excludeIDList)) {
 				$where .= " AND \"GoogleMapLocationsObject\".\"ID\" NOT IN (".implode(",",$excludeIDList).") ";
 			}
-			$join = "LEFT JOIN \"SiteTree_Live\" ON \"SiteTree_Live\".\"ID\" = \"GoogleMapLocationsObject\".\"ParentID\"";
 			$objects = GoogleMapLocationsObject::get()
 				->where($where)
 				->sort($orderByRadius)
-				->leftJoin("SiteTree_Live", "SiteTree_Live.ID = GoogleMapLocationsObject.ParentID")
+				->leftJoin("SiteTree".$stage."", "SiteTree".$stage.".ID = GoogleMapLocationsObject.ParentID")
 				->limit(Config::inst()->get("GoogleMap", "number_shown_in_around_me"));
 			if($objects->count()) {
 				return $this->makeXMLData(
@@ -579,15 +584,20 @@ class GoogleMapDataResponse extends Controller {
 	 *
 	 * @return String (XML)
 	 */
-	protected function makeXMLData($PageDataObjectSet = null, $GooglePointsDataObject = null, $dataObjectTitle = '', $whereStatementDescription = '') {
+	protected function makeXMLData(
+		$pages = null,
+		$dataPoints = null,
+		$title = '',
+		$selectionStatement = ''
+	) {
 		$this->map = GoogleMap::create();
-		$this->map->setDataObjectTitle($dataObjectTitle);
-		$this->map->setWhereStatementDescription($whereStatementDescription);
-		if($PageDataObjectSet) {
-			$this->map->setPageDataObjectSet($PageDataObjectSet);
+		$this->map->setDataObjectTitle($title);
+		$this->map->setWhereStatementDescription($selectionStatement);
+		if($pages) {
+			$this->map->setPageDataObjectSet($pages);
 		}
-		elseif($GooglePointsDataObject) {
-			$this->map->setGooglePointsDataObject($GooglePointsDataObject);
+		elseif($dataPoints) {
+			$this->map->setGooglePointsDataObject($dataPoints);
 		}
 		$data = $this->map->createDataPoints();
 
