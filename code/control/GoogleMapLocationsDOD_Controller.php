@@ -236,19 +236,19 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param Boolean $retainOldSessionData
 	 * @param String $title
 	 */
-	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '') {
-		$filterCode = $this->ID."_".$this->request->
+	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '', $filterCode = "") {
 		$this->initiateMap();
-		$isGoogleMapLocationsObject = true;
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($this->owner->ID, "addCustomMap");
+		$isGoogleMapLocationsObject = true;		
+		if(!$filterCode) {
+			$filterCode = $this->owner->ID."_".$this->owner->request->param("Action");
+		}
 		if($pagesOrGoogleMapLocationsObjects) {
 			if(!$retainOldSessionData) {
-				$this->clearCustomMaps();
+				$addCustomGoogleMapArray = array();
+				$this->clearCustomMaps($filterCode);
 			}
 			else {
-				if(is_array($addCustomGoogleMapArray)) {
-					$customMapCount = count($addCustomGoogleMapArray);
-				}
+				$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($filterCode);
 			}
 			foreach($pagesOrGoogleMapLocationsObjects as $obj) {
 				if($obj instanceof SiteTree) {
@@ -257,13 +257,10 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 				if(!$obj->ID) {
 					user_error("Page provided to addCustomMap that does not have an ID", E_USER_ERROR);
 				}
-				if(!isset($addCustomGoogleMapArray[$title])) {
-					$addCustomGoogleMapArray[$title] = array();
-				}
-				$addCustomGoogleMapArray[$title][] = $obj->ID;
+				$addCustomGoogleMapArray[$obj->ID] = $obj->ID;
 			}
 		}
-		GoogleMapDataResponse::set_custom_google_map_session_data($addCustomGoogleMapArray, $this->owner->ID, "addCustomMap");
+		GoogleMapDataResponse::set_custom_google_map_session_data($addCustomGoogleMapArray, $filterCode);
 		Session::save();
 		if($isGoogleMapLocationsObject) {
 			$fn = "showcustomdosmapxml";
@@ -271,7 +268,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		else {
 			$fn = "showcustompagesmapxml";
 		}
-		$this->addMap($fn, $title);
+		$this->addMap($fn, $title, 0, 0, $filterCode);
 	}
 
 
