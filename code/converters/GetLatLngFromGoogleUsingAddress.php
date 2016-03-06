@@ -31,7 +31,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 *
 	 * @var String
 	 */
-	private static $geocode_url = "http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
+	private static $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false";
 
 	 /**
 		* default user to first result that is returned.
@@ -50,6 +50,12 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	private static $server_side_available = true;
 
 	/**
+	 * alternative to api key
+	 * @var string
+	 */
+	private static $google_client_id = "";
+
+	/**
 	 * Get first placemark as flat array
 	 *
 	 * @param string $q
@@ -65,9 +71,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 				->filter(array("SearchPhrase" => Convert::raw2sql($q)))
 				->First();
 			if($searchRecord && $searchRecord->ResultArray) {
-				if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
-					debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");
-				}
+				if($debug) {debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");}
 				//@ is important here!
 				$result = @unserialize($searchRecord->ResultArray);
 				if($result === null) {
@@ -86,7 +90,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 					$resultArray = self::google_2_ss($result);
 					if($debug) {debug::show(print_r($resultArray, 1));}
 					if(!isset($searchRecord) || !$searchRecord) {
-						$searchRecord = new GetLatLngFromGoogleUsingAddressSearchRecord();
+						$searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::create();
 						$searchRecord->SearchPhrase = Convert::raw2sql($q);
 					}
 					$searchRecord->ResultArray = serialize($resultArray);
@@ -115,9 +119,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	protected static function get_placemark($q, $tryAnyway = false) {
 		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","server_side_available") || $tryAnyway) {
 			$responseObj = self::get_geocode_obj($q);
-			if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
-				debug::show(print_r($responseObj, 1));
-			}
+			if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {debug::show(print_r($responseObj, 1));}
 			if($responseObj && $responseObj->status == 'OK' && isset($responseObj->results[0])) {
 				//we just take the first address!
 				if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","default_to_first_result") || count($responseObj->results) ==1) {
@@ -138,15 +140,16 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 */
 	protected static function get_geocode_obj($q) {
 		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
-		if(!Config::inst()->get("GoogleMap", "google_map_api_key")) {
-			//user_error('Please define a valid Google Maps API Key: google_map_api_key', E_USER_ERROR);
-		}
 		$q = trim($q);
-		if($debug) {
-			var_dump($q);
-		}
+		if($debug) {debug::show(print_r($q, 1));}
 		if(empty($q)) return false;
 		$url = sprintf(Config::inst()->get("GetLatLngFromGoogleUsingAddress","geocode_url"), urlencode($q));
+		if($clientID = Config::inst()->get("GetLatLngFromGoogleUsingAddress","google_client_id")) {
+			$url .= "&client=".$clientID;
+		}
+		elseif($api = Config::inst()->get("GoogleMap", "google_map_api_key")) {
+			$url .= "&key=".$api;
+		}
 		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 			debug::show(print_r($url, 1));
 		}

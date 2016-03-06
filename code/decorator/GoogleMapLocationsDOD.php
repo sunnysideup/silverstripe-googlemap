@@ -9,9 +9,13 @@
 
 class GoogleMapLocationsDOD extends SiteTreeExtension {
 
-	private static $db = array("HasGeoInfo" => "Boolean");
+	private static $db = array(
+		"HasGeoInfo" => "Boolean"
+	);
 
-	private static $has_many = array("GeoPoints" => "GoogleMapLocationsObject");
+	private static $has_many = array(
+		"GeoPoints" => "GoogleMapLocationsObject"
+	);
 
 	/**
 	 * list of pages types without a map
@@ -55,7 +59,7 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 	 * @return String (HTML)
 	 */
 	public function AjaxInfoWindowLink() {
-		if($this->owner->hasMethod("CustomAjaxInfoWindow") || 1 == 1) {
+		if($this->owner->hasMethod("CustomAjaxInfoWindow")) {
 			return $this->owner->CustomAjaxInfoWindow();
 		}
 		if($this->owner->hasMethod("ajaxinfowindowreturn")) {
@@ -113,7 +117,6 @@ class GoogleMapLocationsDOD extends SiteTreeExtension {
 			}
 		}
 		return ($childrenOfType) ? $childrenOfType : new ArrayList();
-
 	}
 
 }

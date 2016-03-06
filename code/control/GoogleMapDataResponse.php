@@ -14,7 +14,9 @@
  *
  * 'showpagepointsmapxml' => show points from the current page
  *
- * 'showchildpointsmapxml' => show points from the child pages
+ * 'showchildpointsmapxml' => show points from the child pages (all child pages)
+ *
+ * 'showdirectchildren' => show points from the child pages (direct ones only)
  *
  * 'showsearchpoint' =>
  *
@@ -134,6 +136,7 @@ class GoogleMapDataResponse extends Controller {
 		'showemptymap',
 		'showpagepointsmapxml',
 		'showchildpointsmapxml',
+		'showdirectchildren',
 		'showsearchpoint',
 		'showcustompagesmapxml',
 		'showcustomdosmapxml',
@@ -317,6 +320,18 @@ class GoogleMapDataResponse extends Controller {
 	 */
 	public function showchildpointsmapxml($request) {
 		if($children = $this->owner->getChildrenOfType($this->owner, null)) {
+			return $this->makeXMLData($children, null, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
+		}
+		return $this->showemptymap($request);
+	}
+
+	/**
+	 * @param SS_HTTPRequest
+	 *
+	 * @return String (XML)
+	 */
+	public function showdirectchildren($request) {
+		if($children = Provider::get()) {
 			return $this->makeXMLData($children, null, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
 		}
 		return $this->showemptymap($request);

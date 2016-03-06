@@ -312,11 +312,13 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						GMO.directionsOnLoad();
 				});
 				google.maps.event.addListener(GMO.directions, "error", this.directionsHandleErrors);
+				//start icon
 				G_START_ICON = "";
 				G_START_ICON.iconSize = new google.maps.Size(0, 0);
 				G_START_ICON.image="";
 				G_START_ICON.shadow = "";
-				G_END_ICON = "";""
+				//end icon
+				G_END_ICON = "";
 				G_END_ICON.iconSize = new google.maps.Size(0, 0);
 				G_END_ICON.image="";
 				G_END_ICON.shadow = "";
@@ -501,7 +503,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			//marker options
 			var markerOpts = this.opts.markerOptions || {};
 			if(!iconUrl) {
-				iconUrl = this.layerInfo[currentLayerId].iconUrl[0];
+				iconUrl = "http://maps.google.com/mapfiles/marker_yellow"+name[0].toUpperCase()+".png";
 			}
 			var icon = this.createStandardIcon(iconUrl);
 			markerOpts.icon = icon;
@@ -710,10 +712,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				obscuringLinks += "</span></p>";
 			}
 			//basic html
-			var html = '<div id="infoWindowTab1" class="infoWindowTab">' + obscuringLinks + '<div>'+desc+'</div>';
+			var html = '<div id="infoWindowTab1" class="infoWindowTab"><h1>'+name+'</h1>' + obscuringLinks + '<div>'+desc+'</div>';
 			if(this.opts.addZoomInButton) {
 				infoTabExtraLinksArray.push(
-					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">'+this.opts.addZoomInButton+'</a>'
+					'<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">zoom in</a>'
 				);
 			}
 			if(this.opts.addDeleteMarkerButton) {
@@ -822,8 +824,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				google.maps.event.addListener(m, "findAddressFromLngLat",
 					function() {
 						GMO.geocoder = new google.maps.Geocoder();
+						return;
 						GMO.geocoder.getLocations(
-							m.getLatLng(),
+							m.position,
 							function(response) {
 								var html = '<p>'+GMO._t.address_not_found+'</p>';
 								if (!response || response.Status.code != 200) {
@@ -1045,7 +1048,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 						styleLocationId = placemarks[i].getElementsByTagName("styleUrl")[0];
 						styleLocationId = styleLocationId.substring(1, styleLocationId.length);
 					}
-					var newIconURL = iconUrl;
+					var newIconURL = ""; //use standard one => iconUrl;
 					if(styleLocationId) {
 						//<Style id="randomColorIcon"><IconStyle><Icon>URL here
 						var IconStyleDoc = xmlDoc.getElementsByTagName("Style");
@@ -1401,15 +1404,15 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				}
 				else {
 					var zoomLinkLabel = 'full-screen';
-					var hideAction = '| <a href="javascript:void(0)" onclick="GMO.hideStatus();">' + GMO._t.hide + '</a>';
+					var hideAction = '<span>|</span> <a href="javascript:void(0)" onclick="GMO.hideStatus();">' + GMO._t.hide + '</a> ';
 				}
 			}
 			var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
 			// depreciated
 			if(this.opts.addAddressFinder) {
-				fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">' + GMO._t.find_address + '</a> |'
+				fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">' + GMO._t.find_address + '</a> <span>|</span>'
 			}
-			fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');"> ' + GMO._t.show_help + ' </a> |'
+			fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');"> ' + GMO._t.show_help + ' </a> <span>|</span>'
 			+ ' <a href="javascript:void(0)" onclick="GMO.enlargeMap();" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
 			+ hideAction
 			+ '</p>'+ html;

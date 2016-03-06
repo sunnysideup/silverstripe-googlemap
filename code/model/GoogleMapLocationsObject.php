@@ -4,6 +4,10 @@
  * Map Location Object
  * onBeforeWrite, it automagically adds all the details.
  *
+ * To create a new GoogleMapLocationsObject 
+ * set the Address field and write.  All other fields
+ * are completed automatically...
+ * 
  */
 
 class GoogleMapLocationsObject extends DataObject {
@@ -25,7 +29,7 @@ class GoogleMapLocationsObject extends DataObject {
 		'PostalCodeNumber' => 'Varchar(30)',
 		'Manual' => 'Boolean',
 		'CustomPopUpWindowTitle' => "Varchar(50)",
-		'CustomPopUpWindowInfo' => "Varchar(255)",
+		'CustomPopUpWindowInfo' => "HTMLText(255)"
 		//'GeoPointField' => 'GeoPoint',
 		//'GeoPolygonField' => 'GeoPolygon',
 		//'GeoLineString' => 'GeoLineString'
@@ -152,7 +156,7 @@ class GoogleMapLocationsObject extends DataObject {
 			$customPopUpWindowTitleField->setRightTitle(
 				_t("GoogleMap.CUSTOM_POP_UP_WINDOW_TITLE", 'Leave Blank to auto-complete the pop-up information on the map.')
 			);
-			$fields->addFieldToTab("Root.Popup", $customPopUpWindowInfoField = new TextareaField('CustomPopUpWindowInfo', $labels["CustomPopUpWindowInfo"] ));
+			$fields->addFieldToTab("Root.Popup", $customPopUpWindowInfoField = new HTMLEditorField('CustomPopUpWindowInfo', $labels["CustomPopUpWindowInfo"] ));
 			$customPopUpWindowInfoField->setRightTitle(
 				_t("GoogleMap.CUSTOM_POP_UP_WINDOW_INFO", 'Leave Blank to auto-complete the pop-up information on the map.')
 			);
@@ -178,12 +182,16 @@ class GoogleMapLocationsObject extends DataObject {
 	 * @return String (HTML)
 	 */
 	function getAjaxInfoWindowLink() {
-		if(strlen($this->CustomPopUpWindowInfo) > 3) {
-			return '<p>'.$this->CustomPopUpWindowInfo.'</p>';
+		if(strlen($this->CustomPopUpWindowInfo) > 10) {
+			return $this->CustomPopUpWindowInfo;
 		}
 		elseif($parent = $this->getParentData()) {
-			return $parent->AjaxInfoWindowLink();
+			$html = $parent->AjaxInfoWindowLink();
 		}
+		if(!$html) {
+			$html = $this->FullAddress;
+		}
+		return $html;
 	}
 
 	/**
@@ -273,8 +281,10 @@ class GoogleMapLocationsObject extends DataObject {
 	}
 
 	/**
-	 *
-	 * @return this
+	 * test to see if address is found.  If address if found then
+	 * it will write the object, otherwise it returns null.
+	 * 
+	 * @return this || null
 	 */
 	public function findGooglePointsAndWriteIfFound() {
 		$this->findGooglePoints(true);
@@ -282,7 +292,6 @@ class GoogleMapLocationsObject extends DataObject {
 			$this->write();
 			return $this;
 		}
-		return false;
 	}
 
 	/**

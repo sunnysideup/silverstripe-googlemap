@@ -124,8 +124,8 @@ GoogleMap:
   #add a tab with the address finder
   add_current_address_finder: false
 
-  #add a "zoom in" link on info window, should be emptry string or text for button.
-  add_zoom_in_button: ""
+  #add a "zoom in" link on info window?
+  add_zoom_in_button: false
 
   # the text that links through to the details for the marker
   ajax_info_window_text: "view details"

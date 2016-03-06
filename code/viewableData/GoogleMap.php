@@ -181,10 +181,6 @@ class GoogleMap extends ViewableData {
 	}
 
 
-
-
-
-
 	################################
 	# TEMPATE METHODS
 	################################
@@ -589,7 +585,7 @@ class GoogleMap extends ViewableData {
 		if($this->googlePointsDataObject) {
 			$totalCount = $this->googlePointsDataObject->count();
 		}
-		if($totalCount > 0  && $totalCount < 500) {
+		if($totalCount > 0  && $totalCount < 10000) {
 			$count = 0;
 			$pointsXml = '';
 			//the sort works, but Google Map does not seem to care...
@@ -601,7 +597,7 @@ class GoogleMap extends ViewableData {
 						$dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
 						$link = '';
 						if($dataPoint->Link) {
-							$link = $dataPoint->AjaxInfoWindowLink;
+							$link = $dataPoint->getAjaxInfoWindowLink();
 						}
 						$staticIcon = '';
 						if($dataPoint->staticIcon) {
@@ -620,7 +616,7 @@ class GoogleMap extends ViewableData {
 									'<id>'.$dataPoint->ID.'</id>'.
 									'<name>'.Convert::raw2xml($dataPoint->Name).'</name>'.
 									$dataLine.
-									'<description><![CDATA[ '.$dataPoint->AjaxInfoWindowLink.']]></description>'.
+									'<description><![CDATA[ '.$dataPoint->getAjaxInfoWindowLink().']]></description>'.
 									'</Placemark>';
 						$this->dataPointsObjectSet->push($dataPoint);
 						$averageLatitude = $dataPoint->Longitude;
