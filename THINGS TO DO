@@ -1,9 +1,0 @@
-this.opts.mapScaleInfoSizeInPixels - no longer used, but might be able to rename to:
-this.opts.mapScalePosition - e.g. google.maps.ControlPosition.BOTTOM_RIGHT
-
-
-this.opts.mapControlSizeOneToThree - change into two options
-
-Get rid of polygon business
-
-get rid of this.opts.iconImageMap;
