@@ -12,9 +12,9 @@ class Page_Controller extends ContentController {
 		parent::init();
 		//$this->addMap("showemptymap");
 		$this->addMap("showPagePointsMapXML");
-		//$this->addExtraLayersAsAction(...);
+		//$this->addExtraLayer(...);
 		//loadmap - test as /home/loadmap/....
-		//$this->addExtraLayersAsLinks(...);
+		//$this->addExtraLayersUsingRawLink(...);
 		//$this->addAddress("128 evans bay parade, wellington, new zealand");
 		//$this->addAllowAddingAndDeletingPoints(...);
 		//$this->addUpdateServerUrlAddressSearchPoint(...);

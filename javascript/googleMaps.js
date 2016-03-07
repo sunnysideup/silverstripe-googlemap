@@ -164,10 +164,11 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		/**
 		 * adds layer to map with with points
 		 * @param URL url
+		 * @param string url
 		 * @todo: encapsulate
 		 */
-		addLayer: function(url) {
-			GMO.downloadXml(url);
+		addLayer: function(url, title) {
+			GMO.downloadXml(url, title);
 			return true;
 		},
 
@@ -405,7 +406,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 * @todo turn latitudeAndlongitude into two variables!
 		 */
 		zoomTo: function(latitudeAndlongitude, zoom) {
-			if(zoom && latitudeAndlongitude) {
+			if(latitudeAndlongitude && zoom) {
 				GMO.mapObject.setZoom(zoom);
 				GMO.mapObject.panTo(latitudeAndlongitude);
 			}
@@ -1008,153 +1009,156 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		 */
 		processXml: function(doc) {
 			this.bounds = new google.maps.LatLngBounds();
-			var pointCount = parseInt(doc.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue);
-			this.tooManyPointsWarning(pointCount + 1);
-			if(pointCount > 0) {
+			if(doc.getElementsByTagName("pointcount").length > 0) {
+				var pointCount = parseInt(doc.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue);
+				this.tooManyPointsWarning(pointCount + 1);
+				if(pointCount > 0) {
 
-				var currentLayerId = this.layerInfo.length;
-				var groupInfo = {};
-				iconUrlCollection = [];
-				groupInfo.show = 1;
-				groupInfo.url = this.latestUrl;
-				this.latestUrl = '';
-				groupInfo.pointCount = pointCount;
-				//parse basics:
-				groupInfo.title =  doc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
-				groupInfo.info = doc.getElementsByTagName("info")[0].childNodes[0].nodeValue;
-				groupInfo.a = doc.getElementsByTagName("latitude")[0].childNodes[0].nodeValue;
-				groupInfo.o = doc.getElementsByTagName("longitude")[0].childNodes[0].nodeValue;
-				groupInfo.z = doc.getElementsByTagName("zoom")[0].childNodes[0].nodeValue;
-				//add icon here? createStandardIcon
-				var currentIconId = currentLayerId + 1;
-				var layerIconCount = 0;
-				if(currentIconId > this.opts.iconMaxCount) {
-					currentIconId = 1;
-				}
-				if(currentIconId && (this.opts.iconFolder || this.opts.defaultIconUrl)) {
-					var iconUrl = this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
-				}
-				//add layer information ... IMPORTANT MUST BE BEFORE MARKER LOOP
-				//groupInfo.iconUrl = iconUrlCollection;
-				this.layerInfo.push (groupInfo);
-				// Read through the Placemarks
-				var placemarks = doc.documentElement.getElementsByTagName("Placemark");
-				for (var i = 0; i < placemarks.length; i++) {
-					var serverId = placemarks[i].getElementsByTagName("id")[0].childNodes[0];
-					var name = placemarks[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
-					var desc = placemarks[i].getElementsByTagName("description")[0].childNodes[0];
-					var styleLocationId = null
-					if (placemarks[i].getElementsByTagName("styleUrl").length > 0) {
-						styleLocationId = placemarks[i].getElementsByTagName("styleUrl")[0];
-						styleLocationId = styleLocationId.substring(1, styleLocationId.length);
+					var currentLayerId = this.layerInfo.length;
+					var groupInfo = {};
+					iconUrlCollection = [];
+					groupInfo.show = 1;
+					groupInfo.url = this.latestUrl;
+					this.latestUrl = '';
+					groupInfo.pointCount = pointCount;
+					//parse basics:
+					var mapInfo = doc.getElementsByTagName("mapinfo")[0];
+					groupInfo.title =  mapInfo.getElementsByTagName("title")[0].firstChild.nodeValue;
+					if(mapInfo.getElementsByTagName("info")[0].firstChild !== null) {
+						groupInfo.info =  mapInfo.getElementsByTagName("info")[0].firstChild.nodeValue;
 					}
-					var newIconURL = ""; //use standard one => iconUrl;
-					if(styleLocationId) {
-						//<Style id="randomColorIcon"><IconStyle><Icon>URL here
-						var IconStyleDoc = xmlDoc.getElementsByTagName("Style");
-						for(var j=0;j<IconStyleDoc.length;j++){
-							if(IconStyleDoc[j].getAttribute("id")) {
-								if(IconStyleDoc[j].getAttribute("id") == styleLocationId){
-									layerIconCount++;
-									newIconURL = IconStyleDoc[j].getElementsByTagName("Icon")[0].childNodes[0];
+					groupInfo.a = mapInfo.getElementsByTagName("latitude")[0].firstChild.nodeValue;
+					groupInfo.o = mapInfo.getElementsByTagName("longitude")[0].firstChild.nodeValue;
+					groupInfo.z = mapInfo.getElementsByTagName("zoom")[0].firstChild.nodeValue;
+					//add icon here? createStandardIcon
+					var currentIconId = currentLayerId + 1;
+					var layerIconCount = 0;
+					if(currentIconId > this.opts.iconMaxCount) {
+						currentIconId = 1;
+					}
+					if(currentIconId && (this.opts.iconFolder || this.opts.defaultIconUrl)) {
+						var iconUrl = this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
+					}
+					//add layer information ... IMPORTANT MUST BE BEFORE MARKER LOOP
+					//groupInfo.iconUrl = iconUrlCollection;
+					this.layerInfo.push (groupInfo);
+					// Read through the Placemarks
+					var placemarks = doc.documentElement.getElementsByTagName("Placemark");
+					for (var i = 0; i < placemarks.length; i++) {
+						var serverId = placemarks[i].getElementsByTagName("id")[0].childNodes[0];
+						var name = placemarks[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
+						var desc = placemarks[i].getElementsByTagName("description")[0].childNodes[0];
+						var styleLocationId = null
+						if (placemarks[i].getElementsByTagName("styleUrl").length > 0) {
+							styleLocationId = placemarks[i].getElementsByTagName("styleUrl")[0];
+							styleLocationId = styleLocationId.substring(1, styleLocationId.length);
+						}
+						var newIconURL = ""; //use standard one => iconUrl;
+						if(styleLocationId) {
+							//<Style id="randomColorIcon"><IconStyle><Icon>URL here
+							var IconStyleDoc = xmlDoc.getElementsByTagName("Style");
+							for(var j=0;j<IconStyleDoc.length;j++){
+								if(IconStyleDoc[j].getAttribute("id")) {
+									if(IconStyleDoc[j].getAttribute("id") == styleLocationId){
+										layerIconCount++;
+										newIconURL = IconStyleDoc[j].getElementsByTagName("Icon")[0].childNodes[0];
+									}
 								}
 							}
 						}
-					}
-					// Attempt to preload images
-					var coords = placemarks[i].getElementsByTagName("coordinates")[0].childNodes[0].nodeValue;
-					coords=coords.replace(/\s+/g," "); // tidy the whitespace
-					coords=coords.replace(/^ /,"");    // remove possible leading whitespace
-					coords=coords.replace(/, /,",");   // tidy the commas
-					var path = coords.split(" ");
-					// Is this a polyline/polygon?
-					if (path.length > 1) {
-						// Build the list of points
-						var points = [];
-						var pbounds = new google.maps.LatLngBounds();
-						for (var p=0; p<path.length-1; p++) {
-							var bits = path[p].split(",");
-							var point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
-							points.push(point);
-							this.bounds.extend(point);
-							pbounds.extend(point);
-						}
-						if(this.opts.polyIcon) {
-							newIconURL = this.opts.polyIcon;
-						}
-						var width = this.opts.lineWidth;
-						var color = this.opts.lineColour;
-						var opacity = this.opts.lineOpacity;
-						var linestring = placemarks[i].getElementsByTagName("LineString");
-						var polygons = placemarks[i].getElementsByTagName("Polygon");
-						if (linestring.length) {
-							var p = this.createPolyline(points,color,width,opacity,name,desc);
-						}
-						else if (polygons.length) {
-							var fillopacity = this.opts.fillOpacity;
-							var fillcolor = this.opts.fillColour;
-							var p = this.createPolygon(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc);
+						// Attempt to preload images
+						var coords = placemarks[i].getElementsByTagName("coordinates")[0].childNodes[0].nodeValue;
+						coords=coords.replace(/\s+/g," "); // tidy the whitespace
+						coords=coords.replace(/^ /,"");    // remove possible leading whitespace
+						coords=coords.replace(/, /,",");   // tidy the commas
+						var path = coords.split(" ");
+						// Is this a polyline/polygon?
+						if (path.length > 1) {
+							// Build the list of points
+							var points = [];
+							var pbounds = new google.maps.LatLngBounds();
+							for (var p=0; p<path.length-1; p++) {
+								var bits = path[p].split(",");
+								var point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
+								points.push(point);
+								this.bounds.extend(point);
+								pbounds.extend(point);
+							}
+							if(this.opts.polyIcon) {
+								newIconURL = this.opts.polyIcon;
+							}
+							var width = this.opts.lineWidth;
+							var color = this.opts.lineColour;
+							var opacity = this.opts.lineOpacity;
+							var linestring = placemarks[i].getElementsByTagName("LineString");
+							var polygons = placemarks[i].getElementsByTagName("Polygon");
+							if (linestring.length) {
+								var p = this.createPolyline(points,color,width,opacity,name,desc);
+							}
+							else if (polygons.length) {
+								var fillopacity = this.opts.fillOpacity;
+								var fillcolor = this.opts.fillColour;
+								var p = this.createPolygon(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc);
+							}
+							else {
+								alert(GMO._t.error_in_loading);
+							}
 						}
 						else {
-							alert(GMO._t.error_in_loading);
+						//it must be a marker
+							var bits = path[0].split(",");
+							var point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
+							this.bounds.extend(point);
+						// create marker
+							this.updateStatus(GMO._t.processing + " " + i + " " + GMO._t.of + " " + pointCount + ".");
+							var m = this.createMarker(point, name, desc, serverId, newIconURL);
 						}
+						if(!iconUrlCollection.inArray(newIconURL)) {
+							iconUrlCollection.push(newIconURL);
+						}
+					}
+					//add icons
+					var currentLayerId = this.layerInfo.length - 1;
+					this.layerInfo[currentLayerId].iconUrl = iconUrlCollection;
+					// Shall we zoom to the bounds?
+					if (pointCount > 1) {
+						GMO.mapObject.fitBounds(this.bounds);
 					}
 					else {
-					//it must be a marker
-						var bits = path[0].split(",");
-						var point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
-						this.bounds.extend(point);
-					// create marker
-						this.updateStatus(GMO._t.processing + " " + i + " " + GMO._t.of + " " + pointCount + ".");
-						var m = this.createMarker(point, name, desc, serverId, newIconURL);
+						GMO.mapObject.panTo(point);
 					}
-					if(!iconUrlCollection.inArray(newIconURL)) {
-						iconUrlCollection.push(newIconURL);
+					this.updateLists();
+					//this.zoomTo(groupInfo.a, groupInfo.o, groupInfo.z);
+					//if(!GMO.mapObject.getInfoWindow().getVisible()) {
+					if(!marker.getVisible) {
+						//GMO.mapObject.closeInfoWindow();
+						marker.infowindow.close();
 					}
-				}
-				//add icons
-				var currentLayerId = this.layerInfo.length - 1;
-				this.layerInfo[currentLayerId].iconUrl = iconUrlCollection;
-				// Shall we zoom to the bounds?
-				if (pointCount > 1) {
-					var latLng = new google.maps.LatLng(this.bounds.getCenter().lat(),  this.bounds.getCenter().lng(), false);
-					this.zoomTo(latLng, GMO.mapObject.fitBounds(this.bounds));
-					GMO.mapObject.setCenter(this.bounds.getCenter());
+					if(pointCount > 1) {
+						this.updateStatus(pointCount + " " + GMO._t.locations_added + ".");
+					}
+					else {
+						window.setTimeout(
+							function () {
+								google.maps.event.trigger(GMO.gmarkers[GMO.gmarkers.length -1], "click");
+								//GMO.mapObject.panDirection(0, 1);
+								GMO.mapObject.panBy(0, 1);
+							}
+							, 300
+						);
+						this.updateStatus(GMO._t.one_location_loaded);
+					}
 				}
 				else {
-					GMO.mapObject.panTo(point);
-				}
-				this.updateLists();
-				//this.zoomTo(groupInfo.a, groupInfo.o, groupInfo.z);
-				//if(!GMO.mapObject.getInfoWindow().getVisible()) {
-				if(!marker.getVisible) {
-					//GMO.mapObject.closeInfoWindow();
-					marker.infowindow.close();
-				}
-				if(pointCount > 1) {
-					this.updateStatus(pointCount + " " + GMO._t.locations_added + ".");
-				}
-				else {
-					window.setTimeout(
-						function () {
-							google.maps.event.trigger(GMO.gmarkers[GMO.gmarkers.length -1], "click");
-							//GMO.mapObject.panDirection(0, 1);
-							GMO.mapObject.panBy(0, 1);
+					var title =  doc.getElementsByTagName("title")[0];
+					if(this.opts.titleId) {
+						if(el = document.getElementById(this.opts.titleId)) {
+							el.innerHTML = title;
 						}
-						, 300
-					);
-					this.updateStatus(GMO._t.one_location_loaded);
-				}
-			}
-			else {
-				var title =  doc.getElementsByTagName("title")[0];
-				if(this.opts.titleId) {
-					if(el = document.getElementById(this.opts.titleId)) {
-						el.innerHTML = title;
 					}
-				}
-				if(this.opts.changePageTitle && document.title) {
-					document.title = title;
+					if(this.opts.changePageTitle && document.title) {
+						document.title = title;
+					}
 				}
 			}
 		},
@@ -1265,6 +1269,15 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 					}
 					html += '</ul>';
 					el.innerHTML = html;
+					if(typeof AdjustHeightsForGoogleMap !== "undefined") {
+						AdjustHeightsForGoogleMap.boxesSelector = '#' + this.opts.sideBarId + 'list > li';
+						jQuery(window).resize(
+							function() {
+								AdjustHeightsForGoogleMap.adjustBoxes()();
+							}
+						);
+						AdjustHeightsForGoogleMap.adjustBoxes()();
+					}
 				}
 				else {
 					console.debug("you defined the dropbox like this " + this.opts.sideBarId + ", but it does not exist");
@@ -2190,10 +2203,12 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 		/**
 		 * adds layer to map with with points
 		 * @param URL url
+		 * @param string title
+		 *
 		 * @todo: encapsulate
 		 */
-		addLayer: function(url) {
-			return GMO.addLayer(url);
+		addLayer: function(url, title) {
+			return GMO.addLayer(url, title);
 		},
 
 		/**

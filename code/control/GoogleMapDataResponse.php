@@ -3,7 +3,7 @@
 /**
  * The way the map works is that you open a page, which loads the initial page
  * with the map points being loaded as a separate XML doc.
- * 
+ *
  * This controller returns the Google Map data XML sheet
  * You can show one point by adding ?i=123
  * Where 123 is the ID of a GoogleMapLocationsObject
@@ -37,7 +37,7 @@
 class GoogleMapDataResponse extends Controller {
 
 
-
+	private static $session_var_prefix = "addCustomGoogleMap";
 
 	/**
 	 * Default URL handlers - (Action)/(ID)/(OtherID)
@@ -54,33 +54,27 @@ class GoogleMapDataResponse extends Controller {
 	# SESSION MANAGEMENT
 	#################
 
-	protected static session_var_name($filterCode = "") {
-		if(!$filterCode) {
-			$filterCode = $this->filterCode;
-		}
-		return "addCustomGoogleMap_".$filterCode;
-	} 
+	protected static function session_var_name($filterCode = "") {
+		return Config::inst()->get("GoogleMapDataResponse", "session_var_prefix")."_".$filterCode;
+	}
 
 	/**
-	 * we use the ID and the action to set unique session names
-	 * so that you dont get mixups
 	 * @param Array $addCustomGoogleMapArrayNEW
-	 * @param int $id
-	 * @param string $action
-	 * 
+	 * @param string $filterCode
+	 *
 	 */
 	public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW, $filterCode = ""){
 		$addCustomGoogleMapArrayOLD = Session::get(self::session_var_name($filterCode));
 		$addCustomGoogleMapArrayNEW = array_merge($addCustomGoogleMapArrayOLD, $addCustomGoogleMapArrayNEW);
-		Session::set(Session::get(self::session_var_name($filterCode), serialize($addCustomGoogleMapArrayNEW));
+		Session::set(Session::get(self::session_var_name($filterCode), serialize($addCustomGoogleMapArrayNEW)));
 	}
 
 	/**
-	 * we use the ID and the action to set unique session names
-	 * so that you dont get mixups
+	 *
+	 *
 	 * @param Array $addCustomGoogleMapArray
-	 * @param int $id
-	 * @param string $action
+	 * @param string $filterCode
+	 *
 	 */
 	public static function set_custom_google_map_session_data($addCustomGoogleMapArray, $filterCode = ""){
 		if(!is_array($addCustomGoogleMapArray)) {
@@ -90,9 +84,8 @@ class GoogleMapDataResponse extends Controller {
 	}
 
 	/**
-	 * @param int $id
-	 * @param string $action
-	 * 
+	 * @param string $filterCode
+	 *
 	 * @return Array
 	 */
 	public static function get_custom_google_map_session_data($filterCode = ""){
@@ -112,11 +105,8 @@ class GoogleMapDataResponse extends Controller {
 	}
 
 	/**
-	 * we use the ID and the action to set unique session names
-	 * so that you dont get mixups
-	 * 
-	 * @param int $id
-	 * @param string $action
+	 *
+	 * @param string $filterCode
 	 */
 	public static function clear_custom_google_map_session_data($filterCode = ""){
 		Session::clear(self::session_var_name($filterCode));
@@ -384,7 +374,7 @@ class GoogleMapDataResponse extends Controller {
 	 * @return String (XML)
 	 */
 	public function showcustompagesmapxml($request) {
-		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data();
+		$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($this->filterCode);
 		$pages = SiteTree::get()->filter(array("ID" => $addCustomGoogleMapArray));
 		return $this->makeXMLData($pages, null, $this->title, $this->title);
 	}
@@ -397,8 +387,8 @@ class GoogleMapDataResponse extends Controller {
 	 * @return String (XML)
 	 */
 	public function showcustomdosmapxml($request) {
-		$array = GoogleMapDataResponse::get_custom_google_map_session_data($this->owner->ID, "addCustomMap");
-		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $addCustomGoogleMapArray);
+		$array = GoogleMapDataResponse::get_custom_google_map_session_data($this->filterCode);
+		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $addCustomGoogleMapArray));
 		return $this->makeXMLData(null, $googleMapLocationsObjects, $this->title, $this->title);
 	}
 
@@ -583,6 +573,10 @@ class GoogleMapDataResponse extends Controller {
 	#################
 
 	/**
+	 * @param DataList $pages
+	 * @param DataList $dataPoints
+	 * @param string $title
+	 * @param string $selectionStatement
 	 *
 	 * @return String (XML)
 	 */
@@ -592,24 +586,97 @@ class GoogleMapDataResponse extends Controller {
 		$title = '',
 		$selectionStatement = ''
 	) {
-		$this->map = GoogleMap::create();
-		$this->map->setTitleOfMap($title);
-		$this->map->setWhereStatementDescription($selectionStatement);
+		$this->response->addHeader("Content-Type", "text/xml; charset=\"utf-8\"");
+		return self::xml_sheet(
+			$pages,
+			$dataPoints,
+			$title = '',
+			$selectionStatement = ''
+		);
+	}
+
+
+
+	################################
+	# STATIC METHODS
+	################################
+
+	public static function xml_sheet(
+		$pages = null,
+		$dataPoints = null,
+		$title = '',
+		$selectionStatement = ''
+	) {
+		$map = Injector::inst()->get("GoogleMap");
+		$map->setTitleOfMap($title);
+		$map->setWhereStatementDescription($selectionStatement ? $selectionStatement : $title);
 		if($pages) {
-			$this->map->setPageDataObjectSet($pages);
+			$map->setPageDataObjectSet($pages);
 		}
 		elseif($dataPoints) {
-			$this->map->setPoints($dataPoints);
+			$map->setPoints($dataPoints);
 		}
-		$data = $this->map->createDataPoints();
-
-		if(Director::is_ajax() || $this->owner->ID) {
-			$this->response->addHeader("Content-Type", "text/xml; charset=\"utf-8\"");
-			return $this->renderWith("GoogleMapXml");
-		}
-		else {
-			user_error("Could not provide data for map", E_USER_NOTICE);
-			return "error";
-		}
+		$map->createDataPoints();
+		return $map->renderWith("GoogleMapXml");
 	}
+
+
+
+	/**
+	 * var arrayOfLatitudeAndLongitude: Array (Latitude" => 123, "Longitude" => 123, "Marker" => "red1");
+	 * Marker is optional
+	 * @param Array arrayOfLatitudeAndLongitude
+	 * @param String title
+	 *
+	 * @return String (HTML - img tag)
+	 */
+
+	public static function quick_static_map($arrayOfLatitudeAndLongitude, $title) {
+		$staticMapURL = '';
+		$count = 0;
+		//width
+		$staticMapWidth = Config::inst()->get("GoogleMap", "google_map_width");
+		if($staticMapWidth > 512) { $staticMapWidth = 512;}
+		//height
+		$staticMapHeight = Config::inst()->get("GoogleMap", "google_map_height");
+		if($staticMapHeight > 512) { $staticMapHeight = 512;}
+		$staticMapURL = "size=".$staticMapWidth."x".$staticMapHeight;
+		if(count($arrayOfLatitudeAndLongitude)) {
+			//http://maps.google.com/maps/api/staticmap?sensor=true&maptype=map&size=209x310&
+			//markers=color:green%7Clabel:A%7C-45.0302,168.663
+			//&markers=color:red%7Clabel:Q%7C-36.8667,174.767
+			foreach($arrayOfLatitudeAndLongitude as $row) {
+				$staticMapURL .= '&amp;markers=color:'.$row["Colour"].'%7Clabel:'.$row["Label"].'%7C';
+				$staticMapURL .= round($row["Latitude"], 6).",".round($row["Longitude"], 6);
+				$count++;
+			}
+			if($count == 1) {
+				$staticMapURL .= '&amp;center='.$defaultCenter.'&amp;zoom='. Config::inst()->get("GoogleMap", "default_zoom");
+			}
+		}
+		return self::make_static_map_url_into_image($staticMapURL, $title);
+	}
+
+	/**
+	 * @param String $staticMapURL
+	 * @param String $title
+	 *
+	 * @return String (HTML - img tag)
+	 */
+	protected static function make_static_map_url_into_image($staticMapURL, $title) {
+		$fullStaticMapURL =
+			'http://maps.google.com/maps/api/staticmap?'
+				.Config::inst()->get("GoogleMap", "static_map_settings").'&amp;'
+				.$staticMapURL.'&amp;'
+				.'key='.Config::inst()->get("GoogleMap", "google_map_api_key");
+		if(Config::inst()->get("GoogleMap", "save_static_map_locally")) {
+			$fileName = str_replace(array('&', '|', ',', '=', ';'), array('', '', '', '', ''), $staticMapURL);
+			$length = strlen($fileName);
+			$fileName = "_sGMap".substr(hash("md5", $fileName), 0, 35)."_".$length.".gif";
+			$fullStaticMapURL = StaticMapSaverForHTTPS::convert_to_local_file(str_replace('&amp;', '&', $fullStaticMapURL), $fileName);
+		}
+		return '<img class="staticGoogleMap" src="'.$fullStaticMapURL.'" alt="map: '.Convert::raw2att($title).'" />';
+	}
+
+
 }

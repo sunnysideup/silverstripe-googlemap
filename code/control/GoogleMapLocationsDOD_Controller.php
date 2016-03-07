@@ -33,29 +33,29 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	/**
 	 * @var String
 	 */
-	protected $address = "";
+	protected $googleMapAddress = "";
 
 	/**
 	 * look for address
 	 *
 	 */
 	public function onAfterInit(){
-		if(!$this->address && isset($_REQUEST["address"])) {
-			$this->address = urldecode($_REQUEST["address"]);
+		if(!$this->googleMapAddress && isset($_REQUEST["address"])) {
+			$this->googleMapAddress = urldecode($_REQUEST["address"]);
 		}
-		if($this->address) {
-			$this->initiateMap();
-			$this->googleMap->setAddress($this->address);
+		if($this->googleMapAddress) {
+			$this->MyGoogleMap()->setAddress($this->googleMapAddress);
 		}
 	}
 
+
 	/**
 	 * initialise GoogleMap
-	 * return GoogleMap
+	 * @return GoogleMap
 	 */
-	protected function initiateMap() {
+	public function MyGoogleMap() {
 		if(!$this->googleMap) {
-			$this->googleMap = GoogleMap::create();
+			$this->googleMap = Injector::inst()->get("GoogleMap");
 		}
 		return $this->googleMap;
 	}
@@ -75,13 +75,15 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * provides a link to any map you like.
 	 * e.g. mysite.com/mypage/mysub-page/loadmap/optionsHereURLEncoded/
 	 * optionsHereURLEncoded are basically the link to the map.
+	 * you can use this to link through to a page and provide a specific map
+	 *
 	 * @param HTTPRequest
 	 */
 	public function loadmap($request){
 		$link = urldecode($request->param("ID"));
 		$options = explode("/", $link);
 		$title = $options[3];
-		$this->addExtraLayersAsLinks($title, $link);
+		$this->owner->addMapUsingRawLink($title, $link);
 		return array();
 	}
 
@@ -97,7 +99,10 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 *
 	 * @return String
 	 */
-	public function LoadmapLink($page, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+	public function LoadmapLink($page = null, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+		if(!$page) {
+			$page = $this->owner->dataRecord;
+		}
 		return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filter));
 	}
 
@@ -116,16 +121,15 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @return GoogleMap
 	 */
 	public function GoogleMapController() {
-		$this->initiateMap();
-		$this->googleMap->loadGoogleMap();
-		return $this->googleMap;
+		$obj =  $this->MyGoogleMap()->loadGoogleMap();
+		return $obj;
 	}
 
 	/**
 	 * @return Boolean
 	 */
 	public function HasGoogleMap() {
-		if($this->googleMap && $this->owner->classHasGoogleMap()) {
+		if($this->MyGoogleMap() && $this->owner->classHasGoogleMap()) {
 			return true;
 		}
 		else {
@@ -137,7 +141,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @return Form
 	 */
 	public function SearchByAddressForm(){
-		return SearchByAddressForm::create($this->owner, "SearchByAddressForm", $this->address);
+		return SearchByAddressForm::create($this->owner, "SearchByAddressForm", $this->googleMapAddress);
 	}
 
 
@@ -159,24 +163,39 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param String $title
 	 * @param float $lng - default LATITUDE
 	 * @param float $lat - default LONGITUDE
-	 * @param String $filter - can be a SiteTree class name, e.g. "ProductPage"
+	 * @param String $filterCode - can be a SiteTree class name, e.g. "ProductPage"
 	 *                         filter depends on the type of action
 	 *
 	 */
-	function addMap($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
-		$this->initiateMap();
+	public function addMap($action = "", $title = "", $lng = 0, $lat = 0, $filterCode = "") {
 		if(!$title) {
 			$title = $this->owner->Title;
 		}
 		$allowedActions = Config::inst()->get("GoogleMapDataResponse", "allowed_actions");
 		if(isset($allowedActions[$action]) || in_array($action, $allowedActions)) {
-			$linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filter);
+			$linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filterCode);
 			//where the magic happens...
-			$this->googleMap->addLayer($linkForData);
+			$this->MyGoogleMap()->addLayer($linkForData, $title);
 		}
 		else {
 			user_error("Could not find $action action in GoogleMapDataResponse", E_USER_NOTICE );
 		}
+	}
+
+	/**
+	 * add a layer to a Google Map
+	 *
+	 * @param String $action - see GoogleMapDataResponse::allowed_actions to get a list of actions
+	 * @param String $title
+	 * @param String $filterCode - can be a SiteTree class name, e.g. "ProductPage"
+	 *                         filter depends on the type of action
+	 *
+	 */
+	public function addMapUsingRawLink($link = "", $title = "", $filterCode = "") {
+		if(!$title) {
+			$title = $this->owner->Title;
+		}
+		$this->MyGoogleMap()->addLayer($link, $title);
 	}
 
 	/**
@@ -188,10 +207,9 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param Int $lat
 	 * @param String $filter
 	 */
-	public function addExtraLayersAsAction($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
-		$this->initiateMap();
+	public function addExtraLayer($action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
 		$linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filter);
-		$this->addExtraLayersAsLinks($title, $linkForData);
+		$this->owner->addExtraLayersUsingRawLink($title, $linkForData);
 	}
 
 	/**
@@ -200,20 +218,19 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param String $title
 	 * @param String $link
 	 */
-	public function addExtraLayersAsLinks($title, $link) {
-		$this->initiateMap();
-		$this->googleMap->addExtraLayersAsLinks($title, $link);
+	public function addExtraLayerUsingRawLink($title, $link) {
+		$this->MyGoogleMap()->addExtraLayer($title, $link);
 	}
 
 
 	/**
 	 * add an address to the map
-	 * 
+	 *
 	 * @param String $address
 	 * @param Boolean $addShowAroundAdress
 	 * @param String $filter - usuall a SiteTree ClassName (e.g. ProductPage)
 	 */
-	function addAddress($address, $addShowAroundAdress = false, $filter = "") {
+	public function addAddress($address, $addShowAroundAdress = false, $filter = "") {
 		if($addShowAroundAdress) {
 			$pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
 			if($pointArray) {
@@ -224,8 +241,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 			}
 		}
 		else {
-			$this->address = $address;
-			$this->initiateMap();
+			$this->owner->MyGoogleMap();
+			$this->googleMapAddress = $address;
 		}
 	}
 
@@ -234,26 +251,25 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	/**
 	 * @param DataList $pagesOrGoogleMapLocationsObjects
 	 * @param Boolean $retainOldSessionData
+	 * @param string $title
+	 * @param string $filterCode
+	 *
 	 * @param String $title
 	 */
 	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '', $filterCode = "") {
-		$this->initiateMap();
-		$isGoogleMapLocationsObject = true;		
+		$isGoogleMapLocationsObject = $pagesOrGoogleMapLocationsObjects->DataClass() == "GoogleMapLocationsObject" ? true : false;
 		if(!$filterCode) {
-			$filterCode = $this->owner->ID."_".$this->owner->request->param("Action");
+			$filterCode = $this->owner->ID."_".($this->owner->request->param("Action") ? $this->owner->request->param("Action") : "index");
 		}
 		if($pagesOrGoogleMapLocationsObjects) {
 			if(!$retainOldSessionData) {
 				$addCustomGoogleMapArray = array();
-				$this->clearCustomMaps($filterCode);
+				$this->owner->clearCustomMaps($filterCode);
 			}
 			else {
 				$addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($filterCode);
 			}
 			foreach($pagesOrGoogleMapLocationsObjects as $obj) {
-				if($obj instanceof SiteTree) {
-					$isGoogleMapLocationsObject = false;
-				}
 				if(!$obj->ID) {
 					user_error("Page provided to addCustomMap that does not have an ID", E_USER_ERROR);
 				}
@@ -268,7 +284,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		else {
 			$fn = "showcustompagesmapxml";
 		}
-		$this->addMap($fn, $title, 0, 0, $filterCode);
+		$this->owner->addMap($fn, $title, $lng = 0, $lat = 0, $filterCode);
 	}
 
 
@@ -289,30 +305,32 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 */
 	function addUpdateServerUrlAddressSearchPoint($updateServerUrlAddPoint = "/googlemap/showaroundmexml/") {
 		$link = Controller::join_links($updateServerUrlAddPoint, $this->owner->ID);
-		$this->googleMap->setUpdateServerUrlAddressSearchPoint($link);
+		$this->MyGoogleMap()->setUpdateServerUrlAddressSearchPoint($link);
 	}
 
 	/**
 	 * @param String $updateServerUrlDragend
 	 */
 	function addUpdateServerUrlDragend($updateServerUrlDragend = "googlemap/updatemexml/") {
-		$link = Controller::join_links($UpdateServerUrlDragend, $this->owner->ID);;
-		$this->googleMap->setUpdateServerUrlDragend($link);
+		$link = Controller::join_links($UpdateServerUrlDragend, $this->owner->ID);
+		$this->MyGoogleMap()->setUpdateServerUrlDragend($link);
 	}
 
 	/**
 	 * make the map editable
 	 */
 	function addAllowAddingAndDeletingPoints() {
-		$this->googleMap->AllowAddPointsToMap();
+		$this->MyGoogleMap()->AllowAddPointsToMap();
 	}
 
 	/**
 	 * removes user settings for map
 	 * a custom map is a bunch of points that are customised via a session
+	 *
+	 * @param string $filterCode
 	 */
-	function clearCustomMaps($id = 0, $action = "") {
-		GoogleMapDataResponse::clear_custom_google_map_session_data($id, $ation)
+	function clearCustomMaps($filterCode = "") {
+		GoogleMapDataResponse::clear_custom_google_map_session_data($filterCode);
 	}
 
 

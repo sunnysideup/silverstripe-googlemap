@@ -5,10 +5,10 @@
  * Map Location Object
  * onBeforeWrite, it automagically adds all the details.
  *
- * To create a new GoogleMapLocationsObject 
+ * To create a new GoogleMapLocationsObject
  * set the Address field and write.  All other fields
  * are completed automatically...
- * 
+ *
  */
 
 class GoogleMapLocationsObject extends DataObject {
@@ -284,7 +284,7 @@ class GoogleMapLocationsObject extends DataObject {
 	/**
 	 * test to see if address is found.  If address if found then
 	 * it will write the object, otherwise it returns null.
-	 * 
+	 *
 	 * @return this || null
 	 */
 	public function findGooglePointsAndWriteIfFound() {
@@ -300,16 +300,14 @@ class GoogleMapLocationsObject extends DataObject {
 	 * @param Boolean $doNotWrite - do not write to Database
 	 */
 	protected function findGooglePoints($doNotWrite) {
-		if($this) {
-			if($this->Address && !$this->Manual) {
-				$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
-			}
-			elseif($this->Latitude && $this->Longitude && $this->Manual) {
-				$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude);
-			}
-			if(isset($newData) && is_array($newData)) {
-				$this->addDataFromArray($newData, $doNotWrite);
-			}
+		if($this->Address && !$this->Manual) {
+			$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
+		}
+		elseif($this->Latitude && $this->Longitude && $this->Manual) {
+			$newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude);
+		}
+		if(isset($newData) && is_array($newData)) {
+			$this->addDataFromArray($newData, $doNotWrite);
 		}
 	}
 

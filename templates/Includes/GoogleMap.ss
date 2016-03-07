@@ -36,7 +36,7 @@
 			<h2>Add to the map</h2>
 			<ul>
 			<% loop AllExtraLayersAsLinks %>
-				<li><a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.addLayer('{$Link}');">$Title</a></li>
+				<li><a href="#GoogleMapDiv" onclick="return !{$MyInstanceName}.addLayer('{$Link}', '{$Title}');">$Title</a></li>
 			<% end_loop %>
 			</ul>
 		</div>

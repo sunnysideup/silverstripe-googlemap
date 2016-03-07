@@ -26,7 +26,7 @@ class GoogleMap extends ViewableData {
 
 
 	/* BASIC MAP SETTINGS */
-	private static $api_version = "3.20";
+	private static $api_version = "3.24";
 	private static $google_map_api_key = "";
 	private static $default_latitude = 0.000000001; //MOVE TO SITECONFIG
 	private static $default_longitude = 0.0000000001; //MOVE TO SITECONFIG
@@ -110,6 +110,9 @@ class GoogleMap extends ViewableData {
 
 
 
+
+
+
 	################################
 	# TEMPATE METHODS
 	################################
@@ -168,7 +171,7 @@ class GoogleMap extends ViewableData {
 	/**
 	 * @return Boolean
 	 */
-	public function AddAddressFinder() {return Config::inst()->get("GoogleMap", "add_address_finder");}
+	public function AddAddressFinder() {Config::inst()->get("GoogleMap", "add_address_finder");}
 
 	/**
 	 * @return Boolean
@@ -220,7 +223,7 @@ class GoogleMap extends ViewableData {
 	/**
 	 * @var ArrayList
 	 */
-	protected $processedDataPointsForTemplate;
+	protected $processedDataPointsForTemplate = null;
 		public function setProcessedDataPointsForTemplate($s){$this->processedDataPointsForTemplate = $s;}
 		public function ProcessedDataPointsForTemplate(){return $this->getProcessedDataPointsForTemplate();}
 		public function getProcessedDataPointsForTemplate(){return $this->processedDataPointsForTemplate;}
@@ -230,7 +233,10 @@ class GoogleMap extends ViewableData {
 	 */
 	protected $dataPointsXML;
 		protected function DataPointsXML(){return $this->getDataPointsXML();}
-		protected function getDataPointsXML(){return $this->dataPointsXML;}
+		protected function getDataPointsXML(){
+			$this->createDataPoints();
+			return $this->dataPointsXML;
+		}
 
 
 
@@ -252,19 +258,19 @@ class GoogleMap extends ViewableData {
 	/**
 	 * @var ArrayList
 	 */
-	protected $extraLayersAsLinks = null;
-		public function setExtraLayersAsLinks($v) {user_error("use GoogleMap::addExtraLayersAsLinks");}
-		public function getExtraLayersAsLinks() {return $this->extraLayersAsLinks;}
+	protected $extraLayers = null;
+		public function setExtraLayer($a) {$this->extraLayers = $a;}
+		public function getExtraLayers() {return $this->extraLayers;}
 
 		/**
 		 * @param String $title
 		 * @param String $link
 		 */
-		public function addExtraLayersAsLinks($title, $link) {
-			if($this->getExtraLayersAsLinks() === null) {
-				$this->extraLayersAsLinks = new ArrayList();
+		public function addExtraLayer($title, $link) {
+			if(!$this->getExtraLayers()) {
+				$this->extraLayers = new ArrayList();
 			}
-			$this->extraLayersAsLinks->push(
+			$this->extraLayers->push(
 				new ArrayData(
 					array(
 						"Title" => $title,
@@ -279,24 +285,24 @@ class GoogleMap extends ViewableData {
 		 *
 		 * @return ArrayList
 		 */
-		public function AllExtraLayersAsLinks() {
-			return $this->getExtraLayersAsLinks();
+		public function AllExtraLayers() {
+			return $this->getExtraLayers();
 		}
 
 	/**
 	 * @var Array
+	 *    Link => Title
 	 */
 	protected $linksForData = Array();
 		public function setLinksForData($a) {$this->linksForData = $a;}
 		public function getLinksForData() {return $this->linksForData;}
 
 		/**
-		 * @param ArrayData $linkForData (Title, Link)
+		 * @param string $linkForData
+		 * @param string $title
 		 */
-		function addLayer($linkForData) {
-			if(!in_array($linkForData, $this->linksForData)) {
-				$this->linksForData[] = $linkForData;
-			}
+		function addLayer($linkForData, $title) {
+			$this->linksForData[$linkForData] = $title;
 		}
 
 
@@ -331,7 +337,7 @@ class GoogleMap extends ViewableData {
 					$array = $pageDataList->map("ID", "ID")->toArray();
 				}
 				else {
-					user_error("Wrong format for pageDataList")
+					user_error("Wrong format for pageDataList");
 				}
 				$this->points = GoogleMapLocationsObject::get()->filter(array("ParentID" => $array));
 				$pageDataList = null;
@@ -345,12 +351,9 @@ class GoogleMap extends ViewableData {
 	protected $points = null;
 		public function setPoints($s) {$this->points = $s;}
 		public function getPoints() {
-			if(!$this->points) {
-				$this->points = get_custom_google_map_session_data($this->sessionId, $this->sessionAction);
-			}
 			return $this->points;
 		}
-				
+
 
 
 	/**
@@ -432,6 +435,7 @@ class GoogleMap extends ViewableData {
 			Requirements::customScript($js, "GoogleMapCustomScript");
 			self::$_includes_are_done = true;
 		}
+		return $this;
 	}
 
 
@@ -451,9 +455,7 @@ class GoogleMap extends ViewableData {
 	 * @return ArrayList
 	 */
 	protected function orderItemsByLatitude($reverse = false) {
-		if(!$unsortedSet) {
-			$unsortedSet = $this->getProcessedDataPointsForTemplate();
-		}
+		$unsortedSet = $this->getProcessedDataPointsForTemplate();
 		$sortedSet = new ArrayList();
 		if($unsortedSet->count()) {
 			foreach($unsortedSet as $item) {
@@ -462,7 +464,7 @@ class GoogleMap extends ViewableData {
 		}
 		ksort($tempArray);
 		//not sure why this is a bit counter intuitive.
-		//north to south is from high to low ... 
+		//north to south is from high to low ...
 		if(!$reverse) {
 			$tempArray = array_reverse($tempArray);
 		}
@@ -477,8 +479,8 @@ class GoogleMap extends ViewableData {
 	 * @return Int
 	 */
 	public function getPointCount() {
-		if($this->getProcessedDataPointsForTemplate()) {
-			return $this->processedDataPointsForTemplate->count();
+		if($processedPoints = $this->getProcessedDataPointsForTemplate()) {
+			return $processedPoints->count();
 		}
 		elseif($points = $this->getPoints()){
 			return $points->count();
@@ -502,7 +504,6 @@ class GoogleMap extends ViewableData {
 	 */
 	public function createDataPoints() {
 		$this->dataPointsXML = '';
-		$this->processedDataPointsForTemplate = new ArrayList();
 		$this->loadDefaults();
 		$idArray = array();
 		$bestZoom = $this->Config()->get("default_zoom");
@@ -514,6 +515,7 @@ class GoogleMap extends ViewableData {
 		$averageLongitudeArray = array();
 		$averageLatitudeArray = array();
 		if($totalCount > 0  && $totalCount < 10000) {
+			$this->processedDataPointsForTemplate = new ArrayList();
 			$count = 0;
 			$pointsXml = '';
 			foreach($this->getPoints() as $dataPoint) {
@@ -663,9 +665,9 @@ class GoogleMap extends ViewableData {
 			function initiateGoogleMap() {
 				'.$instanceName.'.init();';
 		if($this->linksForData && count($this->linksForData)) {
-			foreach($this->linksForData as $link) {
+			foreach($this->linksForData as $link => $title) {
 				$js .= '
-				'.$instanceName.'.addLayer("'.Director::absoluteBaseURL().$link.'");';
+				'.$instanceName.'.addLayer("'.Convert::raw2js(Director::absoluteURL($link)).'", "'.Convert::raw2js($title).'");';
 			}
 		}
 		elseif($this->address) {
