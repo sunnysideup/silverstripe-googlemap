@@ -95,15 +95,15 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param String $title
 	 * @param Int $lng
 	 * @param Int $lat
-	 * @param String $filter
+	 * @param String $filterCode
 	 *
 	 * @return String
 	 */
-	public function LoadmapLink($page = null, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+	public function LoadmapLink($page = null, $action = "", $title = "", $lng = 0, $lat = 0, $filterCode = "") {
 		if(!$page) {
 			$page = $this->owner->dataRecord;
 		}
-		return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filter));
+		return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filterCode));
 	}
 
 
@@ -164,7 +164,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 * @param float $lng - default LATITUDE
 	 * @param float $lat - default LONGITUDE
 	 * @param String $filterCode - can be a SiteTree class name, e.g. "ProductPage"
-	 *                         filter depends on the type of action
+	 *                             filter depends on the type of action
 	 *
 	 */
 	public function addMap($action = "", $title = "", $lng = 0, $lat = 0, $filterCode = "") {
@@ -259,7 +259,10 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	function addCustomMap($pagesOrGoogleMapLocationsObjects, $retainOldSessionData = false, $title = '', $filterCode = "") {
 		$isGoogleMapLocationsObject = $pagesOrGoogleMapLocationsObjects->DataClass() == "GoogleMapLocationsObject" ? true : false;
 		if(!$filterCode) {
-			$filterCode = $this->owner->ID."_".($this->owner->request->param("Action") ? $this->owner->request->param("Action") : "index");
+			$filterCode = ""
+				.$this->owner->ID."_"
+				.($this->owner->request->param("Action") ? $this->owner->request->param("Action") : "index")
+				.($this->owner->request->param("ID") ? $this->owner->request->param("ID") : 0);
 		}
 		if($pagesOrGoogleMapLocationsObjects) {
 			if(!$retainOldSessionData) {
@@ -343,7 +346,7 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 	 *
 	 * @return String
 	 */
-	protected function getLinkForData($pageID = 0, $action = "", $title = "", $lng = 0, $lat = 0, $filter = "") {
+	protected function getLinkForData($pageID = 0, $action = "", $title = "", $lng = 0, $lat = 0, $filterCode = "") {
 		if(!$pageID) {
 			$pageID = $this->owner->ID;
 		}
@@ -351,8 +354,8 @@ class GoogleMapLocationsDOD_Controller extends Extension {
 		if($lng && $lat) {
 			$linkForData .= $lng."/".$lat."/";
 		}
-		if($filter) {
-			$linkForData .= urlencode($filter)."/";
+		if($filterCode) {
+			$linkForData .= urlencode($filterCode)."/";
 		}
 		return $linkForData;
 	}
