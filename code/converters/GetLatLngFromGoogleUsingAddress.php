@@ -159,16 +159,18 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 			debug::show(print_r($url, 1));
 		}
-		$curl = curl_init($url);
-		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt( $curl, CURLOPT_VERBOSE, true );
-		$responseString = curl_exec( $curl );
+		$ch = curl_init($url);
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt( $ch, CURLOPT_VERBOSE, true );
+		$responseString = curl_exec( $ch );
+		curl_close($ch;);
 		if(!$responseString) {
 			$responseString = file_get_contents($url);
 			if(!$responseString) {
 				return false;
 			}
 		}
+
 		if($debug) {debug::show(print_r($responseString, 1));}
 		return self::json_decoder($responseString);
 	}
