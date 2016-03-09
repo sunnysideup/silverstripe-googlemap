@@ -25,7 +25,7 @@
 
 	<% if TitleDivId %><h4 id="$TitleDivId" class="MapExtraInformation"></h4><% end_if %>
 
-	<div id="GoogleMapDiv" style="width: {$GoogleMapWidth}px; height: {$GoogleMapHeight}px;"></div>
+	<div id="GoogleMapDiv" style="<% if GoogleMapWidth %>width: {$GoogleMapWidth}px; <% end_if %><% if GoogleMapHeight %> height: {$GoogleMapHeight}px;<% end_if %>"></div>
 
 	<% if DropDownDivId %><div id="$DropDownDivId" class="MapExtraInformation <% if EnoughPointsForAList %><% else %>hideMe<% end_if %>"></div><% end_if %>
 

@@ -1884,6 +1884,14 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 			GMO.closeLastInfoWindow();
 			if(selectedId > -1){
 				google.maps.event.trigger(this.gmarkers[selectedId],'click');
+				//scroll to map ...
+				var target = jQuery("#"+GMO.mapDivName);
+				if(target.length > 0) {
+					jQuery('html,body').animate(
+						{scrollTop: target.offset().top},
+						1000
+					);
+				}
 			}
 		},
 

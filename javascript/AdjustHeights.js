@@ -15,13 +15,13 @@ AdjustHeightsForGoogleMap = {
 
 		function setConformingHeight(el, newHeight) {
 			// set the height to something new, but remember the original height in case things change
-			el.data("originalHeight", (el.data("originalHeight") == undefined) ? (el.height()) : (el.data("originalHeight")));
+			el.data("originalHeight", (el.data("originalHeight") == undefined) ? (el.outerHeight()) : (el.data("originalHeight")));
 			el.height(newHeight);
 		}
 
 		function getOriginalHeight(el) {
 			// if the height has changed, send the originalHeight
-			return (el.data("originalHeight") == undefined) ? (el.height()) : (el.data("originalHeight"));
+			return (el.data("originalHeight") == undefined) ? (el.outerHeight()) : (el.data("originalHeight"));
 		}
 
 		function columnConform() {

@@ -163,7 +163,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt( $ch, CURLOPT_VERBOSE, true );
 		$responseString = curl_exec( $ch );
-		curl_close($ch;);
+		curl_close($ch);
 		if(!$responseString) {
 			$responseString = file_get_contents($url);
 			if(!$responseString) {
