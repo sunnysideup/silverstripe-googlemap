@@ -1,3 +1,9 @@
+---
+Name: googlemap
+Before: 'mysite/*'
+After: 'framework/*','cms/*'
+---
+
 SiteTree:
   extensions:
     - GoogleMapLocationsDOD

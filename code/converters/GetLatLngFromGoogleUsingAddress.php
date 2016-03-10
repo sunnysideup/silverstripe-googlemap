@@ -27,7 +27,7 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 * @var Boolean for debugging
 	 */
 	private static $debug = false;
-
+	
 	/**
 	 * location for API
 	 *
