@@ -31,8 +31,8 @@ class GoogleMap extends ViewableData {
 	private static $default_latitude = 0.000000001; //MOVE TO SITECONFIG
 	private static $default_longitude = 0.0000000001; //MOVE TO SITECONFIG
 	private static $default_zoom = 2; //MOVE TO SITECONFIG
-	private static $google_map_width = 500;
-	private static $google_map_height = 500;
+	private static $google_map_width = 0;
+	private static $google_map_height = 0;
 
 	/* MAP CONTROLS*/
 	private static $map_type_default = 0; //MOVE TO SITECONFIG

@@ -229,7 +229,12 @@ class GoogleMapDataResponse extends Controller {
 		$this->title = urldecode($this->request->param("Title"));
 		$this->lng = floatval($this->request->param("Longitude"));
 		$this->lat = floatval($this->request->param("Latitude"));
-		$this->filterCode = urldecode($this->request->param("FilterCode"));
+		if($this->lng && $this->lat) {
+			$this->filterCode = urldecode($this->request->param("FilterCode"));
+		}
+		else {
+			$this->filterCode = urldecode($this->request->param("Longitude"));
+		}
 		if(!$this->title && $this->owner) {
 			$this->title = $this->owner->Title;
 		}
@@ -388,7 +393,7 @@ class GoogleMapDataResponse extends Controller {
 	 */
 	public function showcustomdosmapxml($request) {
 		$array = GoogleMapDataResponse::get_custom_google_map_session_data($this->filterCode);
-		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $addCustomGoogleMapArray));
+		$googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $array));
 		return $this->makeXMLData(null, $googleMapLocationsObjects, $this->title, $this->title);
 	}
 

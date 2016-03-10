@@ -65,9 +65,11 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 	 * @return Array
 	 */
 	public static function get_placemark_as_array($q, $tryAnyway = 0) {
+		//debug?
 		$debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
 		$q = trim($q);
 		if($q) {
+			//check if we have searched for this before ...
 			$result = null;
 			$searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::get()
 				->filter(array("SearchPhrase" => Convert::raw2sql($q)))
@@ -76,11 +78,13 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 				if($debug) {debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");}
 				//@ is important here!
 				$result = @unserialize($searchRecord->ResultArray);
+				//remove result if it can not be read
 				if($result === null) {
 					$searchRecord->ResultArray = "";
 					$searchRecord->write();
 				}
-				if(isset($result["FullAddress"]) && isset($result["Longitude"]) && isset($result["Latitude"])) {
+				//return details if they seem correct ...
+				elseif(isset($result["FullAddress"]) && isset($result["Longitude"]) && isset($result["Latitude"])) {
 					return $result;
 				}
 				$result = null;
@@ -91,10 +95,10 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 				if(is_object($result)) {
 					$resultArray = self::google_2_ss($result);
 					if($debug) {debug::show(print_r($resultArray, 1));}
-					if(!isset($searchRecord) || !$searchRecord) {
+					if(!$searchRecord) {
 						$searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::create();
-						$searchRecord->SearchPhrase = Convert::raw2sql($q);
 					}
+					$searchRecord->SearchPhrase = Convert::raw2sql($q);
 					$searchRecord->ResultArray = serialize($resultArray);
 					$searchRecord->write();
 					return $resultArray;
@@ -155,16 +159,18 @@ class GetLatLngFromGoogleUsingAddress extends Object {
 		if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
 			debug::show(print_r($url, 1));
 		}
-		$curl = curl_init($url);
-		curl_setopt( $curl, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt( $curl, CURLOPT_VERBOSE, true );
-		$responseString = curl_exec( $curl );
+		$ch = curl_init($url);
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt( $ch, CURLOPT_VERBOSE, true );
+		$responseString = curl_exec( $ch );
+		curl_close($ch);
 		if(!$responseString) {
 			$responseString = file_get_contents($url);
 			if(!$responseString) {
 				return false;
 			}
 		}
+
 		if($debug) {debug::show(print_r($responseString, 1));}
 		return self::json_decoder($responseString);
 	}
