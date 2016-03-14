@@ -1245,7 +1245,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 				var el;
 				var layerName = '';
 				var sideBarElements = '';
-				if(el = document.getElementById(this.opts.sideBarId)) {
+				if(el = document.getElementById(this.opts.sideBarId) && sideBarArray.length > 1) {
 					var html = '<ul id="' + this.opts.sideBarId + 'list">';
 					for (var j = 0; j < sideBarArray.length; j++) {
 						sideBarElements = sideBarArray[j].split("$$$", 2);
