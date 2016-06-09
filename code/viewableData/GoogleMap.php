@@ -61,7 +61,7 @@ class GoogleMap extends ViewableData {
     private static $info_window_options = "{maxWidth:280, zoomLevel:17, mapTypeId: google.maps.MapTypeId.HYBRID}";
     private static $add_antipodean = false; //MOVE TO SITECONFIG
     private static $add_directions = false; //MOVE TO SITECONFIG
-    private static $add_current_address_finder = false; //MOVE TO SITECONFIG
+    private static $add_current_address_finder_in_marker = false; //MOVE TO SITECONFIG
     private static $add_zoom_in_button = true; //MOVE TO SITECONFIG
     private static $ajax_info_window_text = "View Details"; //MOVE TO SITECONFIG
 
@@ -172,7 +172,7 @@ class GoogleMap extends ViewableData {
     /**
      * @return Boolean
      */
-    public function AddAddressFinder() {Config::inst()->get("GoogleMap", "add_address_finder");}
+    public function AddAddressFinder() {return Config::inst()->get("GoogleMap", "add_address_finder");}
 
     /**
      * @return Boolean
@@ -540,6 +540,9 @@ class GoogleMap extends ViewableData {
                             if(!$count) {
                                 $defaultCenter = $center;
                             }
+                            if(!$dataPoint->Name) {
+                                $dataPoint->Name = "no name";
+                            }
                             $pointsXml .=
                                         '<Placemark>'.
                                         '<id>'.$dataPoint->ID.'</id>'.
@@ -614,7 +617,7 @@ class GoogleMap extends ViewableData {
                         infoWindowOptions:'.$this->config()->get("info_window_options").',
                         addAntipodean:'.$this->showFalseOrTrue($this->config()->get("add_antipodean")).',
                         addDirections:'.$this->showFalseOrTrue($this->config()->get("add_directions")).',
-                        addCurrentAddressFinder:'.$this->showFalseOrTrue($this->config()->get("add_current_address_finder")).',
+                        addCurrentAddressFinder:'.$this->showFalseOrTrue($this->config()->get("add_current_address_finder_in_marker")).',
                         addZoomInButton:"'.$this->config()->get("add_zoom_in_button").'",
 
                         /* MARKER */

@@ -384,7 +384,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         var nameString = "Longitude (" + Math.round(point.x*10000)/10000 + ") and Latitude (" + Math.round(point.y*10000)/10000 + ")";
                         var pointLngLat = new google.maps.LatLng(point.x, point.y);
                         var description = GMO._t.manually_added_point;
-                        xmlSheet = GMO.createPointXml(nameString,pointLngLat,description);
+                        var xmlSheet = GMO.createPointXml(nameString,pointLngLat,description);
                         GMO.processXml(xmlSheet);
                     }
                     else {
@@ -1041,13 +1041,13 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @param DOM doc
          * @todo ???
          */
-        processXml: function(doc) {
+        processXml: function(docToRead) {
             this.bounds = new google.maps.LatLngBounds();
-            if(doc.getElementsByTagName("pointcount").length > 0) {
-                var pointCount = parseInt(doc.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue);
+            if(docToRead.getElementsByTagName("pointcount").length > 0) {
+                var pointCount = docToRead.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue;
+                pointCount = parseInt(pointCount);
                 this.tooManyPointsWarning(pointCount + 1);
                 if(pointCount > 0) {
-
                     var currentLayerId = this.layerInfo.length;
                     var groupInfo = {};
                     var iconUrlCollection = [];
@@ -1055,8 +1055,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     groupInfo.url = this.latestUrl;
                     this.latestUrl = '';
                     groupInfo.pointCount = pointCount;
-                    //parse basics:
-                    var mapInfo = doc.getElementsByTagName("mapinfo")[0];
+                    var mapInfo = docToRead.getElementsByTagName("mapinfo")[0];
+                    var placemarks = docToRead.getElementsByTagName("Placemark");
                     groupInfo.title =  mapInfo.getElementsByTagName("title")[0].firstChild.nodeValue;
                     if(mapInfo.getElementsByTagName("info")[0].firstChild !== null) {
                         groupInfo.info =  mapInfo.getElementsByTagName("info")[0].firstChild.nodeValue;
@@ -1077,7 +1077,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     //groupInfo.iconUrl = iconUrlCollection;
                     this.layerInfo.push (groupInfo);
                     // Read through the Placemarks
-                    var placemarks = doc.documentElement.getElementsByTagName("Placemark");
+
+                    //var placemarks = doc.getElementsByTagName("Placemark");
                     for (var i = 0; i < placemarks.length; i++) {
                         var serverId = placemarks[i].getElementsByTagName("id")[0].childNodes[0];
                         var name = placemarks[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
@@ -1090,7 +1091,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         var newIconURL = ""; //use standard one => iconUrl;
                         if(styleLocationId) {
                             //<Style id="randomColorIcon"><IconStyle><Icon>URL here
-                            var IconStyleDoc = xmlDoc.getElementsByTagName("Style");
+                            var IconStyleDoc = docToRead.getElementsByTagName("Style");
                             for(var j=0;j<IconStyleDoc.length;j++){
                                 if(IconStyleDoc[j].getAttribute("id")) {
                                     if(IconStyleDoc[j].getAttribute("id") == styleLocationId){
@@ -1431,12 +1432,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var el = null;
             var hideAction = "";
             //depreciated...
-            if(this.opts.addAddressFinder || add == "find") {
-                if(html) {
-                    html += "<hr />";
-                }
-                html += this.findAddressForm() + "";
-            }
             if(add == "help") {
                 if(html) {
                     html += "<hr />";
@@ -1458,9 +1453,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             }
             var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
             // depreciated
-            if(this.opts.addAddressFinder) {
-                fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'find\');">' + GMO._t.find_address + '</a> <span>|</span>'
-            }
             fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');"> ' + GMO._t.show_help + ' </a> <span>|</span>'
             + ' <a href="javascript:void(0)" onclick="GMO.enlargeMap();" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
             + hideAction

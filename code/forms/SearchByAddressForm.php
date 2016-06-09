@@ -64,8 +64,11 @@ class SearchByAddressForm extends Form {
         if(!$this->defaultAddress) {
             $this->defaultAddress = isset($_GET["FindNearAddress"]) ? $_GET["FindNearAddress"] : "";
         }
-        $this->classNamesSearchedFor = $classNamesSearchedFor;
-        $classNamesAsString = implode(",", $this->classNamesSearchedFor);
+        $classNamesAsString = '';
+        if(is_array($classNamesSearchedFor)) {
+            $this->classNamesSearchedFor = $classNamesSearchedFor;
+            $classNamesAsString = implode(",", $this->classNamesSearchedFor);
+        }
         parent::__construct(
             $controller,
             "SearchByAddressForm",
@@ -107,7 +110,7 @@ class SearchByAddressForm extends Form {
         $pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
         if(!$pointArray || !isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
             GoogleMapSearchRecord::create_new(
-                Convert::raw2slq($address),
+                Convert::raw2sql($address),
                 $this->getController()->dataRecord->ID,
                 false
             );
