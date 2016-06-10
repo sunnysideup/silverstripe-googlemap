@@ -1071,7 +1071,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         currentIconId = 1;
                     }
                     if(currentIconId && (this.opts.iconFolder || this.opts.defaultIconUrl)) {
-                        var iconUrl = this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
+                        var iconUrl = 'themes/base/images/i1.png'; //this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
                     }
                     //add layer information ... IMPORTANT MUST BE BEFORE MARKER LOOP
                     //groupInfo.iconUrl = iconUrlCollection;
