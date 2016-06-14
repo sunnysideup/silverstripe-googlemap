@@ -331,7 +331,7 @@ class GoogleMapLocationsObject extends DataObject {
      * @return String
      */
     function DirectionsLink(){
-        return "https://www.google.co.nz/maps/dir//".urlencode($this->Address);
+        return "https://www.google.com/maps/dir//".urlencode($this->Address);
     }
 
 }

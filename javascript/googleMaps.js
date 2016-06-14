@@ -1071,7 +1071,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         currentIconId = 1;
                     }
                     if(currentIconId && (this.opts.iconFolder || this.opts.defaultIconUrl)) {
-                        var iconUrl = 'themes/base/images/i1.png'; //this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
+                        var iconUrl = this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
                     }
                     //add layer information ... IMPORTANT MUST BE BEFORE MARKER LOOP
                     //groupInfo.iconUrl = iconUrlCollection;
@@ -1088,7 +1088,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             styleLocationId = placemarks[i].getElementsByTagName("styleUrl")[0];
                             styleLocationId = styleLocationId.substring(1, styleLocationId.length);
                         }
-                        var newIconURL = ""; //use standard one => iconUrl;
+                        var newIconURL = iconUrl; //use standard one => iconUrl;
                         if(styleLocationId) {
                             //<Style id="randomColorIcon"><IconStyle><Icon>URL here
                             var IconStyleDoc = docToRead.getElementsByTagName("Style");
@@ -1146,6 +1146,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             this.bounds.extend(point);
                         // create marker
                             this.updateStatus(GMO._t.processing + " " + i + " " + GMO._t.of + " " + pointCount + ".");
+                            console.debug(newIconURL);
                             var m = this.createMarker(point, name, desc, serverId, newIconURL);
                         }
                         if(!iconUrlCollection.inArray(newIconURL)) {
