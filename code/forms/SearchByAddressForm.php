@@ -135,6 +135,20 @@ class SearchByAddressForm extends Form {
         //$this->owner->addMap($action = "showsearchpoint", "Your search", $lng, $lat);
         $action = "showaroundmexml";
         $title = _t("GoogleMap.CLOSEST_TO_YOUR_SEARCH", "Closest to your search");
+        if(Director::is_ajax()) {
+            $this->getController()->response->setBody(json_encode(array(
+                'Action' =>  $action,
+                'Title' => urlencode($title),
+                'ParentID' => $this->getController()->ID,
+                'Lng'=> $lng,
+                'Lat'=> $lat,
+                'ClassNames'=> $classNames
+            )));
+
+            $this->getController()->response->addHeader("Content-type", "application/json");
+
+            return $this->getController()->response;
+        }
         $this->getController()->addMap($action, $title, $lng, $lat, $classNames);
         return array();
     }
