@@ -15,6 +15,21 @@ class GoogleMapLocationsObject extends DataObject {
 
     private static $parent_point_counts = array();
 
+    /**
+     * e.g. Page / home Page / Product Page / My Page
+     * @var string
+     */
+    private static $singular_name = 'Location';
+    function i18n_singular_name() { return self::$singular_name;}
+
+
+    /**
+     * e.g. Pages / home Pages / Product Pages / My Pages
+     * @var string
+     */
+    private static $plural_name = 'Locations';
+    function i18n_plural_name() { return self::$plural_name;}
+    
     private static $db = array (
         'PointType' =>'Enum("none, point, polyline, polygon", "point")',
         'Accuracy' => 'Varchar(100)',
