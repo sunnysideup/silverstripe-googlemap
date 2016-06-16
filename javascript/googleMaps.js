@@ -15,6 +15,11 @@
  *
  */
 
+
+var GMO = null;
+
+
+
 jQuery(document).ready(
     function(){
         if(typeof GoogleMapConstructors !== "undefined") {
@@ -31,8 +36,6 @@ jQuery(document).ready(
                     var layers = obj.layers;
                     if(layers.length > 0) {
                         for(var j = 0; j < layers.length; j++) {
-                            console.debug(layers[j].link);
-                            console.debug(layers[j].title);
                             GoogleMapConstructors[i].googleMap.addLayer(layers[j].link, layers[j].title);
                         }
                     }
@@ -42,8 +45,33 @@ jQuery(document).ready(
                         GoogleMapConstructors[i].googleMap.findAddress(obj.address);
                     }
                 }
-
-
+                if(i == 0 && $('#SearchByAddressForm_SearchByAddressForm').length > 0) {
+                    alert("hggh");
+                    var formSuccess = function(responseText, statusText, xhr, $form)  {
+                        alert("AAAAAAAAA");
+                        var base = jQuery("base").attr("href");
+                        var link = base;
+                        link += "\/googlemap\/";
+                        link += ""+responseText.Action+"\/";
+                        link += ""+responseText.ParentID+"\/";
+                        link += ""+responseText.Title+"\/";
+                        link += ""+responseText.Lng+"\/";
+                        link += ""+responseText.Lat+"\/";
+                        link += ""+responseText.ClassNames+"\/";
+                        console.debug(link);
+                        GoogleMapConstructors[0].googleMap.addLayer(link, responseText.Title);
+                    };
+                    GMO = GoogleMapConstructors[i].googleMap;
+                    var options = {
+                        error: function() {
+                            alert("Could not find address!");
+                        },
+                        success: formSuccess,
+                        dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type)
+                    };
+                    // bind form using 'ajaxForm'
+                    $('#SearchByAddressForm_SearchByAddressForm').ajaxForm(options);
+                }
             }
         }
     }
@@ -1146,7 +1174,6 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             this.bounds.extend(point);
                         // create marker
                             this.updateStatus(GMO._t.processing + " " + i + " " + GMO._t.of + " " + pointCount + ".");
-                            console.debug(newIconURL);
                             var m = this.createMarker(point, name, desc, serverId, newIconURL);
                         }
                         if(!iconUrlCollection.inArray(newIconURL)) {
