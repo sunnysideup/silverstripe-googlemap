@@ -46,9 +46,7 @@ jQuery(document).ready(
                     }
                 }
                 if(i == 0 && $('#SearchByAddressForm_SearchByAddressForm').length > 0) {
-                    alert("hggh");
                     var formSuccess = function(responseText, statusText, xhr, $form)  {
-                        alert("AAAAAAAAA");
                         var base = jQuery("base").attr("href");
                         var link = base;
                         link += "\/googlemap\/";
@@ -734,7 +732,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var obscuringLinks = '';
             var pointCount = this.layerInfo[m.layerId].pointCount;
             if(pointCount > 1) {
-                //infoTabExtraLinksArray.push(', <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'hideGroup\');">Hide Group ('+ pointCount +' points)</a>');
+                //infoTabExtraLinksArray.push(', <a href="#" onclick="google.maps.event.trigger(GMO.lastMarker,\'hideGroup\');">Hide Group ('+ pointCount +' points)</a>');
                 google.maps.event.addListener(m, "hideGroup", function() {
                         GMO.changeLayerVisibility(m.layerId);
                         infowindow.close();
@@ -742,7 +740,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             }
             if(this.opts.addAntipodean) {
                 infoTabExtraLinksArray.push(
-                    '<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickAntipodean\');">'+GMO._t.drill_a_hole+'</a>'
+                    '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.getMap().lastMarker,\'clickAntipodean\'); return false;">'+GMO._t.drill_a_hole+'</a>'
                 );
                 google.maps.event.addListener(m, "clickAntipodean", function() {
                     GMO.mapObject.setZoom(6);
@@ -764,7 +762,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 obscuringLinks += ' <p><span class="partialObscuring">'+GMO._t.partial_obscuring;
                 for(var i = 0; i < hiddenMarkerArray.length; i++) {
                     var markerId = hiddenMarkerArray[i];
-                    obscuringLinks += ' <a href="javascript:void(0)" onclick="'+this.variableName+'.showMarkerFromList('+markerId+');">' + this.gmarkers[markerId].markerName + '</a>';
+                    obscuringLinks += ' <a href="#" onclick="'+GMO.variableName+'.showMarkerFromList('+markerId+'); return false;">' + this.gmarkers[markerId].markerName + '</a>';
                     if(i < (hiddenMarkerArray.length - 2)) {
                         obscuringLinks += ", ";
                     }
@@ -778,12 +776,12 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var html = '<div id="infoWindowTab1" class="infoWindowTab"><h1>'+name+'</h1>' + obscuringLinks + '<div>'+desc+'</div>';
             if(this.opts.addZoomInButton) {
                 infoTabExtraLinksArray.push(
-                    '<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickZoomIn\')">zoom in</a>'
+                    '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickZoomIn\'); return false;">zoom in</a>'
                 );
             }
             if(this.opts.addDeleteMarkerButton) {
                 infoTabExtraLinksArray.push(
-                    '<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickRemoveMe\')">'+this.opts.addDeleteMarkerButton+'</a>'
+                    '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickRemoveMe\'); return false;">'+this.opts.addDeleteMarkerButton+'</a>'
                 );
             }
             if(infoTabExtraLinksArray.length) {
@@ -818,14 +816,14 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         + ' <b>' + GMO._t.from + ':</b>'
                         + '</p>'
                         + '<p id="fromHereLink">'
-                        + ' <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickFromHere\')">'+ GMO._t.select_this_point + '</a>: '
+                        + ' <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickFromHere\')">'+ GMO._t.select_this_point + '</a>: '
                         + ' ' + this.currentFromLocation()
                         + '</p>'
                         + '<p class="infoTabToOption">'
                         + ' <b>' + GMO._t.to + ':</b>'
                         + '</p>'
                         + '<p id="toHereLink">'
-                        + ' <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickToHere\')">' + GMO._t.select_this_point + '</a>:'
+                        + ' <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickToHere\'); return false;">' + GMO._t.select_this_point + '</a>:'
                         + ' ' + this.currentToLocation()
                         + '</p>'
                         + '<p class="infoTabAlternative">';
@@ -834,17 +832,17 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             + ' <b>' + GMO._t.do_next + ':</b>'
                             + '</p>'
                             + '<p>'
-                            + ' <a href="javascript:google.maps.event.trigger(GMO.lastMarker,\'clickClearRoute\')" id="clearRouteLink">'+GMO._t.clear_last_route+'</a> ';
+                            + ' <a href="#" onclick="return google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickClearRoute\'); return false;" id="clearRouteLink">'+GMO._t.clear_last_route+'</a> ';
                     }
                     else if((this.floatFrom || this.floatTo) || (this.to || this.from)) {
                         findDirections += ''
                             + '<b>'+GMO._t.do_next+':</b></p>'
-                            + '<p><a href="javascript:void(0)" class="submitButton" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickFindRoute\')" id="calculateLinkRoute">'+GMO._t.calculate_route+'</a>';
+                            + '<p><a href="#" class="submitButton" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickFindRoute\'); return false;" id="calculateLinkRoute">'+GMO._t.calculate_route+'</a>';
                     }
                     else if(this.layerInfo[m.layerId].pointCount > 1 && this.layerInfo[m.layerId].pointCount < 20) {
                         findDirections += ''
                             + '<span class="alternatively">'+GMO._t.alernatively+'</p>'
-                            + '<p><a href="javascript:void(0)" class="submitButton" onclick="google.maps.event.trigger(GMO.lastMarker,\'joinTheDots\')" id="calculateLinkRoute">'+GMO._t.create_routes_using_current_points+'</a>';
+                            + '<p><a href="#" class="submitButton" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'joinTheDots\')" id="calculateLinkRoute">'+GMO._t.create_routes_using_current_points+'</a>';
                     }
                     findDirections += ''
                         + '</p>'
@@ -881,9 +879,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 
             if(this.opts.addCurrentAddressFinder) {
                 html = html + '<div id="infoWindowTab3" class="infoWindowTab">'
-                    + '<a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">'+GMO._t.find_address+'</a>'
+                    + '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'findAddressFromLngLat\')">'+GMO._t.find_address+'</a>'
                     + '</div>';
-                //tabsHtml.push(new GInfoWindowTab("address", '<div id="infoWindowTab3" class="infoWindowTab"><a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>'));
+                //tabsHtml.push(new GInfoWindowTab("address", '<div id="infoWindowTab3" class="infoWindowTab"><a href="#" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>'));
                 google.maps.event.addListener(m, "findAddressFromLngLat",
                     function() {
                         GMO.geocoder = new google.maps.Geocoder();
@@ -926,7 +924,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var hideGroupLink = '';
             var pointCount = this.layerInfo[m.layerId].pointCount;
             if(pointCount > 1) {
-                //hideGroupLink += ', <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'hideGroup\');">Hide Group ('+ pointCount +' points)</a>';
+                //hideGroupLink += ', <a href="#" onclick="google.maps.event.trigger(GMO.lastMarker,\'hideGroup\');">Hide Group ('+ pointCount +' points)</a>';
                 google.maps.event.addListener(
                     m,
                     "hideGroup",
@@ -940,8 +938,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var html = '<div id="infoWindowTab1" class="infoWindowTab">'
                 + '<div>'+desc+'</div>'
                 + '<p class="infoTabBasicLinks">'
-                + '<a href="javascript:void(0)" onclick="'+this.variableName+'.mapObject.closeInfoWindow();">'+GMO._t.close+'</a>'
-                + ', <a href="javascript:void(0)" onclick="google.maps.event.trigger(GMO.lastMarker,\'clickHideMe\')">'+GMO._t.remove+'</a>'
+                + '<a href="#" onclick="'+GMO.variableName+'.mapObject.closeInfoWindow(); return false;">'+GMO._t.close+'</a>'
+                + ', <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickHideMe\')l return false;">'+GMO._t.remove+'</a>'
                 + hideGroupLink
                 + '.</p>'
             google.maps.event.addListener(m, "clickHideMe", function() {
@@ -1320,14 +1318,14 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             if(isManuallyAdded == -1) {
                                 html += ''
                                     + '<li class="forLayer'+layerName+' icon'+i+'">'
-                                    +' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
+                                    +' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
                                     +' <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div>'
                                     +'</li>';
                             }
                             else {
                                 html += ''
                                     +'<li class="forLayer'+layerName+'">' + GMO._t.you_added + ':'
-                                    +' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="GMO.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
+                                    +' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
                                     +'</li>';
                             }
                         }
@@ -1411,9 +1409,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         }
                         html += ''
                             + this.layerInfo[i].title
-                            + ' <a href="javascript:void(0)" onclick="GMO.changeLayerVisibility('+i+')">' + linkText + '</a>';
+                            + ' <a href="#" onclick="'+GMO.variableName+'.changeLayerVisibility('+i+'); return false;">' + linkText + '</a>';
                             if(!this.opts.hiddenLayersRemovedFromList) {
-                                + ' - <a href="javascript:void(0)" onclick="GMO.deleteLayer('+i+')">' + GMO._t.remove + '</a>';
+                                + ' - <a href="#" onclick="'+GMO.variableName+'.deleteLayer('+i+')">' + GMO._t.remove + '</a>';
                             }
                         if(this.opts.addKmlLink && this.layerInfo[i].url) {
                             html += ''
@@ -1476,13 +1474,13 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 }
                 else {
                     var zoomLinkLabel = 'full-screen';
-                    var hideAction = '<span>|</span> <a href="javascript:void(0)" onclick="GMO.hideStatus();">' + GMO._t.hide + '</a> ';
+                    var hideAction = '<span>|</span> <a href="#" onclick="'+GMO.variableName+'.hideStatus();">' + GMO._t.hide + '</a> ';
                 }
             }
             var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
             // depreciated
-            fullHtml += ' <a href="javascript:void(0)" onclick="GMO.updateStatus(\'\', \'help\');"> ' + GMO._t.show_help + ' </a> <span>|</span>'
-            + ' <a href="javascript:void(0)" onclick="GMO.enlargeMap();" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
+            fullHtml += ' <a href="#" onclick="'+GMO.variableName+'.updateStatus(\'\', \'help\'); return false;"> ' + GMO._t.show_help + ' </a> <span>|</span>'
+            + ' <a href="#" onclick="'+GMO.variableName+'.enlargeMap(); return false;" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
             + hideAction
             + '</p>'+ html;
             if(this.opts.statusDivId) {
@@ -1727,7 +1725,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 html += ''
                     + '<tr>'
                     +' <th colspan="2">'
-                    +'  <a href="javascript:void(0);" onclick="'+this.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">'
+                    +'  <a href="#" onclick="'+GMO.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">'
                     +'   <img src="http://www.google.com/intl/en_ALL/mapfiles/icon-dd-' +type+ '-trans.png" alt="marker">'
                     +'  </a>'
                     +   pointName + " (" + address + ")"
@@ -1746,7 +1744,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 html += ''
                     + '<tr>'
                     +' <td>'
-                    +'  <a href="javascript:void(0);" onclick="'+this.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+'));">'+num+'.</a> '
+                    +'  <a href="#" onclick="'+GMO.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">'+num+'.</a> '
                     +   description
                     +' </td>'
                     +' <td class="dist">'
@@ -1802,9 +1800,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var directionsPanel = document.getElementById(GMO.opts.directionsDivId);
             if(directionsPanel) {
                 html += ''
-                + '<p id="directionsPrintOptions"><a href="javascript:void(0)" onclick="GMO.printDirections()">Print Directions</a>, <a href="javascript:void(0)" onclick="GMO.clearRouteAll();">Clear Route</a></p>'
+                + '<p id="directionsPrintOptions"><a href="#" onclick="'+GMO.variableName+'.printDirections(); return false;">Print Directions</a>, '
+                + '<a href="#" onclick="'+GMO.variableName+'.clearRouteAll(); return false;">Clear Route</a></p>';
                 directionsPanel.innerHTML = html;
-                GMO.updateStatus('Directions Loaded - <a href="javascript:void(0)" onclick="GMO.printDirections()">Print Directions</a>.');
+                GMO.updateStatus('Directions Loaded - <a href="#" onclick="'+GMO.variableName+'.printDirections(); return false;on">Print Directions</a>.');
             }
             else {
                 GMO.openDirectionsPopup(html);
@@ -1895,7 +1894,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     + '<style type="text/css">'
                     + '</style>'
                     + '<body onLoad="self.focus()">'
-                    + '<p><a href="javascript:void(0)" onclick="self.print()">Print This page</a>, <a href="javascript:void(0)" onclick="self.close()">Close Window</a></p>'
+                    + '<p>'
+                    + '<a href="#" onclick="self.print(); return false;">Print This page</a>, '
+                    + '<a href="#" onclick="self.close(); return false;">Close Window</a>'
+                    + '</p>'
                     + innerHTML
                     + '</body></html>';
             }
@@ -2128,7 +2130,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     //+ '<form action="#">'
                     + ' <p class="findAddressHtml">'
                     + '  <input type="text" size="60" id="mapAddress" class="infoTabInputAddress" />' + GMO.opts.defaultAddressText
-                    + '  <input type="button" value="find address" id="infoTabSubmitAddress" class="submitButton" onclick="' + GMO.variableName + '.findAddress(document.getElementById(\'mapAddress\').value); return false" />'
+                    + '  <input type="button" value="find address" id="infoTabSubmitAddress" class="submitButton" onclick="'+GMO.variableName+'.findAddress(document.getElementById(\'mapAddress\').value); return false;" />'
                     + ' </p>'
                     //+ '</form>';
             return findAddressHtml
@@ -2241,6 +2243,11 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
      * @var Object - main Object that holds all the private functions
      */
     return {
+
+
+        getMap: function(){
+            return GMO;
+        },
 
         /**
          * get any variable
