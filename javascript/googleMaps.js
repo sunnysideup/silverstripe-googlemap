@@ -16,8 +16,6 @@
  */
 
 
-var GMO = null;
-
 
 
 jQuery(document).ready(
@@ -28,7 +26,7 @@ jQuery(document).ready(
                 GoogleMapConstructors[i].googleMap = new GoogleMapConstructor(
                     obj.divID,                            //div ID
                     null,                                 //url for map... added via layers
-                    GoogleMapConstructors[i].googleMap,   // object that holds constructor
+                    'GoogleMapConstructors['+i+'].googleMap.getMap()',   // object that holds constructor
                     obj.options                           //map options ...
                 );
                 GoogleMapConstructors[i].googleMap.init();
@@ -530,17 +528,20 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var count = 0;
             if(this.layerInfo[selectedLayerId].show) {
                 newStatus = 0;
-                GMO.mapObject.closeInfoWindow();
+                //GMO.mapObject.closeInfoWindow();
             }
             for (var i = 0; i < this.gmarkers.length; i++) {
                 if (this.gmarkers[i].layerId == selectedLayerId) {
                     count++;
-                    if(newStatus) {
-                        this.gmarkers[i].show();
+                    if(newStatus === 1) {
+                        this.gmarkers[i].setVisible(true);
                         newStatusName = "shown";
                     }
                     else {
-                        this.gmarkers[i].hide();
+                        if(typeof this.gmarkers[i].infowindow !== 'undefined') {
+                            this.gmarkers[i].infowindow.close();
+                        }
+                        this.gmarkers[i].setVisible(false);
                         newStatusName = "hidden";
                     }
                 }
@@ -733,10 +734,14 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var pointCount = this.layerInfo[m.layerId].pointCount;
             if(pointCount > 1) {
                 //infoTabExtraLinksArray.push(', <a href="#" onclick="google.maps.event.trigger(GMO.lastMarker,\'hideGroup\');">Hide Group ('+ pointCount +' points)</a>');
-                google.maps.event.addListener(m, "hideGroup", function() {
+                google.maps.event.addListener(
+                    m,
+                    "hideGroup",
+                    function() {
                         GMO.changeLayerVisibility(m.layerId);
                         infowindow.close();
-                });
+                    }
+                );
             }
             if(this.opts.addAntipodean) {
                 infoTabExtraLinksArray.push(
@@ -864,10 +869,17 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         GMO.floatTo = new google.maps.LatLng(point.ob, point.pb);
                     });
                     //add route
-                    google.maps.event.addListener(m, "clickFindRoute", function() {
-                        GMO.showRoute();
-                        GMO.mapObject.closeInfoWindow();
-                    });
+                    google.maps.event.addListener(
+                        m,
+                        "clickFindRoute",
+                        function() {
+                            GMO.showRoute();
+                            if(typeof m.infowindow !== 'undefined') {
+                                m.infowindow.close();
+                            }
+                            //GMO.mapObject.closeInfoWindow();
+                        }
+                    );
                     //clearRoute
                     google.maps.event.addListener(m, "clickClearRoute", function() {
                         GMO.clearRouteAll();
@@ -930,7 +942,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     "hideGroup",
                     function() {
                         GMO.changeLayerVisibility(m.layerId);
-                        GMO.mapObject.closeInfoWindow();
+                        if(typeof m.infowindow !== 'undefined') {
+                            m.infowindow.close();
+                        }
+                        //GMO.mapObject.closeInfoWindow();
                     }
                 );
             }
@@ -938,16 +953,23 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var html = '<div id="infoWindowTab1" class="infoWindowTab">'
                 + '<div>'+desc+'</div>'
                 + '<p class="infoTabBasicLinks">'
-                + '<a href="#" onclick="'+GMO.variableName+'.mapObject.closeInfoWindow(); return false;">'+GMO._t.close+'</a>'
+                + '<a href="#" onclick="'+GMO.variableName+'.lastMarker.infowindow.close(); return false;">'+GMO._t.close+'</a>'
                 + ', <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickHideMe\')l return false;">'+GMO._t.remove+'</a>'
                 + hideGroupLink
                 + '.</p>'
-            google.maps.event.addListener(m, "clickHideMe", function() {
-                GMO.mapObject.closeInfoWindow();
-                m.hide();
-                var currentLayerId = m.layerId
-                GMO.updateLists();
-            });
+            google.maps.event.addListener(
+                m,
+                "clickHideMe",
+                function() {
+                    //GMO.mapObject.closeInfoWindow();
+                    if(typeof m.infowindow !== 'undefined') {                    
+                        m.infowindow.close();
+                    }
+                    m.setVisible(false);
+                    var currentLayerId = m.layerId
+                    GMO.updateLists();
+                }
+            );
             //var tabsHtml = [new google.maps.InfoWindowTab("info", html)];//[new GInfoWindowTab("info", html)];
             //directions and address finder
             if(pbounds) {
@@ -1193,7 +1215,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     //if(!GMO.mapObject.getInfoWindow().getVisible()) {
                     if(typeof m !== "undefined" &&  ! m.getVisible) {
                         //GMO.mapObject.closeInfoWindow();
-                        m.infowindow.close();
+                        if(typeof m.infowindow !== 'undefined') {
+                            m.infowindow.close();
+                        }
                     }
                     if(pointCount > 1) {
                         this.updateStatus(pointCount + " " + GMO._t.locations_added + ".");
@@ -1410,8 +1434,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         html += ''
                             + this.layerInfo[i].title
                             + ' <a href="#" onclick="'+GMO.variableName+'.changeLayerVisibility('+i+'); return false;">' + linkText + '</a>';
-                            if(!this.opts.hiddenLayersRemovedFromList) {
-                                + ' - <a href="#" onclick="'+GMO.variableName+'.deleteLayer('+i+')">' + GMO._t.remove + '</a>';
+                            if( ! this.opts.hiddenLayersRemovedFromList) {
+                                + ' - <a href="#" onclick="'+GMO.variableName+'.deleteLayer('+i+'); return false;">' + GMO._t.remove + '</a>';
                             }
                         if(this.opts.addKmlLink && this.layerInfo[i].url) {
                             html += ''
