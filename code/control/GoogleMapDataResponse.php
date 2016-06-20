@@ -614,7 +614,7 @@ class GoogleMapDataResponse extends Controller {
         return self::xml_sheet(
             $pages,
             $dataPoints,
-            $title = '',
+            $title,
             $selectionStatement = ''
         );
     }
