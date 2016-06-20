@@ -368,14 +368,19 @@ class GoogleMapDataResponse extends Controller {
     public function showpointbyid($request) {
         $id = $request->param("FilterCode");
         $ids = explode(',', $id);
-        foreach($ids as $key => $id) {$ids[$key] = intval($id);}
-        $className = intval($request->param("SecondFilterCode"));
-        if(!$className || ! class_exists($className)) {
-            $className = "GoogleMapLocationsObject";
+        foreach($ids as $key => $id) {
+            $ids[$key] = intval($id);
+        }
+        $className = Convert::raw2sql($request->param("SecondFilterCode"));
+        $direct = false;
+        if( ! $className) {
             $direct = true;
         }
-        else {
-            $direct = false;
+        elseif( ! class_exists($className)) {
+            $direct = true;
+        }
+        if($direct) {
+            $className = "GoogleMapLocationsObject";
         }
         $objects = $className::get()->filter(array("ID" => $ids));
         if($direct) {

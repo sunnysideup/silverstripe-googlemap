@@ -29,7 +29,7 @@ class GoogleMapLocationsObject extends DataObject {
      */
     private static $plural_name = 'Locations';
     function i18n_plural_name() { return self::$plural_name;}
-    
+
     private static $db = array (
         'PointType' =>'Enum("none, point, polyline, polygon", "point")',
         'Accuracy' => 'Varchar(100)',
@@ -123,7 +123,7 @@ class GoogleMapLocationsObject extends DataObject {
         ))->First();
     }
 
-    function  getCMSFields() {
+    function getCMSFields() {
         $fields = parent::getCMSFields();
         $labels = $this->FieldLabels();
         $addTitleAndContent = true;
@@ -182,6 +182,7 @@ class GoogleMapLocationsObject extends DataObject {
             $fields->removeByName("CustomPopUpWindowTitle");
             $fields->removeByName("CustomPopUpWindowInfo");
         }
+        $fields->makeFieldReadonly("ParentID");
         return $fields;
     }
 
