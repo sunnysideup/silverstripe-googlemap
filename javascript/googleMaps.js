@@ -31,8 +31,6 @@ jQuery(document).ready(
                     var layers = obj.layers;
                     if(layers.length > 0) {
                         for(var j = 0; j < layers.length; j++) {
-                            console.debug(layers[j].link);
-                            console.debug(layers[j].title);
                             GoogleMapConstructors[i].googleMap.addLayer(layers[j].link, layers[j].title);
                         }
                     }
