@@ -30,7 +30,7 @@
  *
  * 'showaroundmexml' =>
  *
- * 'showpointbyid' =>
+ * 'showpointbyid' => can also be more than one ID
  *
  */
 
@@ -43,7 +43,7 @@ class GoogleMapDataResponse extends Controller {
      * Default URL handlers - (Action)/(ID)/(OtherID)
      */
     private static $url_handlers = array(
-        '/$Action//$OwnerID/$Title/$Longitude/$Latitude/$FilterCode' => 'handleAction',
+        '/$Action//$OwnerID/$Title/$Longitude/$Latitude/$FilterCode/$SecondFilterCode' => 'handleAction',
     );
 
 
@@ -172,6 +172,11 @@ class GoogleMapDataResponse extends Controller {
     protected $filterCode = "";
 
     /**
+     * @var String
+     */
+    protected $secondFilterCode = "";
+
+    /**
      * @var GoogleMap
      */
     protected $map = null;
@@ -229,12 +234,8 @@ class GoogleMapDataResponse extends Controller {
         $this->title = urldecode($this->request->param("Title"));
         $this->lng = floatval($this->request->param("Longitude"));
         $this->lat = floatval($this->request->param("Latitude"));
-        if($this->lng && $this->lat) {
-            $this->filterCode = urldecode($this->request->param("FilterCode"));
-        }
-        else {
-            $this->filterCode = urldecode($this->request->param("Longitude"));
-        }
+        $this->filterCode = urldecode($this->request->param("FilterCode"));
+        $this->secondFilterCode = urldecode($this->request->param("SecondFilterCode"));
         if(!$this->title && $this->owner) {
             $this->title = $this->owner->Title;
         }
@@ -365,11 +366,31 @@ class GoogleMapDataResponse extends Controller {
      * @return String (XML)
      */
     public function showpointbyid($request) {
-        die("To be completed");
-        $id = 0;
-        $googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $id));
-        return $this->makeXMLData(null, $googleMapLocationsObjects, $this->title, $this->title);
+        $id = $request->param("FilterCode");
+        $ids = explode(',', $id);
+        foreach($ids as $key => $id) {
+            $ids[$key] = intval($id);
+        }
+        $className = Convert::raw2sql($request->param("SecondFilterCode"));
+        $direct = false;
+        if( ! $className) {
+            $direct = true;
+        }
+        elseif( ! class_exists($className)) {
+            $direct = true;
+        }
+        if($direct) {
+            $className = "GoogleMapLocationsObject";
+        }
+        $objects = $className::get()->filter(array("ID" => $ids));
+        if($direct) {
+            return $this->makeXMLData(null, $objects, $this->title, $this->title);
+        }
+        else {
+            return $this->makeXMLData($objects, null, $this->title, $this->title);
+        }
     }
+
 
     /**
      * load data from session
@@ -593,7 +614,7 @@ class GoogleMapDataResponse extends Controller {
         return self::xml_sheet(
             $pages,
             $dataPoints,
-            $title = '',
+            $title,
             $selectionStatement = ''
         );
     }

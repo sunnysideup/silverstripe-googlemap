@@ -15,6 +15,21 @@ class GoogleMapLocationsObject extends DataObject {
 
     private static $parent_point_counts = array();
 
+    /**
+     * e.g. Page / home Page / Product Page / My Page
+     * @var string
+     */
+    private static $singular_name = 'Location';
+    function i18n_singular_name() { return self::$singular_name;}
+
+
+    /**
+     * e.g. Pages / home Pages / Product Pages / My Pages
+     * @var string
+     */
+    private static $plural_name = 'Locations';
+    function i18n_plural_name() { return self::$plural_name;}
+
     private static $db = array (
         'PointType' =>'Enum("none, point, polyline, polygon", "point")',
         'Accuracy' => 'Varchar(100)',
@@ -108,7 +123,7 @@ class GoogleMapLocationsObject extends DataObject {
         ))->First();
     }
 
-    function  getCMSFields() {
+    function getCMSFields() {
         $fields = parent::getCMSFields();
         $labels = $this->FieldLabels();
         $addTitleAndContent = true;
@@ -167,6 +182,7 @@ class GoogleMapLocationsObject extends DataObject {
             $fields->removeByName("CustomPopUpWindowTitle");
             $fields->removeByName("CustomPopUpWindowInfo");
         }
+        $fields->makeFieldReadonly("ParentID");
         return $fields;
     }
 
@@ -331,7 +347,7 @@ class GoogleMapLocationsObject extends DataObject {
      * @return String
      */
     function DirectionsLink(){
-        return "https://www.google.co.nz/maps/dir//".urlencode($this->Address);
+        return "https://www.google.com/maps/dir//".urlencode($this->Address);
     }
 
 }

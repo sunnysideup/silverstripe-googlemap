@@ -64,8 +64,11 @@ class SearchByAddressForm extends Form {
         if(!$this->defaultAddress) {
             $this->defaultAddress = isset($_GET["FindNearAddress"]) ? $_GET["FindNearAddress"] : "";
         }
-        $this->classNamesSearchedFor = $classNamesSearchedFor;
-        $classNamesAsString = implode(",", $this->classNamesSearchedFor);
+        $classNamesAsString = '';
+        if(is_array($classNamesSearchedFor)) {
+            $this->classNamesSearchedFor = $classNamesSearchedFor;
+            $classNamesAsString = implode(",", $this->classNamesSearchedFor);
+        }
         parent::__construct(
             $controller,
             "SearchByAddressForm",
@@ -107,7 +110,7 @@ class SearchByAddressForm extends Form {
         $pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
         if(!$pointArray || !isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
             GoogleMapSearchRecord::create_new(
-                Convert::raw2slq($address),
+                Convert::raw2sql($address),
                 $this->getController()->dataRecord->ID,
                 false
             );
@@ -131,7 +134,21 @@ class SearchByAddressForm extends Form {
         //$form->Fields()->fieldByName("Address")->setValue($pointArray["address"]); //does not work ....
         //$this->owner->addMap($action = "showsearchpoint", "Your search", $lng, $lat);
         $action = "showaroundmexml";
-        $title = _t("GoogleMap.CLOSEST_TO_YOUR_SEARCH", "Closest to your search");
+        $title = _t("GoogleMap.CLOSEST_TO_YOUR_SEARCH", "Closest to ").$this->address;
+        if(Director::is_ajax()) {
+            $this->getController()->response->setBody(json_encode(array(
+                'Action' =>  $action,
+                'Title' => urlencode($title),
+                'ParentID' => $this->getController()->ID,
+                'Lng'=> $lng,
+                'Lat'=> $lat,
+                'ClassNames'=> $classNames
+            )));
+
+            $this->getController()->response->addHeader("Content-type", "application/json");
+
+            return $this->getController()->response;
+        }
         $this->getController()->addMap($action, $title, $lng, $lat, $classNames);
         return array();
     }

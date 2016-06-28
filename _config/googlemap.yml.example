@@ -122,7 +122,7 @@ GoogleMap:
   add_directions: false
 
   #add a tab with the address finder
-  add_current_address_finder: false
+  add_current_address_finder_in_marker: false
 
   #add a "zoom in" link on info window?
   add_zoom_in_button: false
