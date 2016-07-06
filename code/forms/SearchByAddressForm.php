@@ -101,6 +101,7 @@ class SearchByAddressForm extends Form {
                 "SearchByAddressFormInit"
             );
         }
+        $this->disableSecurityToken();
         return $this;
     }
 
