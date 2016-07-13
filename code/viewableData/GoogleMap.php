@@ -428,7 +428,8 @@ class GoogleMap extends ViewableData {
             Requirements::javascript(
                 "//maps.googleapis.com/maps/api/js?"
                 ."v=".Config::inst()->get("GoogleMap", "api_version")
-                ."&libraries=places"
+                ."&libraries=places&key=".
+            	Config::inst()->get('GoogleMap', 'google_map_api_key')
             );
             Requirements::javascript("googlemap/javascript/googleMaps.js");
             $js .= $this->createJavascript();
