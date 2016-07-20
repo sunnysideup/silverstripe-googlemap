@@ -43,7 +43,7 @@ jQuery(document).ready(
                         GoogleMapConstructors[i].googleMap.findAddress(obj.address);
                     }
                 }
-                if(i == 0 && $('#SearchByAddressForm_SearchByAddressForm').length > 0) {
+                if(i == 0 && jQuery('#SearchByAddressForm_SearchByAddressForm').length > 0) {
                     var formSuccess = function(responseText, statusText, xhr, $form)  {
                         var base = jQuery("base").attr("href");
                         var link = base;
@@ -66,7 +66,7 @@ jQuery(document).ready(
                         dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type)
                     };
                     // bind form using 'ajaxForm'
-                    $('#SearchByAddressForm_SearchByAddressForm').ajaxForm(options);
+                    jQuery('#SearchByAddressForm_SearchByAddressForm').ajaxForm(options);
                 }
             }
         }

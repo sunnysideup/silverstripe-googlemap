@@ -430,6 +430,7 @@ class GoogleMap extends ViewableData {
                 ."v=".Config::inst()->get("GoogleMap", "api_version")
                 ."&libraries=places"
             );
+            Requirements::javascript(THIRDPARTY_DIR.'/jquery-form/jquery.form.js');
             Requirements::javascript("googlemap/javascript/googleMaps.js");
             $js .= $this->createJavascript();
             Requirements::customScript($js, "GoogleMapCustomScript");
