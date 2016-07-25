@@ -426,10 +426,10 @@ class GoogleMap extends ViewableData {
             Requirements::javascript("googlemap/javascript/loadAjaxInfoWindow.js");
             Requirements::insertHeadTags('<style type="text/css">v\:* {behavior:url(#default#VML);}</style>', "GoogleMapCustomHeadTag");
             Requirements::javascript(
-                "//maps.googleapis.com/maps/api/js?"
-                ."v=".Config::inst()->get("GoogleMap", "api_version")
-                ."&libraries=places&key=".
-            	Config::inst()->get('GoogleMap', 'google_map_api_key')
+                "//maps.googleapis.com/maps/api/js"
+                ."?v=".Config::inst()->get("GoogleMap", "api_version")
+                ."&libraries=places"
+                ."&key=".Config::inst()->get('GoogleMap', 'google_map_api_key')
             );
             Requirements::javascript(THIRDPARTY_DIR.'/jquery-form/jquery.form.js');
             Requirements::javascript("googlemap/javascript/googleMaps.js");
