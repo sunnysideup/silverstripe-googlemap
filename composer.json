@@ -1,24 +1,33 @@
 {
-	"name": "sunnysideup/googlemap",
-	"type": "silverstripe-module",
-	"description": "adds an in-depth application of the google map API to your Silverstripe application",
-	"homepage": "http://www.silverstripe-webdevelopment.com",
-	"keywords": ["googlemap", "googlemaps", "google map", "maps", "map", "google", "directions", "geo", "geospatial", "silverstripe"],
-	"license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
-	"authors":[
-		{
-			"name": "Nicolaas Francken",
-			"homepage": "https://github.com/sunnysideup",
-			"role" : "lead developer",
-			"email" : "modules@sunnysideup.co.nz"
-		}
-	],
-	"require":{
-		"silverstripe/framework": "~3.1",
-		"silverstripe/cms": "~3.1",
-		"sunnysideup/google_address_field": "dev-master"
-	},
-	"extra": {
-		"installer-name": "googlemap"
-	}
+    "name": "sunnysideup/googlemap",
+    "type": "silverstripe-module",
+    "description": "adds an in-depth application of the google map API to your Silverstripe application",
+    "keywords": [
+        "googlemap",
+        "googlemaps",
+        "google map",
+        "maps",
+        "map",
+        "google",
+        "directions",
+        "geo",
+        "geospatial",
+        "silverstripe"
+    ],
+    "license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
+    "authors": [
+        {
+            "name": "Nicolaas Francken",
+            "role": "lead developer",
+            "email": "modules@sunnysideup.co.nz"
+        }
+    ],
+    "require": {
+        "silverstripe/framework": "~3.1",
+        "silverstripe/cms": "~3.1",
+        "sunnysideup/google_address_field": "dev-master"
+    },
+    "extra": {
+        "installer-name": "googlemap"
+    }
 }
