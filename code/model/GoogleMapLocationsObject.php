@@ -123,6 +123,13 @@ class GoogleMapLocationsObject extends DataObject {
         ))->First();
     }
 
+    function CMSEditLink()
+    {
+        return singleton('GoogleMapModelAdmin')->Link(
+            $this->ClassName.'/EditForm/field/'.$this->ClassName.'/item/'.$this->ID.'/edit'
+        );
+    }
+
     function getCMSFields() {
         $fields = parent::getCMSFields();
         $labels = $this->FieldLabels();
