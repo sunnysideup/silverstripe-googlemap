@@ -4,20 +4,15 @@
  */
 
 
-class GoogleMapSiteConfigDOD extends DataExtension {
+class GoogleMapSiteConfigDOD extends DataExtension
+{
+    private static $db = array("GoogleMapDefaultTitle" => "Varchar(150)");
 
-	private static $db = array("GoogleMapDefaultTitle" => "Varchar(150)");
-
-	private static $default = array();
-
-
-	function updateCMSFields(FieldList $fields) {
-		return $fields;
- }
+    private static $default = array();
 
 
-
+    public function updateCMSFields(FieldList $fields)
+    {
+        return $fields;
+    }
 }
-
-
-

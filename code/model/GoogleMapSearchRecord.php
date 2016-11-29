@@ -5,8 +5,8 @@
  *
  */
 
-class GoogleMapSearchRecord extends DataObject {
-
+class GoogleMapSearchRecord extends DataObject
+{
     private static $db = array(
         "IPAddres" => "Varchar(32)",
         "SearchedFor" => "Text"
@@ -25,20 +25,20 @@ class GoogleMapSearchRecord extends DataObject {
         "GoogleMapLocationsObject" => "GoogleMapLocationsObject"
     );
 
-    public static function create_new($searchedFor, $parentID = 0, $addGoogleMapLocationsObjectOrItsID = false){
+    public static function create_new($searchedFor, $parentID = 0, $addGoogleMapLocationsObjectOrItsID = false)
+    {
         $obj = new GoogleMapSearchRecord();
         $obj->SearchedFor = $searchedFor;
         $obj->ParentID = $parentID;
-        if($addGoogleMapLocationsObjectOrItsID ) {
-            if($addGoogleMapLocationsObjectOrItsID === true || $addGoogleMapLocationsObjectOrItsID === 1) {
+        if ($addGoogleMapLocationsObjectOrItsID) {
+            if ($addGoogleMapLocationsObjectOrItsID === true || $addGoogleMapLocationsObjectOrItsID === 1) {
                 //create object
                 $location = new GoogleMapLocationsObject();
                 $location->Address = $searchedFor;
                 $location->Manual = false;
                 $location->write();
                 $obj->GoogleMapLocationsObjectID = $location->ID;
-            }
-            else {
+            } else {
                 $obj->GoogleMapLocationsObjectID = intval($addGoogleMapLocationsObjectOrItsID);
             }
         }
@@ -47,10 +47,11 @@ class GoogleMapSearchRecord extends DataObject {
     }
 
 
-    function onBeforeWrite() {
+    public function onBeforeWrite()
+    {
         parent::onBeforeWrite();
         $m = Member::currentUser();
-        if($m) {
+        if ($m) {
             $this->MemberID = $m->ID;
         }
         $this->IPAddres = Controller::curr()->getRequest()->getIP();
@@ -59,7 +60,7 @@ class GoogleMapSearchRecord extends DataObject {
     /**
      * @return bool
      */
-    function canDelete($member = null)
+    public function canDelete($member = null)
     {
         return false;
     }
@@ -67,9 +68,8 @@ class GoogleMapSearchRecord extends DataObject {
     /**
      * @return bool
      */
-    function canEdit($member = null)
+    public function canEdit($member = null)
     {
         return false;
     }
-
 }

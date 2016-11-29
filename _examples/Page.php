@@ -1,14 +1,15 @@
 <?php
-class Page extends SiteTree {
-
-    function CustomAjaxInfoWindow(){
+class Page extends SiteTree
+{
+    public function CustomAjaxInfoWindow()
+    {
         return "my custom message";
     }
-
 }
-class Page_Controller extends ContentController {
-
-    public function init() {
+class Page_Controller extends ContentController
+{
+    public function init()
+    {
         parent::init();
         //$this->addMap("showemptymap");
         $this->hasGeoInfo = true;
@@ -23,5 +24,4 @@ class Page_Controller extends ContentController {
         //$this->clearCustomMaps(...);
         //$this->addCustomMap(...);
     }
-
 }

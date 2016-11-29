@@ -7,7 +7,6 @@
 
 class GoogleMapModelAdmin extends ModelAdmin
 {
-
     public $showImportForm = true;
 
     private static $managed_models = array('GoogleMapLocationsObject', 'GoogleMapSearchRecord');
@@ -15,5 +14,4 @@ class GoogleMapModelAdmin extends ModelAdmin
     private static $url_segment = 'google-maps';
 
     private static $menu_title = 'Google Maps';
-
 }

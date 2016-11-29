@@ -16,7 +16,8 @@
  *
  *
  **/
-class GoogleMap extends ViewableData {
+class GoogleMap extends ViewableData
+{
 
 
 
@@ -52,7 +53,7 @@ class GoogleMap extends ViewableData {
     private static $main_div_id = "GoogleMapDiv";
     private static $title_div_id = "";
     private static $side_bar_div_id = "";
-    private static $drop_down_div_id	="";
+    private static $drop_down_div_id    ="";
     private static $layer_list_div_id = "";
     private static $directions_div_id = "";
     private static $status_div_id = "";
@@ -121,9 +122,10 @@ class GoogleMap extends ViewableData {
     /**
      * @return String
      */
-    public function Link() {
+    public function Link()
+    {
         $page = Controller::curr();
-        if($page) {
+        if ($page) {
             return $page->Link();
         }
     }
@@ -134,52 +136,80 @@ class GoogleMap extends ViewableData {
      * @var String
      */
     protected $myMapFunctionName = "GMO";
-        public function setMyMapFunctionName($a){$this->myMapFunctionName = $s;}
-        public function MyMapFunctionName(){return $this->getMyMapFunctionName(false);}
-        public function MyInstanceName(){return $this->getMyMapFunctionName(true);}
-        public function getMyMapFunctionName($instanceName = false){
-            if($instanceName) {
-                $var = 'load_my_map_'.$this->myMapFunctionName;
-            }
-            else {
-                $var = $this->myMapFunctionName;
-            }
-            return $var;
+    public function setMyMapFunctionName($a)
+    {
+        $this->myMapFunctionName = $s;
+    }
+    public function MyMapFunctionName()
+    {
+        return $this->getMyMapFunctionName(false);
+    }
+    public function MyInstanceName()
+    {
+        return $this->getMyMapFunctionName(true);
+    }
+    public function getMyMapFunctionName($instanceName = false)
+    {
+        if ($instanceName) {
+            $var = 'load_my_map_'.$this->myMapFunctionName;
+        } else {
+            $var = $this->myMapFunctionName;
         }
+        return $var;
+    }
 
     /**
      * title of map
      * @var String
      */
     protected $titleOfMap = "";
-        public function setTitleOfMap($s){$this->titleOfMap = $s;}
-        public function TitleOfMap(){return $this->getTitleOfMap();}
-        public function getTitleOfMap(){return $this->titleOfMap;}
+    public function setTitleOfMap($s)
+    {
+        $this->titleOfMap = $s;
+    }
+    public function TitleOfMap()
+    {
+        return $this->getTitleOfMap();
+    }
+    public function getTitleOfMap()
+    {
+        return $this->titleOfMap;
+    }
 
 
     /**
      * used for static and non-static maps, hence defined only once.
      * @return Int
      */
-    public function GoogleMapWidth() {return Config::inst()->get("GoogleMap", "google_map_width");}
+    public function GoogleMapWidth()
+    {
+        return Config::inst()->get("GoogleMap", "google_map_width");
+    }
 
     /**
      * used for static and non-static maps, hence defined only once.
      * @return Int
      */
-    public function GoogleMapHeight() {return Config::inst()->get("GoogleMap", "google_map_height");}
+    public function GoogleMapHeight()
+    {
+        return Config::inst()->get("GoogleMap", "google_map_height");
+    }
 
     /**
      * @return Boolean
      */
-    public function AddAddressFinder() {return Config::inst()->get("GoogleMap", "add_address_finder");}
+    public function AddAddressFinder()
+    {
+        return Config::inst()->get("GoogleMap", "add_address_finder");
+    }
 
     /**
      * @return Boolean
      */
-    public function CanEdit($member = null) {
-        if($this->getUpdateServerUrlDragend()) {
-            if(Injector::inst()->get("GoogleMapLocationsObject")->canEdit($member)) {
+    public function CanEdit($member = null)
+    {
+        if ($this->getUpdateServerUrlDragend()) {
+            if (Injector::inst()->get("GoogleMapLocationsObject")->canEdit($member)) {
                 return true;
             }
         }
@@ -188,56 +218,90 @@ class GoogleMap extends ViewableData {
     /**
      * @return String
      */
-    public function TitleDivID() {return Config::inst()->get("GoogleMap", "title_div_id");}
+    public function TitleDivID()
+    {
+        return Config::inst()->get("GoogleMap", "title_div_id");
+    }
 
     /**
      * @return String
      */
-    public function SideBarDivId() {return Config::inst()->get("GoogleMap", "side_bar_div_id");}
+    public function SideBarDivId()
+    {
+        return Config::inst()->get("GoogleMap", "side_bar_div_id");
+    }
 
     /**
      * @return String
      */
-    public function DropDownDivId() {return Config::inst()->get("GoogleMap", "drop_down_div_id");}
+    public function DropDownDivId()
+    {
+        return Config::inst()->get("GoogleMap", "drop_down_div_id");
+    }
 
     /**
      * @return String
      */
-    public function LayerListDivId() {return Config::inst()->get("GoogleMap", "layer_list_div_id");}
+    public function LayerListDivId()
+    {
+        return Config::inst()->get("GoogleMap", "layer_list_div_id");
+    }
 
     /**
      * @return String
      */
-    public function DirectionsDivId() {return Config::inst()->get("GoogleMap", "directions_div_id");}
+    public function DirectionsDivId()
+    {
+        return Config::inst()->get("GoogleMap", "directions_div_id");
+    }
 
     /**
      * @return String
      */
-    public function StatusDivId() {return Config::inst()->get("GoogleMap", "status_div_id");}
+    public function StatusDivId()
+    {
+        return Config::inst()->get("GoogleMap", "status_div_id");
+    }
 
     /**
      *
      * @var Boolean
      */
-    public function AllowAddPointsToMap() {$this->Config()->update("add_points_to_map", true);}
+    public function AllowAddPointsToMap()
+    {
+        $this->Config()->update("add_points_to_map", true);
+    }
 
     /**
      * @var ArrayList
      */
     protected $processedDataPointsForTemplate = null;
-        public function setProcessedDataPointsForTemplate($s){$this->processedDataPointsForTemplate = $s;}
-        public function ProcessedDataPointsForTemplate(){return $this->getProcessedDataPointsForTemplate();}
-        public function getProcessedDataPointsForTemplate(){return $this->processedDataPointsForTemplate;}
+    public function setProcessedDataPointsForTemplate($s)
+    {
+        $this->processedDataPointsForTemplate = $s;
+    }
+    public function ProcessedDataPointsForTemplate()
+    {
+        return $this->getProcessedDataPointsForTemplate();
+    }
+    public function getProcessedDataPointsForTemplate()
+    {
+        return $this->processedDataPointsForTemplate;
+    }
 
     /**
      * @var String
      */
     protected $dataPointsXML;
-        protected function DataPointsXML(){return $this->getDataPointsXML();}
-        protected function getDataPointsXML(){
-            $this->createDataPoints();
-            return $this->dataPointsXML;
-        }
+    protected function DataPointsXML()
+    {
+        return $this->getDataPointsXML();
+    }
+    protected function getDataPointsXML()
+    {
+        $this->createDataPoints();
+        return $this->dataPointsXML;
+    }
 
 
 
@@ -260,15 +324,22 @@ class GoogleMap extends ViewableData {
      * @var ArrayList
      */
     protected $extraLayers = null;
-        public function setExtraLayer($a) {$this->extraLayers = $a;}
-        public function getExtraLayers() {return $this->extraLayers;}
+    public function setExtraLayer($a)
+    {
+        $this->extraLayers = $a;
+    }
+    public function getExtraLayers()
+    {
+        return $this->extraLayers;
+    }
 
         /**
          * @param String $title
          * @param String $link
          */
-        public function addExtraLayer($title, $link) {
-            if(!$this->getExtraLayers()) {
+        public function addExtraLayer($title, $link)
+        {
+            if (!$this->getExtraLayers()) {
                 $this->extraLayers = new ArrayList();
             }
             $this->extraLayers->push(
@@ -286,7 +357,8 @@ class GoogleMap extends ViewableData {
          *
          * @return ArrayList
          */
-        public function AllExtraLayers() {
+        public function AllExtraLayers()
+        {
             return $this->getExtraLayers();
         }
 
@@ -294,15 +366,22 @@ class GoogleMap extends ViewableData {
      * @var Array
      *    Link => Title
      */
-    protected $linksForData = Array();
-        public function setLinksForData($a) {$this->linksForData = $a;}
-        public function getLinksForData() {return $this->linksForData;}
+    protected $linksForData = array();
+    public function setLinksForData($a)
+    {
+        $this->linksForData = $a;
+    }
+    public function getLinksForData()
+    {
+        return $this->linksForData;
+    }
 
         /**
          * @param string $linkForData
          * @param string $title
          */
-        function addLayer($linkForData, $title) {
+        public function addLayer($linkForData, $title)
+        {
             $this->linksForData[$linkForData] = $title;
         }
 
@@ -321,23 +400,28 @@ class GoogleMap extends ViewableData {
      * @var String
      */
     protected $address = "";
-        public function setAddress($v) {$this->address = Convert::raw2js($v);}
-        public function getAddress($v) {return $this->address;}
+    public function setAddress($v)
+    {
+        $this->address = Convert::raw2js($v);
+    }
+    public function getAddress($v)
+    {
+        return $this->address;
+    }
 
         /**
          * sets the list of points through a list of parent pages
          * affected variable is: points
          * @param DataList | ArrayList $pageDataList
          */
-        public function setPageDataObjectSet($pageDataList) {
-            if($pageDataList->count()) {
-                if($pageDataList instanceof ArrayList) {
+        public function setPageDataObjectSet($pageDataList)
+        {
+            if ($pageDataList->count()) {
+                if ($pageDataList instanceof ArrayList) {
                     $array = $pageDataList->map("ID", "ID");
-                }
-                elseif($pageDataList instanceof DataList) {
+                } elseif ($pageDataList instanceof DataList) {
                     $array = $pageDataList->map("ID", "ID")->toArray();
-                }
-                else {
+                } else {
                     user_error("Wrong format for pageDataList");
                 }
                 $this->points = GoogleMapLocationsObject::get()->filter(array("ParentID" => $array));
@@ -350,10 +434,14 @@ class GoogleMap extends ViewableData {
      * @var DataList
      */
     protected $points = null;
-        public function setPoints($s) {$this->points = $s;}
-        public function getPoints() {
-            return $this->points;
-        }
+    public function setPoints($s)
+    {
+        $this->points = $s;
+    }
+    public function getPoints()
+    {
+        return $this->points;
+    }
 
 
 
@@ -362,16 +450,28 @@ class GoogleMap extends ViewableData {
      * @var String
      */
     protected $whereStatementDescription = "";
-        public function setWhereStatementDescription($s) {$this->whereStatementDescription = $s;}
-        public function getWhereStatementDescription() {return $this->whereStatementDescription;}
+    public function setWhereStatementDescription($s)
+    {
+        $this->whereStatementDescription = $s;
+    }
+    public function getWhereStatementDescription()
+    {
+        return $this->whereStatementDescription;
+    }
 
     /**
      * filter for class names
      * @var Array
      */
-    protected $filteredClassNameArray = Array();
-        public function setFilteredClassNameArray($a) {$this->filteredClassNameArray = $s;}
-        public function getFilteredClassNameArray() {return $this->filteredClassNameArray;}
+    protected $filteredClassNameArray = array();
+    public function setFilteredClassNameArray($a)
+    {
+        $this->filteredClassNameArray = $s;
+    }
+    public function getFilteredClassNameArray()
+    {
+        return $this->filteredClassNameArray;
+    }
 
 
 
@@ -387,15 +487,27 @@ class GoogleMap extends ViewableData {
      * @var String
      */
     protected $updateServerUrlAddressSearchPoint = "/googlemap/showaroundmexml/";
-        public function setUpdateServerUrlAddressSearchPoint($v) {$this->updateServerUrlAddressSearchPoint = Director::absoluteBaseURL().$v;}
-        public function getUpdateServerURLAddressSearchPoint() {return $this->updateServerUrlAddressSearchPoint;}
+    public function setUpdateServerUrlAddressSearchPoint($v)
+    {
+        $this->updateServerUrlAddressSearchPoint = Director::absoluteBaseURL().$v;
+    }
+    public function getUpdateServerURLAddressSearchPoint()
+    {
+        return $this->updateServerUrlAddressSearchPoint;
+    }
 
     /**
      * @var String
      */
     protected $updateServerUrlDragend = "";
-        public function setUpdateServerUrlDragend($v) {$this->updateServerUrlDragend = Director::absoluteBaseURL().$v;}
-        public function getUpdateServerUrlDragend() {return $this->updateServerUrlDragend;}
+    public function setUpdateServerUrlDragend($v)
+    {
+        $this->updateServerUrlDragend = Director::absoluteBaseURL().$v;
+    }
+    public function getUpdateServerUrlDragend()
+    {
+        return $this->updateServerUrlDragend;
+    }
 
 
 
@@ -415,10 +527,11 @@ class GoogleMap extends ViewableData {
      */
     private static $_includes_are_done = false;
 
-    public function loadGoogleMap() {
+    public function loadGoogleMap()
+    {
         $js = '';
         $this->loadDefaults();
-        if(!self::$_includes_are_done) {
+        if (!self::$_includes_are_done) {
             Requirements::themedCSS("googleMap");
             Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
             $variableName = $this->getMyMapFunctionName(false);
@@ -456,21 +569,22 @@ class GoogleMap extends ViewableData {
      *
      * @return ArrayList
      */
-    protected function orderItemsByLatitude($reverse = false) {
+    protected function orderItemsByLatitude($reverse = false)
+    {
         $unsortedSet = $this->getProcessedDataPointsForTemplate();
         $sortedSet = new ArrayList();
-        if($unsortedSet->count()) {
-            foreach($unsortedSet as $item) {
+        if ($unsortedSet->count()) {
+            foreach ($unsortedSet as $item) {
                 $tempArray[$item->Latitude] = $item;
             }
         }
         ksort($tempArray);
         //not sure why this is a bit counter intuitive.
         //north to south is from high to low ...
-        if(!$reverse) {
+        if (!$reverse) {
             $tempArray = array_reverse($tempArray);
         }
-        foreach($tempArray as $item) {
+        foreach ($tempArray as $item) {
             $sortedSet->push($item);
         }
         return $sortedSet;
@@ -480,11 +594,11 @@ class GoogleMap extends ViewableData {
      *
      * @return Int
      */
-    public function getPointCount() {
-        if($processedPoints = $this->getProcessedDataPointsForTemplate()) {
+    public function getPointCount()
+    {
+        if ($processedPoints = $this->getProcessedDataPointsForTemplate()) {
             return $processedPoints->count();
-        }
-        elseif($points = $this->getPoints()){
+        } elseif ($points = $this->getPoints()) {
             return $points->count();
         }
         return 0;
@@ -493,7 +607,8 @@ class GoogleMap extends ViewableData {
     /**
      * @return Boolean
      */
-    public function EnoughPointsForAList() {
+    public function EnoughPointsForAList()
+    {
         return $this->getPointCount() >= $this->Config()->get("number_of_items_before_showing_list") ? true : false;
     }
 
@@ -504,7 +619,8 @@ class GoogleMap extends ViewableData {
      * but loads it into variables...
      * @return Boolean
      */
-    public function createDataPoints() {
+    public function createDataPoints()
+    {
         $this->dataPointsXML = '';
         $this->loadDefaults();
         $idArray = array();
@@ -516,33 +632,32 @@ class GoogleMap extends ViewableData {
         $filterFree = count($this->filteredClassNameArray) ? false : true;
         $averageLongitudeArray = array();
         $averageLatitudeArray = array();
-        if($totalCount > 0  && $totalCount < 10000) {
+        if ($totalCount > 0  && $totalCount < 10000) {
             $this->processedDataPointsForTemplate = new ArrayList();
             $count = 0;
             $pointsXml = '';
-            foreach($this->getPoints() as $dataPoint) {
+            foreach ($this->getPoints() as $dataPoint) {
                 $dataPoint->addParentData();
-                if($filterFree || in_array($dataPoint->ClassName, $this->filteredClassNameArray)) {
-                    if(!in_array($dataPoint->ID, $idArray)) {
-                        if($dataPoint->Longitude && $dataPoint->Latitude) {
+                if ($filterFree || in_array($dataPoint->ClassName, $this->filteredClassNameArray)) {
+                    if (!in_array($dataPoint->ID, $idArray)) {
+                        if ($dataPoint->Longitude && $dataPoint->Latitude) {
                             $dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
                             $link = '';
-                            if($dataPoint->Link) {
+                            if ($dataPoint->Link) {
                                 $link = $dataPoint->getAjaxInfoWindowLink();
                             }
                             $staticIcon = '';
-                            if($dataPoint->staticIcon) {
+                            if ($dataPoint->staticIcon) {
                                 $staticIcon = $dataPoint->staticIcon;
-                            }
-                            else {
+                            } else {
                                 $staticIcon = $this->Config()->get("static_icon");
                             }
                             $center = round($dataPoint->Latitude, 6).",".round($dataPoint->Longitude, 6);
                             //get the center IF there is only one point...
-                            if(!$count) {
+                            if (!$count) {
                                 $defaultCenter = $center;
                             }
-                            if(!$dataPoint->Name) {
+                            if (!$dataPoint->Name) {
                                 $dataPoint->Name = "no name";
                             }
                             $pointsXml .=
@@ -563,16 +678,16 @@ class GoogleMap extends ViewableData {
             }
             $averageLongitude = array_sum($averageLongitudeArray) / count($averageLongitudeArray);
             $averageLatitude = array_sum($averageLatitudeArray) / count($averageLatitudeArray);
-            if(!$averageLongitude) {
+            if (!$averageLongitude) {
                 $averageLongitude = $this->config()->get("default_longitude");
             }
-            if(!$averageLatitude) {
+            if (!$averageLatitude) {
                 $averageLatitude = $this->config()->get("default_latitude");
             }
             $this->dataPointsXML =
                         '<mapinfo>'.'<title>'.$this->getTitleOfMap().'</title>'
-                        .'<longitude>'.number_format($averageLongitude - 0 , 12, ".", "").'</longitude>'
-                        .'<latitude>'.number_format($averageLatitude - 0 , 9, ".", "").'</latitude>'
+                        .'<longitude>'.number_format($averageLongitude - 0, 12, ".", "").'</longitude>'
+                        .'<latitude>'.number_format($averageLatitude - 0, 9, ".", "").'</latitude>'
                         .'<zoom>'.$bestZoom.'</zoom>'
                         .'<pointcount>'.$count.'</pointcount>'
                         .'<info>'.$this->getWhereStatementDescription().'</info>'
@@ -587,9 +702,10 @@ class GoogleMap extends ViewableData {
      * @param String staticVariablename
      * @return String (Javascript)
      */
-    protected function createJavascript() {
-            $variableName = $this->getMyMapFunctionName(false);
-            $instanceName = $this->getMyMapFunctionName(true);
+    protected function createJavascript()
+    {
+        $variableName = $this->getMyMapFunctionName(false);
+        $instanceName = $this->getMyMapFunctionName(true);
         $js = '
             if(typeof GoogleMapConstructors === "undefined"){
                 GoogleMapConstructors = [];
@@ -652,8 +768,8 @@ class GoogleMap extends ViewableData {
                         mapScaleInfoSizeInPixels:'.intval($this->config()->get("map_scale_info_size_in_pixels") - 0).',
 
                         /* START POSITION */
-                        defaultLatitude:'.number_format($this->config()->get("default_latitude") - 0 , 9, ".", "").',
-                        defaultLongitude:'.number_format($this->config()->get("default_longitude") - 0 , 12, ".", "").',
+                        defaultLatitude:'.number_format($this->config()->get("default_latitude") - 0, 9, ".", "").',
+                        defaultLongitude:'.number_format($this->config()->get("default_longitude") - 0, 12, ".", "").',
                         defaultZoom:'.intval($this->config()->get("default_zoom")  - 0).',
 
                         /* SERVER INTERACTION */
@@ -672,8 +788,8 @@ class GoogleMap extends ViewableData {
                     }
                 }
             );';
-        if($this->linksForData && count($this->linksForData)) {
-            foreach($this->linksForData as $link => $title) {
+        if ($this->linksForData && count($this->linksForData)) {
+            foreach ($this->linksForData as $link => $title) {
                 $js .= '
                 GoogleMapConstructors[GoogleMapConstructors.length-1].layers.push(
                     {
@@ -682,8 +798,7 @@ class GoogleMap extends ViewableData {
                     }
                 );';
             }
-        }
-        elseif($this->address) {
+        } elseif ($this->address) {
             $js .= '
                 GoogleMapConstructors[GoogleMapConstructors.length-1].address = \''.$this->address.'\'';
         }
@@ -695,11 +810,11 @@ class GoogleMap extends ViewableData {
      * @param Mixed
      * @return string (true|false)
      */
-    protected function showFalseOrTrue($v) {
-        if($v && $v !== "false" && $v !== "0" && $v !== 0) {
+    protected function showFalseOrTrue($v)
+    {
+        if ($v && $v !== "false" && $v !== "0" && $v !== 0) {
             return "true";
-        }
-        else{
+        } else {
             return "false";
         }
     }
@@ -707,13 +822,13 @@ class GoogleMap extends ViewableData {
     /**
      * load some defaults
      */
-    protected function loadDefaults() {
-        if(!isset($this->whereStatementDescription)) {
+    protected function loadDefaults()
+    {
+        if (!isset($this->whereStatementDescription)) {
             $this->whereStatementDescription = $this->Config()->get("default_where_statement_description");
         }
-        if(!isset($this->titleOfMap) || !$this->titleOfMap) {
+        if (!isset($this->titleOfMap) || !$this->titleOfMap) {
             $this->titleOfMap = $this->Config()->get("default_title");
         }
     }
-
 }

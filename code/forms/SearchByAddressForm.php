@@ -9,7 +9,8 @@
  */
 
 
-class SearchByAddressForm extends Form {
+class SearchByAddressForm extends Form
+{
 
 
     /**
@@ -22,7 +23,10 @@ class SearchByAddressForm extends Form {
      *
      * @param String
      */
-    public function setDefaultAddress($s) {$this->defaultAddress = $s;}
+    public function setDefaultAddress($s)
+    {
+        $this->defaultAddress = $s;
+    }
 
     /**
      *
@@ -34,7 +38,10 @@ class SearchByAddressForm extends Form {
      *
      * @param Array
      */
-    public function setClassNamesSearchedFor($a) {$this->classNamesSearchedFor = $a;}
+    public function setClassNamesSearchedFor($a)
+    {
+        $this->classNamesSearchedFor = $a;
+    }
 
     /**
      *
@@ -46,7 +53,10 @@ class SearchByAddressForm extends Form {
      *
      * @param Boolean
      */
-    public function setUseAutocomplete($a) {$this->useAutocomplete = $b;}
+    public function setUseAutocomplete($a)
+    {
+        $this->useAutocomplete = $b;
+    }
 
 
 
@@ -59,13 +69,14 @@ class SearchByAddressForm extends Form {
      *
      * @return Form
      */
-    function __construct($controller, $name, $defaultAddress = "", $classNamesSearchedFor = array("SiteTree")) {
+    public function __construct($controller, $name, $defaultAddress = "", $classNamesSearchedFor = array("SiteTree"))
+    {
         $this->defaultAddress = $defaultAddress;
-        if(!$this->defaultAddress) {
+        if (!$this->defaultAddress) {
             $this->defaultAddress = isset($_GET["FindNearAddress"]) ? $_GET["FindNearAddress"] : "";
         }
         $classNamesAsString = '';
-        if(is_array($classNamesSearchedFor)) {
+        if (is_array($classNamesSearchedFor)) {
             $this->classNamesSearchedFor = $classNamesSearchedFor;
             $classNamesAsString = implode(",", $this->classNamesSearchedFor);
         }
@@ -84,7 +95,7 @@ class SearchByAddressForm extends Form {
             new RequiredFields("FindNearAddress")
         );
         $addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your address or zip code here.")) ;
-        if($this->useAutocomplete) {
+        if ($this->useAutocomplete) {
             Requirements::javascript(
             "//maps.googleapis.com/maps/api/js"
             ."?v=".Config::inst()->get("GoogleMap", "api_version")
@@ -106,11 +117,12 @@ class SearchByAddressForm extends Form {
         return $this;
     }
 
-    function findnearaddress($data, $form) {
+    public function findnearaddress($data, $form)
+    {
         $address = Convert::raw2sql($data["FindNearAddress"]);
         $classNames = Convert::raw2sql($data["ClassNamesSearchedFor"]);
         $pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
-        if(!$pointArray || !isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
+        if (!$pointArray || !isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
             GoogleMapSearchRecord::create_new(
                 Convert::raw2sql($address),
                 $this->getController()->dataRecord->ID,
@@ -118,12 +130,11 @@ class SearchByAddressForm extends Form {
             );
             $this->addErrorMessage(
                 'FindNearAddress',
-                _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND","Sorry, address could not be found..."),
+                _t("GoogleMapLocationsDOD.ADDRESSNOTFOUND", "Sorry, address could not be found..."),
                 'warning'
             );
             return array();
-        }
-        else {
+        } else {
             GoogleMapSearchRecord::create_new(
                 Convert::raw2sql($address),
                 $this->getController()->dataRecord->ID,
@@ -137,7 +148,7 @@ class SearchByAddressForm extends Form {
         //$this->owner->addMap($action = "showsearchpoint", "Your search", $lng, $lat);
         $action = "showaroundmexml";
         $title = _t("GoogleMap.CLOSEST_TO_YOUR_SEARCH", "Closest to ").$this->address;
-        if(Director::is_ajax()) {
+        if (Director::is_ajax()) {
             $this->getController()->response->setBody(json_encode(array(
                 'Action' =>  $action,
                 'Title' => urlencode($title),
@@ -160,13 +171,12 @@ class SearchByAddressForm extends Form {
      * @param Mixed
      * @return String (true|false)
      */
-    protected function showFalseOrTrue($v) {
-        if($v === true || 1 == $v) {
+    protected function showFalseOrTrue($v)
+    {
+        if ($v === true || 1 == $v) {
             return "true";
-        }
-        else{
+        } else {
             return "false";
         }
     }
-
 }

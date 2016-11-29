@@ -11,8 +11,8 @@
  *
  */
 
-class GoogleMapLocationsObject extends DataObject {
-
+class GoogleMapLocationsObject extends DataObject
+{
     private static $parent_point_counts = array();
 
     /**
@@ -20,7 +20,10 @@ class GoogleMapLocationsObject extends DataObject {
      * @var string
      */
     private static $singular_name = 'Location';
-    function i18n_singular_name() { return self::$singular_name;}
+    public function i18n_singular_name()
+    {
+        return self::$singular_name;
+    }
 
 
     /**
@@ -28,9 +31,12 @@ class GoogleMapLocationsObject extends DataObject {
      * @var string
      */
     private static $plural_name = 'Locations';
-    function i18n_plural_name() { return self::$plural_name;}
+    public function i18n_plural_name()
+    {
+        return self::$plural_name;
+    }
 
-    private static $db = array (
+    private static $db = array(
         'PointType' =>'Enum("none, point, polyline, polygon", "point")',
         'Accuracy' => 'Varchar(100)',
         'Longitude' => 'Double(12,7)',
@@ -51,11 +57,11 @@ class GoogleMapLocationsObject extends DataObject {
         //'GeoLineString' => 'GeoLineString'
     );
 
-    private static $summary_fields = array (
+    private static $summary_fields = array(
         'FullAddress' => "FullAddress",
     );
 
-    private static $has_one = array (
+    private static $has_one = array(
         'Parent' => 'SiteTree'
     );
 
@@ -98,11 +104,13 @@ class GoogleMapLocationsObject extends DataObject {
      * @param Double $lat - latitude of location
      * @return String
      */
-    public static function radius_definition($lng, $lat) {
+    public static function radius_definition($lng, $lat)
+    {
         return "( 6378.137 * ACOS( COS( RADIANS(".$lat.") ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) * COS( RADIANS( \"GoogleMapLocationsObject\".\"Longitude\" ) - RADIANS(".$lng.") ) + SIN( RADIANS(".$lat.") ) * SIN( RADIANS( \"GoogleMapLocationsObject\".\"Latitude\" ) ) ) )";
     }
 
-    public static function radius_definition_other_table($lng, $lat, $table, $latitudeField, $longitudeField) {
+    public static function radius_definition_other_table($lng, $lat, $table, $latitudeField, $longitudeField)
+    {
         $str = self::radius_definition($lng, $lat);
         $str = str_replace("\"GoogleMapLocationsObject\"", "\"$table\"", $str);
         $str = str_replace("\"Latitude\"", "\"$latitudeField\"", $str);
@@ -116,29 +124,31 @@ class GoogleMapLocationsObject extends DataObject {
      *
      * return GoogleMapLocationsObject | Null
      */
-    public static function point_exists($lng, $lat) {
+    public static function point_exists($lng, $lat)
+    {
         return GoogleMapLocationsObject::get()->filter(array(
             "Longitude" => floatval($lng),
             "Latitude" => floatval($lat)
         ))->First();
     }
 
-    function CMSEditLink()
+    public function CMSEditLink()
     {
         return singleton('GoogleMapModelAdmin')->Link(
             $this->ClassName.'/EditForm/field/'.$this->ClassName.'/item/'.$this->ID.'/edit'
         );
     }
 
-    function getCMSFields() {
+    public function getCMSFields()
+    {
         $fields = parent::getCMSFields();
         $labels = $this->FieldLabels();
         $addTitleAndContent = true;
         $parentPageID = $this->ParentID;
-        if($parentPageID) {
+        if ($parentPageID) {
             $parent = SiteTree::get()->byID($parentPageID);
-            if($parent) {
-                if($parent->hasMethod("CustomAjaxInfoWindow")) {
+            if ($parent) {
+                if ($parent->hasMethod("CustomAjaxInfoWindow")) {
                     $addTitleAndContent = false;
                 }
             }
@@ -148,11 +158,10 @@ class GoogleMapLocationsObject extends DataObject {
             _t("GoogleMap.CMS_ADDRESS_EXPLANATION",
             "(e.g. 123 Main Street, 90210, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed")
         );
-        if($this->Manual) {
+        if ($this->Manual) {
             $fields->addFieldToTab("Root.Details", new TextField('Latitude', $labels["Latitude"]));
             $fields->addFieldToTab("Root.Details", new TextField('Longitude', $labels["Longitude"]));
-        }
-        else {
+        } else {
             $fields->addFieldToTab("Root.Details", new ReadonlyField('Latitude', $labels["Latitude"]));
             $fields->addFieldToTab("Root.Details", new ReadonlyField('Longitude', $labels["Longitude"]));
         }
@@ -168,24 +177,21 @@ class GoogleMapLocationsObject extends DataObject {
         $fields->addFieldToTab("Root.Details", new ReadonlyField('PostalCodeNumber', $labels["PostalCodeNumber"]));
         $fields->addFieldToTab("Root.Details", new ReadonlyField('Accuracy', $labels["Accuracy"]));
         $fields->addFieldToTab("Root.Type", $fields->dataFieldByName("PointType"));
-        if($this->PointType != "point" && $this->PointType != "none") {
+        if ($this->PointType != "point" && $this->PointType != "none") {
             $fields->addFieldToTab("Root.Type", new TextField('PointString', $labels["PointString"]));
-        }
-        else {
+        } else {
             $fields->removeByName("PointString");
         }
-        if($addTitleAndContent) {
+        if ($addTitleAndContent) {
             $fields->addFieldToTab("Root.Popup", $customPopUpWindowTitleField = new TextField('CustomPopUpWindowTitle', $labels["CustomPopUpWindowTitle"]));
             $customPopUpWindowTitleField->setRightTitle(
                 _t("GoogleMap.CUSTOM_POP_UP_WINDOW_TITLE", 'Leave Blank to auto-complete the pop-up information on the map.')
             );
-            $fields->addFieldToTab("Root.Popup", $customPopUpWindowInfoField = new HTMLEditorField('CustomPopUpWindowInfo', $labels["CustomPopUpWindowInfo"] ));
+            $fields->addFieldToTab("Root.Popup", $customPopUpWindowInfoField = new HTMLEditorField('CustomPopUpWindowInfo', $labels["CustomPopUpWindowInfo"]));
             $customPopUpWindowInfoField->setRightTitle(
                 _t("GoogleMap.CUSTOM_POP_UP_WINDOW_INFO", 'Leave Blank to auto-complete the pop-up information on the map.')
             );
-
-        }
-        else {
+        } else {
             $fields->removeByName("CustomPopUpWindowTitle");
             $fields->removeByName("CustomPopUpWindowInfo");
         }
@@ -197,7 +203,8 @@ class GoogleMapLocationsObject extends DataObject {
      * @casted variable
      * @return SiteTree
      */
-    function getParentData() {
+    public function getParentData()
+    {
         return $this->Parent();
     }
 
@@ -205,14 +212,14 @@ class GoogleMapLocationsObject extends DataObject {
      * @casted variable
      * @return String (HTML)
      */
-    function getAjaxInfoWindowLink() {
-        if(strlen($this->CustomPopUpWindowInfo) > 10) {
+    public function getAjaxInfoWindowLink()
+    {
+        if (strlen($this->CustomPopUpWindowInfo) > 10) {
             return $this->CustomPopUpWindowInfo;
-        }
-        elseif($parent = $this->getParentData()) {
+        } elseif ($parent = $this->getParentData()) {
             $html = $parent->AjaxInfoWindowLink();
         }
-        if(!$html) {
+        if (!$html) {
             $html = $this->FullAddress;
         }
         return $html;
@@ -222,8 +229,9 @@ class GoogleMapLocationsObject extends DataObject {
      * @casted variable
      * @return String | Null
      */
-    function getParentClassName() {
-        if($parent = $this->getParentData()) {
+    public function getParentClassName()
+    {
+        if ($parent = $this->getParentData()) {
             return $parent->ClassName;
         }
     }
@@ -232,8 +240,9 @@ class GoogleMapLocationsObject extends DataObject {
      * @casted variable
      * @return String | Null
      */
-    function getLink() {
-        if($parent = $this->getParentData()) {
+    public function getLink()
+    {
+        if ($parent = $this->getParentData()) {
             return $parent->Link();
         }
     }
@@ -241,34 +250,35 @@ class GoogleMapLocationsObject extends DataObject {
     /**
      * add data from Parent to the object
      */
-    public function addParentData() {
+    public function addParentData()
+    {
         $parentData = $this->getParentData();
-        if(!isset(self::$parent_point_counts[$this->ParentID + 0]) && $this->getParentData()) {
+        if (!isset(self::$parent_point_counts[$this->ParentID + 0]) && $this->getParentData()) {
             $count = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->ParentID))->count();
             self::$parent_point_counts[$this->ParentID] = $count;
         }
-        if(isset(self::$parent_point_counts[$this->ParentID + 0]) && self::$parent_point_counts[$this->ParentID + 0] == 1 && $this->getParentData()) {
+        if (isset(self::$parent_point_counts[$this->ParentID + 0]) && self::$parent_point_counts[$this->ParentID + 0] == 1 && $this->getParentData()) {
             $this->Title = $this->getParentData()->Title;
             $this->Name = $this->getParentData()->Title;
-        }
-        else {
+        } else {
             $this->Title = $this->Address;
             $this->Name = $this->Address;
         }
-        if($this->CustomPopUpWindowTitle) {
+        if ($this->CustomPopUpWindowTitle) {
             $this->Title = $this->CustomPopUpWindowTitle;
             $this->Name = $this->CustomPopUpWindowTitle;
         }
     }
 
-    function onBeforeWrite() {
+    public function onBeforeWrite()
+    {
         parent::onBeforeWrite();
         /*
         $this->GeoPointField->setX($this->Latitude);
         $this->GeoPointField->setX($this->Longitude);
         parent::onBeforeWrite();
         */
-        if($this->PointType == "none"){
+        if ($this->PointType == "none") {
             $this->PointType = "point";
         }
         $this->findGooglePoints($doNotWrite = true);
@@ -278,7 +288,8 @@ class GoogleMapLocationsObject extends DataObject {
      * complete points data
      *
      */
-    protected function completePoints() {
+    protected function completePoints()
+    {
         $uncompletedPoints = GoogleMapLocationsObject::get()->where("
             (
                 (\"GoogleMapLocationsObject\".\"Address\" <> \"GoogleMapLocationsObject\".\"FullAddress\")
@@ -297,8 +308,8 @@ class GoogleMapLocationsObject extends DataObject {
                     OR \"GoogleMapLocationsObject\".\"Address\" = IsNull
                 )
             )");
-        if($uncompletedPoints->count()) {
-            foreach($uncompletedPoints as $point) {
+        if ($uncompletedPoints->count()) {
+            foreach ($uncompletedPoints as $point) {
                 $point->findGooglePoints(false);
             }
         }
@@ -310,9 +321,10 @@ class GoogleMapLocationsObject extends DataObject {
      *
      * @return this || null
      */
-    public function findGooglePointsAndWriteIfFound() {
+    public function findGooglePointsAndWriteIfFound()
+    {
         $this->findGooglePoints(true);
-        if($this->FullAddress && $this->Longitude && $this->Latitude) {
+        if ($this->FullAddress && $this->Longitude && $this->Latitude) {
             $this->write();
             return $this;
         }
@@ -322,14 +334,14 @@ class GoogleMapLocationsObject extends DataObject {
      *
      * @param Boolean $doNotWrite - do not write to Database
      */
-    protected function findGooglePoints($doNotWrite) {
-        if($this->Address && !$this->Manual) {
+    protected function findGooglePoints($doNotWrite)
+    {
+        if ($this->Address && !$this->Manual) {
             $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
-        }
-        elseif($this->Latitude && $this->Longitude && $this->Manual) {
+        } elseif ($this->Latitude && $this->Longitude && $this->Manual) {
             $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude);
         }
-        if(isset($newData) && is_array($newData)) {
+        if (isset($newData) && is_array($newData)) {
             $this->addDataFromArray($newData, $doNotWrite);
         }
     }
@@ -339,12 +351,13 @@ class GoogleMapLocationsObject extends DataObject {
      * @param Array $newData
      * @param Boolean $doNotWrite - do not write object to database
      */
-    protected function addDataFromArray($newData, $doNotWrite = false) {
-        foreach($newData as $field => $value) {
+    protected function addDataFromArray($newData, $doNotWrite = false)
+    {
+        foreach ($newData as $field => $value) {
             $this->$field = $value;
         }
-        if(!$doNotWrite) {
-        /* AS THIS IS A onBeforeWrite there is NO POINT in writing!!!!! */
+        if (!$doNotWrite) {
+            /* AS THIS IS A onBeforeWrite there is NO POINT in writing!!!!! */
             $this->write();
         }
     }
@@ -353,8 +366,8 @@ class GoogleMapLocationsObject extends DataObject {
      * provides a links to Google Maps to search for directions
      * @return String
      */
-    function DirectionsLink(){
+    public function DirectionsLink()
+    {
         return "https://www.google.com/maps/dir//".urlencode($this->Address);
     }
-
 }

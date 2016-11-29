@@ -34,9 +34,8 @@
  *
  */
 
-class GoogleMapDataResponse extends Controller {
-
-
+class GoogleMapDataResponse extends Controller
+{
     private static $session_var_prefix = "addCustomGoogleMap";
 
     /**
@@ -54,7 +53,8 @@ class GoogleMapDataResponse extends Controller {
     # SESSION MANAGEMENT
     #################
 
-    protected static function session_var_name($filterCode = "") {
+    protected static function session_var_name($filterCode = "")
+    {
         return Config::inst()->get("GoogleMapDataResponse", "session_var_prefix")."_".$filterCode;
     }
 
@@ -63,7 +63,8 @@ class GoogleMapDataResponse extends Controller {
      * @param string $filterCode
      *
      */
-    public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW, $filterCode = ""){
+    public static function add_custom_google_map_session_data($addCustomGoogleMapArrayNEW, $filterCode = "")
+    {
         $addCustomGoogleMapArrayOLD = Session::get(self::session_var_name($filterCode));
         $addCustomGoogleMapArrayNEW = array_merge($addCustomGoogleMapArrayOLD, $addCustomGoogleMapArrayNEW);
         Session::set(Session::get(self::session_var_name($filterCode), serialize($addCustomGoogleMapArrayNEW)));
@@ -76,8 +77,9 @@ class GoogleMapDataResponse extends Controller {
      * @param string $filterCode
      *
      */
-    public static function set_custom_google_map_session_data($addCustomGoogleMapArray, $filterCode = ""){
-        if(!is_array($addCustomGoogleMapArray)) {
+    public static function set_custom_google_map_session_data($addCustomGoogleMapArray, $filterCode = "")
+    {
+        if (!is_array($addCustomGoogleMapArray)) {
             user_error("addCustomGoogleMapArray should be an array!");
         }
         Session::set(self::session_var_name($filterCode), serialize($addCustomGoogleMapArray));
@@ -88,16 +90,15 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return Array
      */
-    public static function get_custom_google_map_session_data($filterCode = ""){
+    public static function get_custom_google_map_session_data($filterCode = "")
+    {
         $data = Session::get(self::session_var_name($filterCode));
-        if(is_array($data)) {
+        if (is_array($data)) {
             $addCustomGoogleMapArray = $data;
-        }
-        else {
+        } else {
             try {
                 $addCustomGoogleMapArray = unserialize($data);
-            }
-            catch (Exception $e) {
+            } catch (Exception $e) {
                 $addCustomGoogleMapArray = array();
             }
         }
@@ -108,7 +109,8 @@ class GoogleMapDataResponse extends Controller {
      *
      * @param string $filterCode
      */
-    public static function clear_custom_google_map_session_data($filterCode = ""){
+    public static function clear_custom_google_map_session_data($filterCode = "")
+    {
         Session::clear(self::session_var_name($filterCode));
     }
 
@@ -195,39 +197,36 @@ class GoogleMapDataResponse extends Controller {
     # SET AND GET VARIABLES
     #################
 
-    function init() {
+    public function init()
+    {
         parent::init();
         $id = 0;
-        if($this->request->param("OwnerID")) {
+        if ($this->request->param("OwnerID")) {
             $id = intval($this->request->param("OwnerID"));
-        }
-        elseif(isset($_GET["i"])) {
+        } elseif (isset($_GET["i"])) {
             $i = intval($_GET["i"]);
             $point = GoogleMapLocationsObject::get()->byID($i);
-            if(!$point) {
+            if (!$point) {
                 //New POINT
-            }
-            else {
+            } else {
                 $id = $point->ParentID;
             }
         }
-        if($id) {
+        if ($id) {
             $this->owner = SiteTree::get()->byID($id);
         }
         //HACK
-        elseif(!$this->owner) {
+        elseif (!$this->owner) {
             $this->owner = SiteTree::get()->filter(array(
                 "Title" => Convert::raw2sql($this->request->param("Title"))
             ))->First();
         }
-        if($this->owner || in_array($this->request->param("Action"), self::$actions_without_owner)) {
+        if ($this->owner || in_array($this->request->param("Action"), self::$actions_without_owner)) {
             //all ok
-        }
-        elseif(in_array($this->request->param("Action"), self::$actions_without_owner)) {
+        } elseif (in_array($this->request->param("Action"), self::$actions_without_owner)) {
             //ok too
             $this->owner = SiteTree::get()->First();
-        }
-        else {
+        } else {
             user_error("no owner has been identified for GoogleMapDataResponse", E_USER_NOTICE);
         }
         //END HACK
@@ -236,7 +235,7 @@ class GoogleMapDataResponse extends Controller {
         $this->lat = floatval($this->request->param("Latitude"));
         $this->filterCode = urldecode($this->request->param("FilterCode"));
         $this->secondFilterCode = urldecode($this->request->param("SecondFilterCode"));
-        if(!$this->title && $this->owner) {
+        if (!$this->title && $this->owner) {
             $this->title = $this->owner->Title;
         }
     }
@@ -244,27 +243,42 @@ class GoogleMapDataResponse extends Controller {
     /**
      * @param object $owner
      */
-    function setOwner($owner) {$this->owner = $owner;}
+    public function setOwner($owner)
+    {
+        $this->owner = $owner;
+    }
 
     /**
      * @param String $title
      */
-    function setTitle($title) {$this->title = $title;}
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
     /**
      * @param float $lng
      */
-    function setLng($lng) {$this->lng = $lng;}
+    public function setLng($lng)
+    {
+        $this->lng = $lng;
+    }
 
     /**
      * @param Float $lat
      */
-    function setLat($lat) {$this->lat = $lat;}
+    public function setLat($lat)
+    {
+        $this->lat = $lat;
+    }
 
     /**
      * @param string $filterCode
      */
-    function setFilterCode($filterCode) {$this->filterCode = $filterCode;}
+    public function setFilterCode($filterCode)
+    {
+        $this->filterCode = $filterCode;
+    }
 
 
 
@@ -285,7 +299,8 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    function index($request) {
+    public function index($request)
+    {
         return $this->showemptymap($request);
     }
 
@@ -294,7 +309,8 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showemptymap($request) {
+    public function showemptymap($request)
+    {
         return $this->makeXMLData(null, null, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
     }
 
@@ -303,9 +319,10 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showpagepointsmapxml($request) {
+    public function showpagepointsmapxml($request)
+    {
         $data = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->owner->ID));
-        if($data->count()) {
+        if ($data->count()) {
             return $this->makeXMLData(null, $data, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
         }
         return $this->showemptymap($request);
@@ -316,8 +333,9 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showchildpointsmapxml($request) {
-        if($children = $this->owner->getChildrenOfType($this->owner, null)) {
+    public function showchildpointsmapxml($request)
+    {
+        if ($children = $this->owner->getChildrenOfType($this->owner, null)) {
             return $this->makeXMLData($children, null, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
         }
         return $this->showemptymap($request);
@@ -328,8 +346,9 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showdirectchildren($request) {
-        if($children = Provider::get()) {
+    public function showdirectchildren($request)
+    {
+        if ($children = Provider::get()) {
             return $this->makeXMLData($children, null, $this->title, $this->title." "._t("GoogleMap.MAP", "map"));
         }
         return $this->showemptymap($request);
@@ -340,18 +359,19 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showsearchpoint($request) {
-        if($this->lat && $this->lng) {
+    public function showsearchpoint($request)
+    {
+        if ($this->lat && $this->lng) {
             $point = GoogleMapLocationsObject::create();
             $point->ParentID = $this->owner->ID;
             $point->Latitude = $this->lat;
             $point->Longitude = $this->lng;
             $point->CustomPopUpWindowTitle = $this->title;
-            if($this->address) {
+            if ($this->address) {
                 die("get address to do");
                 $point->CustomPopUpWindowInfo = $this->address;
             }
-            if($point) {
+            if ($point) {
                 $data = new ArrayList();
                 $data->push($point);
                 return $this->makeXMLData(null, $data, $this->title, $this->title);
@@ -365,28 +385,27 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showpointbyid($request) {
+    public function showpointbyid($request)
+    {
         $id = $request->param("FilterCode");
         $ids = explode(',', $id);
-        foreach($ids as $key => $id) {
+        foreach ($ids as $key => $id) {
             $ids[$key] = intval($id);
         }
         $className = Convert::raw2sql($request->param("SecondFilterCode"));
         $direct = false;
-        if( ! $className) {
+        if (! $className) {
+            $direct = true;
+        } elseif (! class_exists($className)) {
             $direct = true;
         }
-        elseif( ! class_exists($className)) {
-            $direct = true;
-        }
-        if($direct) {
+        if ($direct) {
             $className = "GoogleMapLocationsObject";
         }
         $objects = $className::get()->filter(array("ID" => $ids));
-        if($direct) {
+        if ($direct) {
             return $this->makeXMLData(null, $objects, $this->title, $this->title);
-        }
-        else {
+        } else {
             return $this->makeXMLData($objects, null, $this->title, $this->title);
         }
     }
@@ -399,7 +418,8 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showcustompagesmapxml($request) {
+    public function showcustompagesmapxml($request)
+    {
         $addCustomGoogleMapArray = GoogleMapDataResponse::get_custom_google_map_session_data($this->filterCode);
         $pages = SiteTree::get()->filter(array("ID" => $addCustomGoogleMapArray));
         return $this->makeXMLData($pages, null, $this->title, $this->title);
@@ -412,7 +432,8 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showcustomdosmapxml($request) {
+    public function showcustomdosmapxml($request)
+    {
         $array = GoogleMapDataResponse::get_custom_google_map_session_data($this->filterCode);
         $googleMapLocationsObjects = GoogleMapLocationsObject::get()->filter(array("ID" => $array));
         return $this->makeXMLData(null, $googleMapLocationsObjects, $this->title, $this->title);
@@ -425,23 +446,23 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (XML)
      */
-    public function showaroundmexml($request) {
+    public function showaroundmexml($request)
+    {
         $lng = 0;
         $lat = 0;
         $excludeIDList = array();
         $stage = '';
-        if(Versioned::current_stage() == "Live") {
+        if (Versioned::current_stage() == "Live") {
             $stage = "_Live";
         }
-        if($this->lng && $this->lat) {
+        if ($this->lng && $this->lat) {
             $lng = $this->lng;
             $lat = $this->lat;
-        }
-        elseif($this->owner->ID) {
+        } elseif ($this->owner->ID) {
             //find the average!
             $objects = GoogleMapLocationsObject::get()->filter(array("ParentID" => $this->owner->ID));
-            if($count = $objects->count()) {
-                foreach($objects as $point) {
+            if ($count = $objects->count()) {
+                foreach ($objects as $point) {
                     $lng += $point->Longitude;
                     $lat += $point->Latitude;
                 }
@@ -450,30 +471,29 @@ class GoogleMapDataResponse extends Controller {
             }
         }
         $classNameForParent = '';
-        if($otherClass = $this->filterCode) {
+        if ($otherClass = $this->filterCode) {
             $classNameForParent = $otherClass;
         }
-        if($this->title) {
+        if ($this->title) {
             $title = $this->title;
-        }
-        else {
+        } else {
             $title = _t("GoogleMap.CLOSES_TO_ME", "Closest to me");
         }
-        if($lng && $lat) {
+        if ($lng && $lat) {
             $orderByRadius = GoogleMapLocationsObject::radius_definition($lng, $lat);
             $where = "(".$orderByRadius.") > 0 AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
-            if($classNameForParent && !is_object($classNameForParent)) {
+            if ($classNameForParent && !is_object($classNameForParent)) {
                 $where .= " AND \"SiteTree".$stage."\".\"ClassName\" = '".$classNameForParent."'";
             }
-            if(count($excludeIDList)) {
-                $where .= " AND \"GoogleMapLocationsObject\".\"ID\" NOT IN (".implode(",",$excludeIDList).") ";
+            if (count($excludeIDList)) {
+                $where .= " AND \"GoogleMapLocationsObject\".\"ID\" NOT IN (".implode(",", $excludeIDList).") ";
             }
             $objects = GoogleMapLocationsObject::get()
                 ->where($where)
                 ->sort($orderByRadius)
                 ->leftJoin("SiteTree".$stage."", "SiteTree".$stage.".ID = GoogleMapLocationsObject.ParentID")
                 ->limit(Config::inst()->get("GoogleMap", "number_shown_in_around_me"));
-            if($objects->count()) {
+            if ($objects->count()) {
                 return $this->makeXMLData(
                     null,
                     $objects,
@@ -501,64 +521,57 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (message)
      */
-    public function updatemexml($request) {
+    public function updatemexml($request)
+    {
         //we use request here, because the data comes from javascript!
-        if($this->owner->canEdit()) {
-            if(isset($_REQUEST["x"]) && isset($_REQUEST["y"]) && isset($_REQUEST["i"]) && isset($_REQUEST["a"]) ) {
+        if ($this->owner->canEdit()) {
+            if (isset($_REQUEST["x"]) && isset($_REQUEST["y"]) && isset($_REQUEST["i"]) && isset($_REQUEST["a"])) {
                 $lng = floatval($_REQUEST["x"]);
                 $lat = floatval($_REQUEST["y"]);
                 $id = intval($_REQUEST["i"]);
                 $action = $_REQUEST["a"];
-                if($lng && $lat) {
-                    if( 0 == $id && "add" == $action ) {
+                if ($lng && $lat) {
+                    if (0 == $id && "add" == $action) {
                         $point = new GoogleMapLocationsObject;
                         $point->ParentID = $this->owner->ID;
                         $point->Longitude = $lng;
                         $point->Latitude = $lat;
                         $point->write();
                         return $point->ID;
-                    }
-                    elseif($id > 0 && "move" == $action) {
+                    } elseif ($id > 0 && "move" == $action) {
                         $point = GoogleMapLocationsObject::get()->byID($id);
-                        if($point) {
-                            if($point->ParentID == $this->owner->ID) {
+                        if ($point) {
+                            if ($point->ParentID == $this->owner->ID) {
                                 $point->Longitude = $lng;
                                 $point->Latitude = $lat;
                                 $point->Address = "";
                                 $point->FullAddress = "";
                                 $point->write();
                                 return  _t("GoogleMap.LOCATION_UPDATED", "location updated");
-                            }
-                            else {
+                            } else {
                                 return _t("GoogleMap.NO_PERMISSION_TO_UPDATE", "you dont have permission to update that location");
                             }
-                        }
-                        else {
+                        } else {
                             return _t("GoogleMap.COULD_NOT_FIND_LOCATION", "could not find location");
                         }
-                    }
-                    elseif($id && "remove" == $action) {
+                    } elseif ($id && "remove" == $action) {
                         $point = GoogleMapLocationsObject::get()->byID($id);
-                        if($point) {
-                            if($point->ParentID == $this->owner->ID) {
+                        if ($point) {
+                            if ($point->ParentID == $this->owner->ID) {
                                 $point->delete();
                                 $point = null;
                                 return _t("GoogleMap.LOCATION_DELETED", "location deleted");
-                            }
-                            else {
+                            } else {
                                 return _t("GoogleMap.NO_DELETE_PERMISSION", "you dont have permission to delete that location");
                             }
-                        }
-                        else {
+                        } else {
                             return _t("GoogleMap.COULD_NOT_FIND_LOCATION", "could not find location.");
                         }
                     }
-                }
-                else {
+                } else {
                     return _t("GoogleMap.LOCATION_NOT_DEFINED", "point not defined.");
                 }
-            }
-            else {
+            } else {
                 return _t("GoogleMap.MISSING_VARIABLES", "not enough information was provided.");
             }
         }
@@ -578,8 +591,9 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return GoogleMap
      */
-    function GoogleMapController() {
-        if(!$this->map) {
+    public function GoogleMapController()
+    {
+        if (!$this->map) {
             user_error("No map has been created");
         }
         return $this->map;
@@ -634,10 +648,9 @@ class GoogleMapDataResponse extends Controller {
         $map = Injector::inst()->get("GoogleMap");
         $map->setTitleOfMap($title);
         $map->setWhereStatementDescription($selectionStatement ? $selectionStatement : $title);
-        if($pages) {
+        if ($pages) {
             $map->setPageDataObjectSet($pages);
-        }
-        elseif($dataPoints) {
+        } elseif ($dataPoints) {
             $map->setPoints($dataPoints);
         }
         $map->createDataPoints();
@@ -655,26 +668,31 @@ class GoogleMapDataResponse extends Controller {
      * @return String (HTML - img tag)
      */
 
-    public static function quick_static_map($arrayOfLatitudeAndLongitude, $title) {
+    public static function quick_static_map($arrayOfLatitudeAndLongitude, $title)
+    {
         $staticMapURL = '';
         $count = 0;
         //width
         $staticMapWidth = Config::inst()->get("GoogleMap", "google_map_width");
-        if($staticMapWidth > 512) { $staticMapWidth = 512;}
+        if ($staticMapWidth > 512) {
+            $staticMapWidth = 512;
+        }
         //height
         $staticMapHeight = Config::inst()->get("GoogleMap", "google_map_height");
-        if($staticMapHeight > 512) { $staticMapHeight = 512;}
+        if ($staticMapHeight > 512) {
+            $staticMapHeight = 512;
+        }
         $staticMapURL = "size=".$staticMapWidth."x".$staticMapHeight;
-        if(count($arrayOfLatitudeAndLongitude)) {
+        if (count($arrayOfLatitudeAndLongitude)) {
             //http://maps.google.com/maps/api/staticmap?sensor=true&maptype=map&size=209x310&
             //markers=color:green%7Clabel:A%7C-45.0302,168.663
             //&markers=color:red%7Clabel:Q%7C-36.8667,174.767
-            foreach($arrayOfLatitudeAndLongitude as $row) {
+            foreach ($arrayOfLatitudeAndLongitude as $row) {
                 $staticMapURL .= '&amp;markers=color:'.$row["Colour"].'%7Clabel:'.$row["Label"].'%7C';
                 $staticMapURL .= round($row["Latitude"], 6).",".round($row["Longitude"], 6);
                 $count++;
             }
-            if($count == 1) {
+            if ($count == 1) {
                 $staticMapURL .= '&amp;center='.$defaultCenter.'&amp;zoom='. Config::inst()->get("GoogleMap", "default_zoom");
             }
         }
@@ -687,13 +705,14 @@ class GoogleMapDataResponse extends Controller {
      *
      * @return String (HTML - img tag)
      */
-    protected static function make_static_map_url_into_image($staticMapURL, $title) {
+    protected static function make_static_map_url_into_image($staticMapURL, $title)
+    {
         $fullStaticMapURL =
             'http://maps.google.com/maps/api/staticmap?'
                 .Config::inst()->get("GoogleMap", "static_map_settings").'&amp;'
                 .$staticMapURL.'&amp;'
                 .'key='.Config::inst()->get("GoogleMap", "google_map_api_key");
-        if(Config::inst()->get("GoogleMap", "save_static_map_locally")) {
+        if (Config::inst()->get("GoogleMap", "save_static_map_locally")) {
             $fileName = str_replace(array('&', '|', ',', '=', ';'), array('', '', '', '', ''), $staticMapURL);
             $length = strlen($fileName);
             $fileName = "_sGMap".substr(hash("md5", $fileName), 0, 35)."_".$length.".gif";
@@ -701,6 +720,4 @@ class GoogleMapDataResponse extends Controller {
         }
         return '<img class="staticGoogleMap" src="'.$fullStaticMapURL.'" alt="map: '.Convert::raw2att($title).'" />';
     }
-
-
 }

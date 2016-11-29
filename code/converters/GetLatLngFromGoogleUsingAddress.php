@@ -18,7 +18,8 @@
  * GetLatLngFromGoogleUsingAddress::get_placemark_as_array()
  */
 
-class GetLatLngFromGoogleUsingAddress extends Object {
+class GetLatLngFromGoogleUsingAddress extends Object
+{
 
     /**
      * For debugging.
@@ -64,52 +65,57 @@ class GetLatLngFromGoogleUsingAddress extends Object {
      * @param Boolean $tryAnyway
      * @return Array
      */
-    public static function get_placemark_as_array($q, $tryAnyway = 0) {
+    public static function get_placemark_as_array($q, $tryAnyway = 0)
+    {
         //debug?
-        $debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
+        $debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug");
         $q = trim($q);
-        if($q) {
+        if ($q) {
             //check if we have searched for this before ...
             $result = null;
             $searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::get()
                 ->filter(array("SearchPhrase" => Convert::raw2sql($q)))
                 ->First();
-            if($searchRecord && $searchRecord->ResultArray) {
-                if($debug) {debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");}
+            if ($searchRecord && $searchRecord->ResultArray) {
+                if ($debug) {
+                    debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");
+                }
                 //@ is important here!
                 $result = @unserialize($searchRecord->ResultArray);
                 //remove result if it can not be read
-                if($result === null) {
+                if ($result === null) {
                     $searchRecord->ResultArray = "";
                     $searchRecord->write();
                 }
                 //return details if they seem correct ...
-                elseif(isset($result["FullAddress"]) && isset($result["Longitude"]) && isset($result["Latitude"])) {
+                elseif (isset($result["FullAddress"]) && isset($result["Longitude"]) && isset($result["Latitude"])) {
                     return $result;
                 }
                 $result = null;
             }
-            if(!$result) {
+            if (!$result) {
                 $result = self::get_placemark($q, $tryAnyway);
-                if($debug) {debug::show(print_r($result, 1));}
-                if(is_object($result)) {
+                if ($debug) {
+                    debug::show(print_r($result, 1));
+                }
+                if (is_object($result)) {
                     $resultArray = self::google_2_ss($result);
-                    if($debug) {debug::show(print_r($resultArray, 1));}
-                    if(!$searchRecord) {
+                    if ($debug) {
+                        debug::show(print_r($resultArray, 1));
+                    }
+                    if (!$searchRecord) {
                         $searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::create();
                     }
                     $searchRecord->SearchPhrase = Convert::raw2sql($q);
                     $searchRecord->ResultArray = serialize($resultArray);
                     $searchRecord->write();
                     return $resultArray;
-                }
-                else {
-                    return Array("FullAddress"=> "Could not find address");
+                } else {
+                    return array("FullAddress"=> "Could not find address");
                 }
             }
-        }
-        else {
-            return Array("FullAddress"=> "No search term provided");
+        } else {
+            return array("FullAddress"=> "No search term provided");
         }
     }
 
@@ -122,13 +128,16 @@ class GetLatLngFromGoogleUsingAddress extends Object {
     *
     * @return Object Single placemark | false
     */
-    protected static function get_placemark($q, $tryAnyway = false) {
-        if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","server_side_available") || $tryAnyway) {
+    protected static function get_placemark($q, $tryAnyway = false)
+    {
+        if (Config::inst()->get("GetLatLngFromGoogleUsingAddress", "server_side_available") || $tryAnyway) {
             $responseObj = self::get_geocode_obj($q);
-            if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {debug::show(print_r($responseObj, 1));}
-            if($responseObj && $responseObj->status == 'OK' && isset($responseObj->results[0])) {
+            if (Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug")) {
+                debug::show(print_r($responseObj, 1));
+            }
+            if ($responseObj && $responseObj->status == 'OK' && isset($responseObj->results[0])) {
                 //we just take the first address!
-                if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","default_to_first_result") || count($responseObj->results) ==1) {
+                if (Config::inst()->get("GetLatLngFromGoogleUsingAddress", "default_to_first_result") || count($responseObj->results) ==1) {
                     $result = $responseObj->results[0];
                     return $result;
                 }
@@ -144,34 +153,40 @@ class GetLatLngFromGoogleUsingAddress extends Object {
      * @param string $q Place name (e.g. 'Portland' or '30th Avenue, New York")
      * @return Object Multiple Placemarks and status code
      */
-    protected static function get_geocode_obj($q) {
-        $debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug");
+    protected static function get_geocode_obj($q)
+    {
+        $debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug");
         $q = trim($q);
-        if($debug) {debug::show(print_r($q, 1));}
-        if(empty($q)) return false;
-        $url = sprintf(Config::inst()->get("GetLatLngFromGoogleUsingAddress","geocode_url"), urlencode($q));
-        if($clientID = Config::inst()->get("GetLatLngFromGoogleUsingAddress","google_client_id")) {
-            $url .= "&client=".$clientID;
+        if ($debug) {
+            debug::show(print_r($q, 1));
         }
-        elseif($api = Config::inst()->get("GoogleMap", "google_map_api_key")) {
+        if (empty($q)) {
+            return false;
+        }
+        $url = sprintf(Config::inst()->get("GetLatLngFromGoogleUsingAddress", "geocode_url"), urlencode($q));
+        if ($clientID = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "google_client_id")) {
+            $url .= "&client=".$clientID;
+        } elseif ($api = Config::inst()->get("GoogleMap", "google_map_api_key")) {
             $url .= "&key=".$api;
         }
-        if(Config::inst()->get("GetLatLngFromGoogleUsingAddress","debug")) {
+        if (Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug")) {
             debug::show(print_r($url, 1));
         }
         $ch = curl_init($url);
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt( $ch, CURLOPT_VERBOSE, true );
-        $responseString = curl_exec( $ch );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
+        $responseString = curl_exec($ch);
         curl_close($ch);
-        if(!$responseString) {
+        if (!$responseString) {
             $responseString = file_get_contents($url);
-            if(!$responseString) {
+            if (!$responseString) {
                 return false;
             }
         }
 
-        if($debug) {debug::show(print_r($responseString, 1));}
+        if ($debug) {
+            debug::show(print_r($responseString, 1));
+        }
         return self::json_decoder($responseString);
     }
 
@@ -182,7 +197,8 @@ class GetLatLngFromGoogleUsingAddress extends Object {
      *
      * @return Array
      */
-    private static function json_decoder($content, $assoc = false) {
+    private static function json_decoder($content, $assoc = false)
+    {
         return json_decode($content);
     }
 
@@ -192,7 +208,8 @@ class GetLatLngFromGoogleUsingAddress extends Object {
      *
      * @return Array
      */
-    private static function json_encoder($content) {
+    private static function json_encoder($content)
+    {
         return json_encode($content);
     }
 
@@ -262,38 +279,38 @@ SS:
      * @param GoogleResponseObject (JSON)
      * @return Array
      */
-    protected static function google_2_ss($responseObj) {
+    protected static function google_2_ss($responseObj)
+    {
         //get address parts
         $outputArray = array(
             "Original"=> $responseObj,
             "FullAddress"=> "Could not find address"
         );
-        $translationArray = Config::inst()->get("GetLatLngFromGoogleUsingAddress","google_2_ss_translation_array");
-        if(isset($responseObj->address_components) && is_array($responseObj->address_components)) {
-            foreach($responseObj->address_components as $addressItem) {
-                if(
+        $translationArray = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "google_2_ss_translation_array");
+        if (isset($responseObj->address_components) && is_array($responseObj->address_components)) {
+            foreach ($responseObj->address_components as $addressItem) {
+                if (
                     is_object($addressItem)
                     && isset($addressItem->types)
                     && is_array($addressItem->types)
                     && count($addressItem->types)
                     && isset($addressItem->short_name)
                 ) {
-                    if(isset($translationArray[$addressItem->types[0]])) {
+                    if (isset($translationArray[$addressItem->types[0]])) {
                         $outputArray[$translationArray[$addressItem->types[0]]] = $addressItem->short_name;
-                    }
-                    else {
+                    } else {
                         $outputArray[$addressItem->types[0]] = $addressItem->short_name;
                     }
                 }
             }
         }
-        if(!empty($responseObj->geometry) && !empty($responseObj->geometry->location)) {
+        if (!empty($responseObj->geometry) && !empty($responseObj->geometry->location)) {
             $outputArray["Longitude"] = $responseObj->geometry->location->lng;
             $outputArray["Latitude"] = $responseObj->geometry->location->lat;
             $outputArray["Accuracy"] = $responseObj->geometry->location_type;
         }
         //get other data
-        if(!empty($responseObj->formatted_address)) {
+        if (!empty($responseObj->formatted_address)) {
             $outputArray["FullAddress"] = $responseObj->formatted_address;
         }
         return $outputArray;

@@ -3,6 +3,9 @@
     "type": "silverstripe-module",
     "description": "adds an in-depth application of the google map API to your Silverstripe application",
     "keywords": [
+        "Silverstripe-CMS",
+        "CMS",
+        "Silverstripe",
         "googlemap",
         "googlemaps",
         "google map",
@@ -11,8 +14,7 @@
         "google",
         "directions",
         "geo",
-        "geospatial",
-        "silverstripe"
+        "geospatial"
     ],
     "license": "Sunny Side Up (BSD-3-Clause and CUSTOM)",
     "authors": [
@@ -25,7 +27,7 @@
     "require": {
         "silverstripe/framework": "~3.1",
         "silverstripe/cms": "~3.1",
-        "sunnysideup/google_address_field": "dev-master"
+        "sunnysideup/google_address_field": "*"
     },
     "extra": {
         "installer-name": "googlemap"
