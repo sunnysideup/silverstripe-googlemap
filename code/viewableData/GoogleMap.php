@@ -532,7 +532,7 @@ class GoogleMap extends ViewableData
         $js = '';
         $this->loadDefaults();
         if (!self::$_includes_are_done) {
-            Requirements::themedCSS("googleMap");
+            Requirements::themedCSS("googleMap", 'googlemap');
             Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
             $variableName = $this->getMyMapFunctionName(false);
             $instanceName = $this->getMyMapFunctionName(true);
