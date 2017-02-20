@@ -26,7 +26,7 @@ jQuery(document).ready(
                 GoogleMapConstructors[i].googleMap = new GoogleMapConstructor(
                     obj.divID,                            //div ID
                     null,                                 //url for map... added via layers
-                    'GoogleMapConstructors['+i+'].googleMap.getMap()',   // object that holds constructor
+                       'GoogleMapConstructors['+i+'].googleMap.getMap()',   // object that holds constructor
                     obj.options                           //map options ...
                 );
                 GoogleMapConstructors[i].googleMap.init();
@@ -43,7 +43,7 @@ jQuery(document).ready(
                         GoogleMapConstructors[i].googleMap.findAddress(obj.address);
                     }
                 }
-                if(i == 0 && jQuery('#SearchByAddressForm_SearchByAddressForm').length > 0) {
+                if(i === 0 && jQuery('#SearchByAddressForm_SearchByAddressForm').length > 0) {
                     var formSuccess = function(responseText, statusText, xhr, $form)  {
                         var base = jQuery("base").attr("href");
                         var link = base;
@@ -65,7 +65,7 @@ jQuery(document).ready(
                         success: formSuccess,
                         dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type)
                     };
-                    // bind form using 'ajaxForm'
+                    // bind form using 'ajaxForm' +
                     jQuery('#SearchByAddressForm_SearchByAddressForm').ajaxForm(options);
                 }
             }
@@ -91,13 +91,11 @@ var GoogleMapTranslatableUserMessages = {
     error_in_zoom: "Error in MaxZoomService",
     select_this_point: "select this point",
     clear_last_route: "clear Last Route",
-    do_next: "do next:",
     calculate_route: "calculate route",
     alernatively: "Alternatively:",
     create_routes_using_current_points: "create route using current points.",
     this_point: "This Point",
     find_address: "find address",
-    address_not_found: "address not found.",
     address_not_retrieved: "address could not be retrieved from server.",
     address_not_accurate: "NB: Address may not be accurate",
     close: "close",
@@ -288,7 +286,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @return Google Map Type
          */
         mapTypesArray: function(i){
-            var a = new Array();
+            var a = [];
             a[1] = google.maps.MapTypeId.ROADMAP;
             a[2] = google.maps.MapTypeId.SATELLITE;
             a[3] = google.maps.MapTypeId.HYBRID;
@@ -303,7 +301,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @todo Private
          */
         zoomControlStyleArray: function(i){
-            var a = new Array();
+            var a = [];
             a[1] = google.maps.ZoomControlStyle.SMALL;
             a[2] = google.maps.ZoomControlStyle.SMALL;
             a[3] = google.maps.ZoomControlStyle.LARGE;
@@ -729,7 +727,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var point = m.getPosition();
             var options = this.opts.infoWindowOptions || {};
             //add delete category
-            var infoTabExtraLinksArray = new Array();
+            var infoTabExtraLinksArray = [];
             var obscuringLinks = '';
             var pointCount = this.layerInfo[m.layerId].pointCount;
             if(pointCount > 1) {
@@ -745,7 +743,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             }
             if(this.opts.addAntipodean) {
                 infoTabExtraLinksArray.push(
-                    '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.getMap().lastMarker,\'clickAntipodean\'); return false;">'+GMO._t.drill_a_hole+'</a>'
+                       '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.getMap().lastMarker,\'clickAntipodean\'); return false;">'+GMO._t.drill_a_hole+'</a>'
                 );
                 google.maps.event.addListener(m, "clickAntipodean", function() {
                     GMO.mapObject.setZoom(6);
@@ -756,7 +754,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     var nameString = GMO._t.antipodean_of + " " + m.markerName;
                     var description = GMO._t.found_opposite;
                     var zoom = 3;
-                    var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description, longitude, latitude, zoom)
+                    var xmlSheet = GMO.createPointXml(nameString, pointLngLat, description, longitude, latitude, zoom);
                     GMO.processXml(xmlSheet);
                 });
             }
@@ -781,12 +779,12 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var html = '<div id="infoWindowTab1" class="infoWindowTab"><h1>'+name+'</h1>' + obscuringLinks + '<div>'+desc+'</div>';
             if(this.opts.addZoomInButton) {
                 infoTabExtraLinksArray.push(
-                    '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickZoomIn\'); return false;">zoom in</a>'
+                       '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickZoomIn\'); return false;">zoom in</a>'
                 );
             }
             if(this.opts.addDeleteMarkerButton) {
                 infoTabExtraLinksArray.push(
-                    '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickRemoveMe\'); return false;">'+this.opts.addDeleteMarkerButton+'</a>'
+                       '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickRemoveMe\'); return false;">'+this.opts.addDeleteMarkerButton+'</a>'
                 );
             }
             if(infoTabExtraLinksArray.length) {
@@ -816,41 +814,40 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 var findDirections = '';
                 if(this.opts.addDirections) {
                     var currentFrom = this.currentFromLocation();
-                    findDirections = ''
-                        + '<p class="infoTabFromOption">'
-                        + ' <b>' + GMO._t.from + ':</b>'
-                        + '</p>'
-                        + '<p id="fromHereLink">'
-                        + ' <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickFromHere\')">'+ GMO._t.select_this_point + '</a>: '
-                        + ' ' + this.currentFromLocation()
-                        + '</p>'
-                        + '<p class="infoTabToOption">'
-                        + ' <b>' + GMO._t.to + ':</b>'
-                        + '</p>'
-                        + '<p id="toHereLink">'
-                        + ' <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickToHere\'); return false;">' + GMO._t.select_this_point + '</a>:'
-                        + ' ' + this.currentToLocation()
-                        + '</p>'
-                        + '<p class="infoTabAlternative">';
+                    findDirections = '' +
+                            '<p class="infoTabFromOption">' +
+                            ' <b>' + GMO._t.from + ':</b>' +
+                            '</p>' +
+                            '<p id="fromHereLink">' +
+                            ' <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickFromHere\')">'+ GMO._t.select_this_point + '</a>: ' +
+                            ' ' + this.currentFromLocation() +
+                            '</p>' +
+                            '<p class="infoTabToOption">' +
+                            ' <b>' + GMO._t.to + ':</b>' +
+                            '</p>' +
+                            '<p id="toHereLink">' +
+                            ' <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickToHere\'); return false;">' + GMO._t.select_this_point + '</a>:' +
+                            ' ' + this.currentToLocation() +
+                            '</p>' +
+                            '<p class="infoTabAlternative">';
                     if(this.routeShown) {
-                        findDirections += ''
-                            + ' <b>' + GMO._t.do_next + ':</b>'
-                            + '</p>'
-                            + '<p>'
-                            + ' <a href="#" onclick="return google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickClearRoute\'); return false;" id="clearRouteLink">'+GMO._t.clear_last_route+'</a> ';
+                        findDirections += '' +
+                                ' <b>' + GMO._t.do_next + ':</b>' +
+                                '</p>' +
+                                '<p>' +
+                                ' <a href="#" onclick="return google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickClearRoute\'); return false;" id="clearRouteLink">'+GMO._t.clear_last_route+'</a> ';
                     }
                     else if((this.floatFrom || this.floatTo) || (this.to || this.from)) {
-                        findDirections += ''
-                            + '<b>'+GMO._t.do_next+':</b></p>'
-                            + '<p><a href="#" class="submitButton" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickFindRoute\'); return false;" id="calculateLinkRoute">'+GMO._t.calculate_route+'</a>';
+                        findDirections += '' +
+                                '<b>'+GMO._t.do_next+':</b></p>' +
+                                '<p><a href="#" class="submitButton" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickFindRoute\'); return false;" id="calculateLinkRoute">'+GMO._t.calculate_route+'</a>';
                     }
                     else if(this.layerInfo[m.layerId].pointCount > 1 && this.layerInfo[m.layerId].pointCount < 20) {
-                        findDirections += ''
-                            + '<span class="alternatively">'+GMO._t.alernatively+'</p>'
-                            + '<p><a href="#" class="submitButton" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'joinTheDots\')" id="calculateLinkRoute">'+GMO._t.create_routes_using_current_points+'</a>';
+                        findDirections += '' +
+                                '<span class="alternatively">'+GMO._t.alernatively+'</p>' +
+                                '<p><a href="#" class="submitButton" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'joinTheDots\')" id="calculateLinkRoute">'+GMO._t.create_routes_using_current_points+'</a>';
                     }
-                    findDirections += ''
-                        + '</p>'
+                    findDirections += '' + '</p>';
                     //join the dots
                     google.maps.event.addListener(m, "joinTheDots", function() {
                         GMO.createRouteFromLayer(m.layerId);
@@ -890,31 +887,31 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             }
 
             if(this.opts.addCurrentAddressFinder) {
-                html = html + '<div id="infoWindowTab3" class="infoWindowTab">'
-                    + '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'findAddressFromLngLat\')">'+GMO._t.find_address+'</a>'
-                    + '</div>';
+                html = html + '<div id="infoWindowTab3" class="infoWindowTab">' +
+                         '<a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'findAddressFromLngLat\')">'+GMO._t.find_address+'</a>' +
+                         '</div>';
                 //tabsHtml.push(new GInfoWindowTab("address", '<div id="infoWindowTab3" class="infoWindowTab"><a href="#" onclick="google.maps.event.trigger(GMO.lastMarker,\'findAddressFromLngLat\')">find address</a></div>'));
                 google.maps.event.addListener(m, "findAddressFromLngLat",
                     function() {
                         GMO.geocoder = new google.maps.Geocoder();
                         return;
-                        GMO.geocoder.getLocations(
-                            m.position,
-                            function(response) {
-                                var html = '<p>'+GMO._t.address_not_found+'</p>';
-                                if (!response || response.Status.code != 200) {
-                                    var html = '<p>'+GMO._t.address_not_retrieved+'</p>';
-                                }
-                                else {
-                                    place = response.Placemark[0];
-                                    if(place) {
-                                        var html = place.address;
-                                    }
-                                }
-                                html += '<hr /><h2>'+GMO._t.address_not_accurate+'.</h2>';
-                                jQuery("#infoWindowTab3").html(html);
-                            }
-                        );
+                        // GMO.geocoder.getLocations(
+                        //     m.position,
+                        //     function(response) {
+                        //         var html = '<p>'+GMO._t.address_not_found+'</p>';
+                        //         if (!response || response.Status.code != 200) {
+                        //             var html = '<p>'+GMO._t.address_not_retrieved+'</p>';
+                        //         }
+                        //         else {
+                        //             place = response.Placemark[0];
+                        //             if(place) {
+                        //                 var html = place.address;
+                        //             }
+                        //         }
+                        //         html += '<hr /><h2>'+GMO._t.address_not_accurate+'.</h2>';
+                        //         jQuery("#infoWindowTab3").html(html);
+                        //     }
+                        // );
                     }
                 );
             }
@@ -950,23 +947,23 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 );
             }
             //basic html
-            var html = '<div id="infoWindowTab1" class="infoWindowTab">'
-                + '<div>'+desc+'</div>'
-                + '<p class="infoTabBasicLinks">'
-                + '<a href="#" onclick="'+GMO.variableName+'.lastMarker.infowindow.close(); return false;">'+GMO._t.close+'</a>'
-                + ', <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickHideMe\')l return false;">'+GMO._t.remove+'</a>'
-                + hideGroupLink
-                + '.</p>'
+            var html = '<div id="infoWindowTab1" class="infoWindowTab">' +
+                    '<div>'+desc+'</div>' +
+                    '<p class="infoTabBasicLinks">' +
+                    '<a href="#" onclick="'+GMO.variableName+'.lastMarker.infowindow.close(); return false;">'+GMO._t.close+'</a>' +
+                    ', <a href="#" onclick="google.maps.event.trigger('+GMO.variableName+'.lastMarker,\'clickHideMe\')l return false;">'+GMO._t.remove+'</a>' +
+                 hideGroupLink +
+                    '.</p>';
             google.maps.event.addListener(
                 m,
                 "clickHideMe",
                 function() {
                     //GMO.mapObject.closeInfoWindow();
-                    if(typeof m.infowindow !== 'undefined') {                    
+                    if(typeof m.infowindow !== 'undefined') {
                         m.infowindow.close();
                     }
                     m.setVisible(false);
-                    var currentLayerId = m.layerId
+                    var currentLayerId = m.layerId;
                     GMO.updateLists();
                 }
             );
@@ -1019,22 +1016,22 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             if(!zoom) {zoom = 5;}
 
             var serverId = "Marker_manuallyAdded" + GMO.layerInfo.length;
-            var string = '<?xml version="1.0" encoding="UTF-8"?>'
-            + '<kml xmlns="http://earth.google.com/kml/2.1"><Document><mapinfo>'
-            + '<title>' + name + '</title>'
-            + '<longitude>' + longitude + '</longitude>'
-            + '<latitude>' + latitude + '</latitude>'
-            + '<zoom>' + zoom + '</zoom>'
-            + '<pointcount>1</pointcount>'
-            + '<info>' + info + '</info>'
-            + '</mapinfo><Placemark>'
-            + ' <id>' + serverId + '</id>'
-            + ' <name>' + name + '</name>'
-            + ' <Point><coordinates>' + pointLngLat.lng() + "," + pointLngLat.lat() + '</coordinates></Point>'
-            + ' <description><![CDATA[ <p>' + description +'</p>]]></description>'
-            + '</Placemark>'
-            + '</Document>'
-            +'</kml>';
+            var string = '<?xml version="1.0" encoding="UTF-8"?>' +
+                '<kml xmlns="http://earth.google.com/kml/2.1"><Document><mapinfo>' +
+                '<title>' + name + '</title>' +
+                '<longitude>' + longitude + '</longitude>' +
+                '<latitude>' + latitude + '</latitude>' +
+                '<zoom>' + zoom + '</zoom>' +
+                '<pointcount>1</pointcount>' +
+                '<info>' + info + '</info>' +
+                '</mapinfo><Placemark>' +
+                ' <id>' + serverId + '</id>' +
+                ' <name>' + name + '</name>' +
+                ' <Point><coordinates>' + pointLngLat.lng() + "," + pointLngLat.lat() + '</coordinates></Point>' +
+                ' <description><![CDATA[ <p>' + description +'</p>]]></description>' +
+                '</Placemark>' +
+                '</Document>' +
+                '</kml>';
             if(GMO.opts.updateServerUrlDragend) {
                 var pointLngLatArray = pointLngLat.split(',');
                 var lng = parseFloat(pointLngLatArray[0]);
@@ -1064,7 +1061,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         downloadXml: function(url) {
             var previouslyLoaded;
-            if(previouslyLoaded = this.layerInfo.inSubArray("url", url)) {
+            previouslyLoaded = this.layerInfo.inSubArray("url", url);
+            if(previouslyLoaded === true) {
                 this.updateStatus(GMO._t.loaded);
                 var realLayerId = previouslyLoaded - 1;
                 if(!this.layerInfo[realLayerId].show) {
@@ -1095,8 +1093,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 var pointCount = docToRead.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue;
                 pointCount = parseInt(pointCount);
                 this.tooManyPointsWarning(pointCount + 1);
+                var currentLayerId = null;
                 if(pointCount > 0) {
-                    var currentLayerId = this.layerInfo.length;
+                    currentLayerId = this.layerInfo.length;
                     var groupInfo = {};
                     var iconUrlCollection = [];
                     groupInfo.show = 1;
@@ -1118,25 +1117,31 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     if(currentIconId > this.opts.iconMaxCount) {
                         currentIconId = 1;
                     }
+                    var iconUrl = '';
                     if(currentIconId && (this.opts.iconFolder || this.opts.defaultIconUrl)) {
-                        var iconUrl = this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
+                        iconUrl = this.opts.defaultIconUrl || this.opts.iconFolder + "i" + currentIconId + "." + this.opts.iconExtension;
                     }
                     //add layer information ... IMPORTANT MUST BE BEFORE MARKER LOOP
                     //groupInfo.iconUrl = iconUrlCollection;
                     this.layerInfo.push (groupInfo);
                     // Read through the Placemarks
-
+                    var bits = [];
+                    var point = null;
+                    var m = null;
                     //var placemarks = doc.getElementsByTagName("Placemark");
                     for (var i = 0; i < placemarks.length; i++) {
                         var serverId = placemarks[i].getElementsByTagName("id")[0].childNodes[0];
                         var name = placemarks[i].getElementsByTagName("name")[0].childNodes[0].nodeValue;
                         var desc = placemarks[i].getElementsByTagName("description")[0].childNodes[0];
-                        var styleLocationId = null
+                        var styleLocationId = null;
                         if (placemarks[i].getElementsByTagName("styleUrl").length > 0) {
                             styleLocationId = placemarks[i].getElementsByTagName("styleUrl")[0];
                             styleLocationId = styleLocationId.substring(1, styleLocationId.length);
                         }
-                        var newIconURL = iconUrl; //use standard one => iconUrl;
+                        var newIconURL = '';
+                        if(iconUrl !== '') {
+                            newIconURL = iconUrl; //use standard one => iconUrl;
+                        }
                         if(styleLocationId) {
                             //<Style id="randomColorIcon"><IconStyle><Icon>URL here
                             var IconStyleDoc = docToRead.getElementsByTagName("Style");
@@ -1161,8 +1166,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             var points = [];
                             var pbounds = new google.maps.LatLngBounds();
                             for (var p=0; p<path.length-1; p++) {
-                                var bits = path[p].split(",");
-                                var point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
+                                bits = path[p].split(",");
+                                point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
                                 points.push(point);
                                 this.bounds.extend(point);
                                 pbounds.extend(point);
@@ -1176,12 +1181,12 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             var linestring = placemarks[i].getElementsByTagName("LineString");
                             var polygons = placemarks[i].getElementsByTagName("Polygon");
                             if (linestring.length) {
-                                var p = this.createPolyline(points,color,width,opacity,name,desc);
+                                p = this.createPolyline(points,color,width,opacity,name,desc);
                             }
                             else if (polygons.length) {
                                 var fillopacity = this.opts.fillOpacity;
                                 var fillcolor = this.opts.fillColour;
-                                var p = this.createPolygon(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc);
+                                p = this.createPolygon(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc);
                             }
                             else {
                                 alert(GMO._t.error_in_loading);
@@ -1189,19 +1194,19 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         }
                         else {
                         //it must be a marker
-                            var bits = path[0].split(",");
-                            var point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
+                            bits = path[0].split(",");
+                            point = new google.maps.LatLng(parseFloat(bits[1]),parseFloat(bits[0]));
                             this.bounds.extend(point);
                         // create marker
                             this.updateStatus(GMO._t.processing + " " + i + " " + GMO._t.of + " " + pointCount + ".");
-                            var m = this.createMarker(point, name, desc, serverId, newIconURL);
+                            m = this.createMarker(point, name, desc, serverId, newIconURL);
                         }
                         if(!iconUrlCollection.inArray(newIconURL)) {
                             iconUrlCollection.push(newIconURL);
                         }
                     }
                     //add icons
-                    var currentLayerId = this.layerInfo.length - 1;
+                    currentLayerId = this.layerInfo.length - 1;
                     this.layerInfo[currentLayerId].iconUrl = iconUrlCollection;
                     // Shall we zoom to the bounds?
                     if (pointCount > 1) {
@@ -1213,10 +1218,12 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     this.updateLists();
                     //this.zoomTo(groupInfo.a, groupInfo.o, groupInfo.z);
                     //if(!GMO.mapObject.getInfoWindow().getVisible()) {
-                    if(typeof m !== "undefined" &&  ! m.getVisible) {
-                        //GMO.mapObject.closeInfoWindow();
-                        if(typeof m.infowindow !== 'undefined') {
-                            m.infowindow.close();
+                    if(typeof m !== null) {
+                        if(! m.getVisible) {
+                            //GMO.mapObject.closeInfoWindow();
+                            if(typeof m.infowindow !== 'undefined') {
+                                m.infowindow.close();
+                            }
                         }
                     }
                     if(pointCount > 1) {
@@ -1228,8 +1235,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                                 google.maps.event.trigger(GMO.gmarkers[GMO.gmarkers.length -1], "click");
                                 //GMO.mapObject.panDirection(0, 1);
                                 GMO.mapObject.panBy(0, 1);
-                            }
-                            , 300
+                            },
+                            300
                         );
                         this.updateStatus(GMO._t.one_location_loaded);
                     }
@@ -1237,7 +1244,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 else {
                     var title =  doc.getElementsByTagName("title")[0];
                     if(this.opts.titleId) {
-                        if(el = document.getElementById(this.opts.titleId)) {
+                        el = document.getElementById(this.opts.titleId);
+                        if(typeof el !== null) {
                             el.innerHTML = title;
                         }
                     }
@@ -1257,7 +1265,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             if(pointCount > 100) {
                 this.updateStatus(pointCount + " " + GMO._t.large_number_of_items);
             }
-            else if(pointCount == 0) {
+            else if(pointCount === 0) {
                 this.updateStatus(GMO._t.no_location_could_be_found);
             }
         },
@@ -1273,34 +1281,36 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         updateLists: function() {
             this.updateStatus(GMO._t.updating_lists);
+            var sideBarArray = [];
             if(this.opts.sideBarId || this.opts.dropBoxId || this.opts.layerListId) {
                 var a = [];
-                var sideBarArray = [];
                 for(var i = 0; i < this.layerInfo.length; i++) {
                     this.layerInfo[i].show = 0;
                 }
-                for (var i = 0; i < this.gmarkers.length; i++) {
-                    if (this.gmarkers[i].getVisible()) {
-                        this.layerInfo[this.gmarkers[i].layerId].show = 1;
-                        if(!a.inArray(this.gmarkers[i].markerName)) {
-                            sideBarArray.push(this.gmarkers[i].markerName + "$$$" + i);
+                for (var j = 0; j < this.gmarkers.length; j++) {
+                    if (this.gmarkers[j].getVisible()) {
+                        this.layerInfo[this.gmarkers[j].layerId].show = 1;
+                        if(!a.inArray(this.gmarkers[j].markerName)) {
+                            sideBarArray.push(this.gmarkers[j].markerName + "$$$" + j);
                         }
-                        a.push(this.gmarkers[i].markerName);
+                        a.push(this.gmarkers[j].markerName);
                     }
                 }
-                sideBarArray.sort();
+                //sideBarArray.sort();
             }
+            var displayItemList = '';
+            var displayLayerList = '';
             if(this.gmarkers.length > 1) {
-                var displayItemList="block";
+                displayItemList="block";
             }
             else {
-                var displayItemList="none";
+                displayItemList="none";
             }
             if(this.layerInfo.length > 1) {
-                var displayLayerList="block";
+                displayLayerList="block";
             }
             else {
-                var displayLayerList="none";
+                displayLayerList="none";
             }
             if(this.opts.sideBarId) {
                 jQuery("#"+this.opts.sideBarId).css("display", displayItemList);
@@ -1327,10 +1337,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         createSideBar: function(sideBarArray) {
             if(this.opts.sideBarId) {
-                var el;
                 var layerName = '';
                 var sideBarElements = '';
-                if(el = document.getElementById(this.opts.sideBarId)) {
+                var el = document.getElementById(this.opts.sideBarId);
+                if(el !== null) {
                     if(sideBarArray.length > 1) {
                         var html = '<ul id="' + this.opts.sideBarId + 'list">';
                         for (var j = 0; j < sideBarArray.length; j++) {
@@ -1340,17 +1350,17 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             var serverID = String(this.gmarkers[i].serverId);
                             var isManuallyAdded = serverID.indexOf( "manuallyAdded", 0 ); // returns -1
                             if(isManuallyAdded == -1) {
-                                html += ''
-                                    + '<li class="forLayer'+layerName+' icon'+i+'">'
-                                    +' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
-                                    +' <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div>'
-                                    +'</li>';
+                                html += '' +
+                                        '<li class="forLayer'+layerName+' icon'+i+'">' +
+                                       ' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>' +
+                                       ' <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div>' +
+                                       '</li>';
                             }
                             else {
-                                html += ''
-                                    +'<li class="forLayer'+layerName+'">' + GMO._t.you_added + ':'
-                                    +' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>'
-                                    +'</li>';
+                                html += '' +
+                                       '<li class="forLayer'+layerName+'">' + GMO._t.you_added + ':' +
+                                       ' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>' +
+                                       '</li>';
                             }
                         }
                         html += '</ul>';
@@ -1379,16 +1389,16 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         createDropDown: function(sideBarArray) {
             if(this.opts.dropBoxId && sideBarArray.length > 1) {
-                var el;
-                if(el = document.getElementById(this.opts.dropBoxId)) {
-                    var html = '<select onchange="GMO.showMarkerFromList(this.value);">'
-                        + '<option selected="selected">' + GMO._t.select_a_location + ' </option>';
+                var el = document.getElementById(this.opts.dropBoxId);
+                if(el !== null) {
+                    var html = '<select onchange="GMO.showMarkerFromList(this.value);">' +
+                           '<option selected="selected">' + GMO._t.select_a_location + ' </option>';
                     for (var j = 0; j < sideBarArray.length; j++) {
                         var sideBarElements = sideBarArray[j].split("$$$", 2);
                         i = sideBarElements[1];
                         html += '<option value="' + i + '">' + this.gmarkers[i].markerName +'</option>';
                     }
-                    html + "</select>";
+                    html += "</select>";
                     el.innerHTML = html;
                 }
                 else {
@@ -1403,8 +1413,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         updateLayerList: function() {
             if(this.opts.layerListId) {
-                var el = null;
-                if(el = document.getElementById(this.opts.layerListId)) {
+                var el = document.getElementById(this.opts.layerListId);
+                if(el !== null) {
                     var html = '<ul>';
                     var className = '';
                     var style = '';
@@ -1425,21 +1435,21 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                                 style = ' style="opacity:.30; filter: alpha(opacity=30); -moz-opacity: 0.30;"';
                             }
                         }
-                        html += ''
-                            + '<li class="'+className+'"'+style+'>';
+                        html += '' +
+                                '<li class="'+className+'"'+style+'>';
                         for(var j=0; j < this.layerInfo[i].iconUrl.length; j++) {
-                            html += ''
-                                + '<img src="'+ this.layerInfo[i].iconUrl[j] + '" alt="icon ' + j + ' for '+ this.layerInfo[i].title + '" class="iconBulletPoint" width="' + this.opts.iconWidth + '" height="' + this.opts.iconHeight + '" /> ';
+                            html += '' +
+                                    '<img src="'+ this.layerInfo[i].iconUrl[j] + '" alt="icon ' + j + ' for '+ this.layerInfo[i].title + '" class="iconBulletPoint" width="' + this.opts.iconWidth + '" height="' + this.opts.iconHeight + '" /> ';
                         }
-                        html += ''
-                            + this.layerInfo[i].title
-                            + ' <a href="#" onclick="'+GMO.variableName+'.changeLayerVisibility('+i+'); return false;">' + linkText + '</a>';
+                        html += '' +
+                             this.layerInfo[i].title +
+                                ' <a href="#" onclick="'+GMO.variableName+'.changeLayerVisibility('+i+'); return false;">' + linkText + '</a>';
                             if( ! this.opts.hiddenLayersRemovedFromList) {
-                                + ' - <a href="#" onclick="'+GMO.variableName+'.deleteLayer('+i+'); return false;">' + GMO._t.remove + '</a>';
+                                html += ' - <a href="#" onclick="'+GMO.variableName+'.deleteLayer('+i+'); return false;">' + GMO._t.remove + '</a>';
                             }
                         if(this.opts.addKmlLink && this.layerInfo[i].url) {
-                            html += ''
-                                + ' (<a href="' + this.layerInfo[i].url + '&kml=1">' + GMO._t.kml + '</a>)</li>';
+                            html += '' +
+                                    ' (<a href="' + this.layerInfo[i].url + '&kml=1">' + GMO._t.kml + '</a>)</li>';
                         }
                     }
                     html += "<ul>";
@@ -1463,9 +1473,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     i = -99;
                 }
             }
-            var el = null;
             if(this.opts.titleId) {
-                if(el = document.getElementById(this.opts.titleId)) {
+                var el = document.getElementById(this.opts.titleId);
+                if(el !== null) {
                     el.innerHTML = title;
                 }
             }
@@ -1479,8 +1489,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @todo test???
          */
         updateStatus: function(html, add) {
-            var el = null;
             var hideAction = "";
+            var zoomLinkLabel = "";
             //depreciated...
             if(add == "help") {
                 if(html) {
@@ -1493,22 +1503,24 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             }
             if(document.getElementById(this.mapDivName)) {
                 if(this.mapIsZoomed) {
-                    var zoomLinkLabel = 'reduce map size';
-                    var hideAction = ""
+                    zoomLinkLabel = 'reduce map size';
+                    hideAction = "";
                 }
                 else {
-                    var zoomLinkLabel = 'full-screen';
-                    var hideAction = '<span>|</span> <a href="#" onclick="'+GMO.variableName+'.hideStatus();">' + GMO._t.hide + '</a> ';
+                    zoomLinkLabel = 'full-screen';
+                    hideAction = '<span>|</span> <a href="#" onclick="'+GMO.variableName+'.hideStatus();">' + GMO._t.hide + '</a> ';
                 }
             }
             var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
             // depreciated
-            fullHtml += ' <a href="#" onclick="'+GMO.variableName+'.updateStatus(\'\', \'help\'); return false;"> ' + GMO._t.show_help + ' </a> <span>|</span>'
-            + ' <a href="#" onclick="'+GMO.variableName+'.enlargeMap(); return false;" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> '
-            + hideAction
-            + '</p>'+ html;
+            fullHtml += ' '+
+            '<a href="#" onclick="'+GMO.variableName+'.updateStatus(\'\', \'help\'); return false;"> ' + GMO._t.show_help + ' </a> <span>|</span>' +
+                ' <a href="#" onclick="'+GMO.variableName+'.enlargeMap(); return false;" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> ' +
+             hideAction +
+                '</p>'+ html;
             if(this.opts.statusDivId) {
-                if(el = document.getElementById(this.opts.statusDivId)) {
+                var el = document.getElementById(this.opts.statusDivId);
+                if(el !== null) {
                     el.innerHTML = fullHtml;
                     el.style.display = "block";
                 }
@@ -1521,7 +1533,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         hideStatus: function() {
             if(this.opts.statusDivId) {
-                if(el = document.getElementById(this.opts.statusDivId)  && !this.mapIsZoomed) {
+                var el = document.getElementById(this.opts.statusDivId);
+                if(el !== null  && !this.mapIsZoomed) {
                     el = document.getElementById(this.opts.statusDivId);
                     el.style.display = "none";
                 }
@@ -1597,7 +1610,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         updateAddressFormFields: function(latLng) {
             if(GMO.opts.latFormFieldId) {
-                if(el = document.getElementById(GMO.opts.latFormFieldId)) {
+                var el = document.getElementById(GMO.opts.latFormFieldId);
+                if(el !== null) {
                     document.getElementById(GMO.opts.latFormFieldId).value = latLng.lat();
                     document.getElementById(GMO.opts.lngFormFieldId).value = latLng.lng();
                 }
@@ -1624,7 +1638,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 GMO.routeShown = true;
                 this.updateStatus(GMO._t.searching_for_route);
                 var fromTo = this.floatFrom + " to " + this.floatTo;
-                var directionOptions = { locale: this.opts.localeForResults, getSteps:true}
+                var directionOptions = {
+                    locale: this.opts.localeForResults,
+                    getSteps: true
+                };
                 GMO.directions.load(fromTo, directionOptions);
             }
         },
@@ -1640,10 +1657,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var doAllMarkers = false;
             var pointCount = this.layerInfo[layerId].pointCount;
             if(pointCount < 2) {
-                var doAllMarkers = true;
+                doAllMarkers = true;
             }
             for (var i = 0; i < this.gmarkers.length; i++) {
-                if(this.gmarkers[i].layerId == layerId || doAllMarkers) {
+                if(this.gmarkers[i].layerId == layerId || doAllMarkers === true) {
                     wayPointArray[k] = (k+1) + ": " + this.gmarkers[i].markerName + "@" + this.gmarkers[i].getPosition().lat() + "," + this.gmarkers[i].getPosition().lng();
                     k++;
                 }
@@ -1706,9 +1723,10 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             this.floatTo = 0;
             this.from = '';
             this.floatFrom = 0;
-            var el = null;
-            if(el = document.getElementById("currentlySetToFrom")) {el.innerHTML = '';}
-            if(el = document.getElementById("currentlySetToTo")) {el.innerHTML = '';}
+            var el = document.getElementById("currentlySetToFrom");
+            if(el !== null) {el.innerHTML = '';}
+            el = document.getElementById("currentlySetToTo");
+            if(el !== null) {el.innerHTML = '';}
         },
 
         /**
@@ -1716,8 +1734,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @todo test and fix
          */
         clearRouteAll: function() {
-            var el = null;
-            if(el = document.getElementById(GMO.opts.directionsDivId)) {el.innerHTML = '';}
+            var el = document.getElementById(GMO.opts.directionsDivId);
+            if(el !== null) {el.innerHTML = '';}
             this.clearRouteVariables();
             this.routeShown = false;
             GMO.directions.clear();
@@ -1746,35 +1764,35 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             GMO.updateStatus("Route Found - Details Loading . . .");
             var html = '';
             function waypoint(point, type, address, pointName) {
-                html += ''
-                    + '<tr>'
-                    +' <th colspan="2">'
-                    +'  <a href="#" onclick="'+GMO.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">'
-                    +'   <img src="http://www.google.com/intl/en_ALL/mapfiles/icon-dd-' +type+ '-trans.png" alt="marker">'
-                    +'  </a>'
-                    +   pointName + " (" + address + ")"
-                    +' </th>'
-                    +'</tr>';
+                html += '' +
+                         '<tr>' +
+                       ' <th colspan="2">' +
+                       '  <a href="#" onclick="'+GMO.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">' +
+                       '   <img src="http://www.google.com/intl/en_ALL/mapfiles/icon-dd-' +type+ '-trans.png" alt="marker">' +
+                       '  </a>' +
+                        pointName + " (" + address + ")" +
+                       ' </th>' +
+                       '</tr>';
             }
             function routeDistance(dist) {
-                html +=  ''
-                    + '<tr><th colspan="2" class="routeDistance">' + dist + '</th></tr>';
+                html +=  '' +
+                         '<tr><th colspan="2" class="routeDistance">' + dist + '</th></tr>';
             }
             function copyright(text) {
-                html +=  ''
-                    + '<tr><th colspan="2" class="copyright">' + text + '</th></tr>';
+                html +=  '' +
+                         '<tr><th colspan="2" class="copyright">' + text + '</th></tr>';
             }
             function detail(point, num, description, dist) {
-                html += ''
-                    + '<tr>'
-                    +' <td>'
-                    +'  <a href="#" onclick="'+GMO.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">'+num+'.</a> '
-                    +   description
-                    +' </td>'
-                    +' <td class="dist">'
-                    +   dist
-                    +' </td>'
-                    +'</tr>';
+                html += '' +
+                         '<tr>' +
+                       ' <td>' +
+                       '  <a href="#" onclick="'+GMO.variableName+'.mapObject.showMapBlowup(new google.maps.LatLng('+point.toUrlValue(6)+')); return false;">'+num+'.</a> ' +
+                        description +
+                       ' </td>' +
+                       ' <td class="dist">' +
+                        dist +
+                       ' </td>' +
+                       '</tr>';
             }
             function formatDistance(meters) {
                 var distanceString = '';
@@ -1784,23 +1802,28 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 else {
                     distanceString += ( meters +"&nbsp;me." );
                 }
-                miles = meters * 0.000621371192
+                miles = meters * 0.000621371192;
                 distanceString += " / " + ((miles).toFixed(1) +" mi.");
                 return distanceString;
             }
+            var geocode = null;
                 // === read through the GRoutes and GSteps ===
+            var point = null;
+            var route = null;
+            var type = '';
+            var pointName = '';
             for (var i=0; i < GMO.directions.getNumRoutes(); i++) {
-                if (i==0) {
-                    var type="play";
-                    var pointName = GMO.from;
+                if (i===0) {
+                    type="play";
+                    pointName = GMO.from;
                 }
                 else {
-                    var type="pause";
-                    var pointName = GMO.via;
+                    type="pause";
+                    pointName = GMO.via;
                 }
-                var route = GMO.directions.getRoute(i);
-                var geocode = route.getStartGeocode();
-                var point = route.getStep(0).getLatLng();
+                route = GMO.directions.getRoute(i);
+                geocode = route.getStartGeocode();
+                point = route.getStep(0).getLatLng();
                 // create Html
                 waypoint(point, type, geocode.address, pointName);
                 routeDistance(formatDistance(route.getDistance().meters)+" - about "+route.getDuration().html);
@@ -1811,21 +1834,21 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 }
             }
             // === the final destination waypoint ===
-            var geocode = route.getEndGeocode();
-            var point = route.getEndLatLng();
-            var pointName = GMO.to;
+            geocode = route.getEndGeocode();
+            point = route.getEndLatLng();
+            pointName = GMO.to;
             waypoint(point, "stop", geocode.address, pointName);
             copyright(GMO.directions.getCopyrightsHtml());
             //open window
-            var html =  ''
-            + '<div id="directionsInnerDiv">'
-            + ' <table class="directionsClassTable"><col class="col1" /><col class="col2"/>' + html + '</table>'
-            + '</div>';
+            html =  '' +
+                '<div id="directionsInnerDiv">' +
+                ' <table class="directionsClassTable"><col class="col1" /><col class="col2"/>' + html + '</table>' +
+                '</div>';
             var directionsPanel = document.getElementById(GMO.opts.directionsDivId);
             if(directionsPanel) {
-                html += ''
-                + '<p id="directionsPrintOptions"><a href="#" onclick="'+GMO.variableName+'.printDirections(); return false;">Print Directions</a>, '
-                + '<a href="#" onclick="'+GMO.variableName+'.clearRouteAll(); return false;">Clear Route</a></p>';
+                html += '' +
+                    '<p id="directionsPrintOptions"><a href="#" onclick="'+GMO.variableName+'.printDirections(); return false;">Print Directions</a>, ' +
+                    '<a href="#" onclick="'+GMO.variableName+'.clearRouteAll(); return false;">Clear Route</a></p>';
                 directionsPanel.innerHTML = html;
                 GMO.updateStatus('Directions Loaded - <a href="#" onclick="'+GMO.variableName+'.printDirections(); return false;on">Print Directions</a>.');
             }
@@ -1846,8 +1869,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
         enlargeMap: function() {
             var el = document.getElementById(this.mapDivName);
             var elLabel = document.getElementById("mapZoomLinkLabel");
-            if(el && elLabel) {
-                if(this.mapIsZoomed == true) {
+            if(el !== null && elLabel) {
+                if(this.mapIsZoomed === true) {
                     el.style.width = this.mapOriginalSize.width + "px";
                     el.style.height = this.mapOriginalSize.height + "px";
                     el.style.position = "relative";
@@ -1879,9 +1902,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @todo test
          */
         printDirections: function() {
-            var el = null;
-            if(el = document.getElementById("directionsInnerDiv")) {
-                var html = el.innerHTML
+            var el = document.getElementById("directionsInnerDiv");
+            if(el !== null) {
+                var html = el.innerHTML;
                 GMO.openDirectionsPopup(html);
             }
             else {
@@ -1912,18 +1935,19 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @todo test
          */
         openDirectionsPopup: function(innerHTML) {
+            var html = '';
             if(innerHTML) {
-                var html = ''
-                    + '<html><head><title>Directions</title>'
-                    + '<style type="text/css">'
-                    + '</style>'
-                    + '<body onLoad="self.focus()">'
-                    + '<p>'
-                    + '<a href="#" onclick="self.print(); return false;">Print This page</a>, '
-                    + '<a href="#" onclick="self.close(); return false;">Close Window</a>'
-                    + '</p>'
-                    + innerHTML
-                    + '</body></html>';
+                html = '' +
+                         '<html><head><title>Directions</title>' +
+                         '<style type="text/css">' +
+                         '</style>' +
+                         '<body onLoad="self.focus()">' +
+                         '<p>' +
+                         '<a href="#" onclick="self.print(); return false;">Print This page</a>, ' +
+                         '<a href="#" onclick="self.close(); return false;">Close Window</a>' +
+                         '</p>' +
+                         innerHTML +
+                         '</body></html>';
             }
             else {
                 GMO.updateStatus("Could not find directions.");
@@ -1933,8 +1957,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var features = 'width=500,height=500,menubar=1,resizable=1,scrollbars=1';
             var name = "directions";
             win = window.open(url, name, features);
-            var newdocument = null;
-            if(newdocument = win.document) {
+            var newdocument = win.document;
+            if(newdocument) {
                 newdocument.open();
                 newdocument.write(html);
                 GMO.attachStyleDirections(newdocument);
@@ -1991,7 +2015,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @return google.maps.LatLng
          */
         antipodeanPointer: function(lng, lat) {
-            var point = {}
+            var point = {};
             if(lng > 0) {
                 lng = -180 + lng;
             }
@@ -2000,7 +2024,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             }
             lat = lat * -1;
             this.updateStatus("Hole Drilled!");
-            point = new google.maps.LatLng(lat, lng, false)
+            point = new google.maps.LatLng(lat, lng, false);
             return point;
         },
 
@@ -2009,7 +2033,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @param Int latitude
          */
         checkLatitude: function(latitude) {
-            if(latitude && latitude != 0 && latitude >= -90 && latitude <= 90){
+            if(latitude && latitude !== 0 && latitude >= -90 && latitude <= 90){
                 return latitude;
             }
             else {
@@ -2022,7 +2046,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @param Int longitude
          */
         checkLongitude: function(longitude) {
-            if(longitude && longitude != 0 && longitude >= -180 && longitude <= 180) {
+            if(longitude && longitude !== 0 && longitude >= -180 && longitude <= 180) {
                 return longitude;
             }
             else {
@@ -2053,7 +2077,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             var pixelCoordinates = GMO.mapObject.fromLatLngToDivPixel(latLngPoint);
             var newPoint = new google.maps.Point(pixelCoordinates.x + 10, pixelCoordinates.y);
             var newlatLngPoint = GMO.mapObject.fromDivPixelToLatLng(newPoint);
-            return distance = latLngPoint.distanceFrom(newlatLngPoint)/10;
+            var distance = latLngPoint.distanceFrom(newlatLngPoint)/10;
+            return distance;
         },
 
 
@@ -2149,15 +2174,14 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @return String
          */
         findAddressForm: function() {
-                var findAddressHtml = ''
-                    findAddressHtml = ''
-                    //+ '<form action="#">'
-                    + ' <p class="findAddressHtml">'
-                    + '  <input type="text" size="60" id="mapAddress" class="infoTabInputAddress" />' + GMO.opts.defaultAddressText
-                    + '  <input type="button" value="find address" id="infoTabSubmitAddress" class="submitButton" onclick="'+GMO.variableName+'.findAddress(document.getElementById(\'mapAddress\').value); return false;" />'
-                    + ' </p>'
+                var findAddressHtml = '' +
+                    //+ '<form action="#">' +
+                         ' <p class="findAddressHtml">' +
+                         '  <input type="text" size="60" id="mapAddress" class="infoTabInputAddress" />' + GMO.opts.defaultAddressText +
+                         '  <input type="button" value="find address" id="infoTabSubmitAddress" class="submitButton" onclick="'+GMO.variableName+'.findAddress(document.getElementById(\'mapAddress\').value); return false;" />' +
+                         ' </p>';
                     //+ '</form>';
-            return findAddressHtml
+            return findAddressHtml;
         },
 
 
@@ -2170,41 +2194,41 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          * @todo test
          */
         helpHtml: function() {
-            var string = ''
-                + '<ul>'
-                + '<li><b>keyboard tricks:</b><ul>'
-                + '<li>keys <i>up</i>, <i>down</i>, <i>left</i>, <i>right</i>: moves the map continuously while the key is pressed. Two keys can be pressed simultaneously in order to move diagonally.</li>'
-                + '<li>keys <i>+</i>, <i>-</i>: zoom in and out respectively</li>'
-                + '</ul></li>'
-                + '<li><b>mouse tricks:</b><ul>'
-                + '<li><i>click on a marker</i> to find out more about the location'
-                + '<li><i>click</i> anywhere else on the map to zoom-in on that particular point</li>'
-                + '<li><i>click-and-hold-down</i> anywhere on the map to drag in any direction</li>';
+            var string = '' +
+                    '<ul>' +
+                    '<li><b>keyboard tricks:</b><ul>' +
+                    '<li>keys <i>up</i>, <i>down</i>, <i>left</i>, <i>right</i>: moves the map continuously while the key is pressed. Two keys can be pressed simultaneously in order to move diagonally.</li>' +
+                    '<li>keys <i>+</i>, <i>-</i>: zoom in and out respectively</li>' +
+                    '</ul></li>' +
+                    '<li><b>mouse tricks:</b><ul>' +
+                    '<li><i>click on a marker</i> to find out more about the location' +
+                    '<li><i>click</i> anywhere else on the map to zoom-in on that particular point</li>' +
+                    '<li><i>click-and-hold-down</i> anywhere on the map to drag in any direction</li>';
             if(this.opts.addPointsToMap) {
-                string += ''
-                + '<li><i>right-mouse-click</i> on the map to add a marker (for example for creating a route)</li>'
-                + '<li><i>right-mouse-click</i> on a marker to delete it</li>'
+                string += '' +
+                    '<li><i>right-mouse-click</i> on the map to add a marker (for example for creating a route)</li>' +
+                    '<li><i>right-mouse-click</i> on a marker to delete it</li>';
             }
             else {
-                string += ''
-                + '<li><i>right-mouse-click</i> to zoom out</li>'
+                string += '' +
+                    '<li><i>right-mouse-click</i> to zoom out</li>';
             }
-            string += ''
-                + '</ul></li>';
+            string += '' +
+                    '</ul></li>';
             if(this.opts.addKmlLink) {
-                string += ''
-                + '<li><b>KML files</b> are for use in <a href="http://earth.google.com">Google Earth</a>.';
-                + 'Download KML files, save them to the desktop and open them.  From there, the should automatically start Google Earth.</li>';
+                string += '' +
+                    '<li><b>KML files</b> are for use in <a href="http://earth.google.com">Google Earth</a>.'+
+                    'Download KML files, save them to the desktop and open them.  From there, the should automatically start Google Earth.</li>';
             }
             if(this.opts.addDirections) {
-                string += ''
-                + '<li><b>Finding directions</b> can be done by clicking on a first marker and choosing <i>from here</i> under the <i>directions</i> tab, then doing the same for another marker choosing the <i>to here</i> link. Finally, click on the <i>calculate route</i> link at the bottom of the <i>directions</i> tab and the map will calculate your route.</li>';
+                string += '' +
+                    '<li><b>Finding directions</b> can be done by clicking on a first marker and choosing <i>from here</i> under the <i>directions</i> tab, then doing the same for another marker choosing the <i>to here</i> link. Finally, click on the <i>calculate route</i> link at the bottom of the <i>directions</i> tab and the map will calculate your route.</li>';
             }
-            string += ''
-                + '<li>many thanks to: http://econym.googlepages.com</li>'
-                + '<li>module developed by www.sunnysideup.co.nz</li>'
-                + '<li>To <b>hide</b> help from the map, just click on the (x).</li>'
-                + '</ul>'
+            string += '' +
+                    '<li>many thanks to: http://econym.googlepages.com</li>' +
+                    '<li>module developed by www.sunnysideup.co.nz</li>' +
+                    '<li>To <b>hide</b> help from the map, just click on the (x).</li>' +
+                    '</ul>';
             return string;
         },
 
@@ -2220,7 +2244,11 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 viewportwidth = window.innerWidth;
             }
             // IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-            else if (typeof document.documentElement != 'undefined' && typeof document.documentElement.clientWidth != 'undefined' && document.documentElement.clientWidth != 0) {
+            else if (
+                typeof document.documentElement != 'undefined' &&
+                typeof document.documentElement.clientWidth != 'undefined' &&
+                document.documentElement.clientWidth !== 0
+            ) {
                 viewportwidth = document.documentElement.clientWidth;
             }
             else {
@@ -2241,7 +2269,11 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 viewportheight = window.innerHeight;
             }
             // IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-            else if (typeof document.documentElement != 'undefined' && typeof document.documentElement.clientHeight != 'undefined' && document.documentElement.clientHeight != 0) {
+            else if (
+                typeof document.documentElement != 'undefined' &&
+                typeof document.documentElement.clientHeight != 'undefined' &&
+                document.documentElement.clientHeight !== 0
+            ) {
                 viewportheight = document.documentElement.clientHeight;
             }
             else {
@@ -2249,7 +2281,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             }
             return viewportheight;
         }
-    }
+    };
 
 
 
@@ -2379,13 +2411,26 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 
             //clear html areas
             if(GMO.opts.changePageTitle) {document.title = GMO.opts.defaultTitle;}
-            if(GMO.opts.titleId) { if(el = document.getElementById(GMO.opts.titleId)) {el.innerHTML = GMO.opts.defaultTitle;}}
-            if(GMO.opts.layerListId) { if(el = document.getElementById(GMO.opts.layerListId)) {el.innerHTML = "";} else {GMO.opts.layerListId = "";}}
-            if(GMO.opts.sideBarId) { if(el = document.getElementById(GMO.opts.sideBarId)) {el.innerHTML = "";} else {GMO.opts.sideBarId = "";}}
-            if(GMO.opts.dropBoxId) { if(el = document.getElementById(GMO.opts.dropBoxId)) {el.innerHTML = "";} else {GMO.opts.dropBoxId = "";}}
-            if(GMO.opts.statusDivId) { if( el = document.getElementById(GMO.opts.statusDivId)) {el.innerHTML = GMO._t.loading_map;} else {GMO.opts.statusDivId = "statusDivOnMap";}} else {GMO.opts.statusDivId = "statusDivOnMap";}
+            el = null;
+            if(GMO.opts.titleId) {
+                el = document.getElementById(GMO.opts.titleId);
+                if(el !== null) {el.innerHTML = GMO.opts.defaultTitle;}
+            }
+            if(GMO.opts.layerListId) {
+                el = document.getElementById(GMO.opts.layerListId);
+                if(el !== null) {el.innerHTML = "";} else {GMO.opts.layerListId = "";}}
+            if(GMO.opts.sideBarId) {
+                el = document.getElementById(GMO.opts.sideBarId);
+                if(el !== null) {el.innerHTML = "";} else {GMO.opts.sideBarId = "";}}
+            if(GMO.opts.dropBoxId) {
+                el = document.getElementById(GMO.opts.dropBoxId);
+                if(el !== null) {el.innerHTML = "";} else {GMO.opts.dropBoxId = "";}}
+            if(GMO.opts.statusDivId) {
+                el = document.getElementById(GMO.opts.statusDivId);
+                if(el !== null) {el.innerHTML = GMO._t.loading_map;} else {GMO.opts.statusDivId = "statusDivOnMap";}} else {GMO.opts.statusDivId = "statusDivOnMap";}
             if(GMO.opts.directionsDivId) {
-                if(el = document.getElementById(GMO.opts.directionsDivId)) {
+                el = document.getElementById(GMO.opts.directionsDivId);
+                if(el !== null) {
                     el.innerHTML = "";
                 }
                 else {
@@ -2420,7 +2465,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
             //	}
             //);
         }
-    }
+    };
 
 
 
@@ -2440,20 +2485,20 @@ Array.prototype.inArray = function (v) {
         }
     }
     return false;
-}
+};
 /**
  * searchs for object in sub array
  * @return Int
  * @todo test
  */
 Array.prototype.inSubArray = function(variableName, v) {
-    var a = []
+    var a = [];
     for (var i=0; i < this.length; i++) {
-        var x = this[i]
+        var x = this[i];
         a.push (x[variableName]);
     }
     return a.inArray(v);
-}
+};
 /**
  * tests to see if map function is defined
  * @return boolen
@@ -2475,7 +2520,7 @@ if(typeof google !== "undefined") {
             markersArray[i].setMap(null);
         }
         markersArray = [];
-    }
+    };
 
 }
 
@@ -2488,17 +2533,17 @@ if(typeof google !== "undefined") {
 * @return {XMLHttpRequest|Null}
 */
 function createXmlHttpRequest() {
- try {
-   if (typeof ActiveXObject != 'undefined') {
-     return new ActiveXObject('Microsoft.XMLHTTP');
-   } else if (window["XMLHttpRequest"]) {
-     return new XMLHttpRequest();
-   }
- } catch (e) {
-   changeStatus(e);
- }
- return null;
-};
+    try {
+        if (typeof ActiveXObject != 'undefined') {
+            return new ActiveXObject('Microsoft.XMLHTTP');
+        } else if (window.XMLHttpRequest) {
+            return new XMLHttpRequest();
+        }
+    } catch (e) {
+        changeStatus(e);
+    }
+    return null;
+}
 
 /**
 * This functions wraps XMLHttpRequest open/send function.
@@ -2514,9 +2559,9 @@ function downloadUrl(url, callback) {
         return false;
     }
     request.onreadystatechange = function() {
-    if (request.readyState == 4) {
-        try {
-            status = request.status;
+        if (request.readyState == 4) {
+            try {
+                status = request.status;
             }
             catch (e) {
                 // Usually indicates request timed out in FF.
@@ -2526,7 +2571,7 @@ function downloadUrl(url, callback) {
                 request.onreadystatechange = function() {};
             }
         }
-    }
+    };
     request.open('GET', url, true);
     try {
         request.send(null);
@@ -2534,7 +2579,7 @@ function downloadUrl(url, callback) {
     catch (e) {
         changeStatus(e);
     }
-};
+}
 
 /**
  * Parses the given XML string and returns the parsed document in a
