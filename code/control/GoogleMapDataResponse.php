@@ -127,17 +127,17 @@ class GoogleMapDataResponse extends Controller
      * @inherited
      */
     private static $allowed_actions = array(
-        'showemptymap',
-        'showpagepointsmapxml',
-        'showchildpointsmapxml',
-        'showdirectchildren',
-        'showsearchpoint',
-        'showcustompagesmapxml',
-        'showcustomdosmapxml',
-        'showdataobjects',
-        'updatemexml',
-        'showaroundmexml',
-        'showpointbyid'
+        'showemptymap' => true,
+        'showpagepointsmapxml' => true,
+        'showchildpointsmapxml' => true,
+        'showdirectchildren' => true,
+        'showsearchpoint' => true,
+        'showcustompagesmapxml' => true,
+        'showcustomdosmapxml' => true,
+        'showdataobjects' => true,
+        'updatemexml' => 'ADMIN',
+        'showaroundmexml' => true,
+        'showpointbyid' => true
     );
 
     /**

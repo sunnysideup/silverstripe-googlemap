@@ -213,6 +213,7 @@ class GoogleMapLocationsDOD_Controller extends Extension
         }
         $allowedActions = Config::inst()->get("GoogleMapDataResponse", "allowed_actions");
         if (isset($allowedActions[$action]) || in_array($action, $allowedActions)) {
+            $title = str_replace('/', '', $title);
             $linkForData = $this->getLinkForData($this->owner->ID, $action, $title, $lng, $lat, $filterCode);
             //where the magic happens...
             $this->MyGoogleMap()->addLayer($linkForData, $title);
