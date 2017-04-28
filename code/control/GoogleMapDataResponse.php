@@ -217,15 +217,16 @@ class GoogleMapDataResponse extends Controller
         }
         //HACK
         elseif (!$this->owner) {
-            $this->owner = SiteTree::get()->filter(array(
-                "Title" => Convert::raw2sql($this->request->param("Title"))
-            ))->First();
+            $this->owner = DataObject::get_one(
+                'SiteTree',
+                array("Title" => Convert::raw2sql($this->request->param("Title"))
+            );
         }
         if ($this->owner || in_array($this->request->param("Action"), self::$actions_without_owner)) {
             //all ok
         } elseif (in_array($this->request->param("Action"), self::$actions_without_owner)) {
             //ok too
-            $this->owner = SiteTree::get()->First();
+            $this->owner = DataObject::get_one('SiteTree');
         } else {
             user_error("no owner has been identified for GoogleMapDataResponse", E_USER_NOTICE);
         }

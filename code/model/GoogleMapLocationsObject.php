@@ -126,10 +126,13 @@ class GoogleMapLocationsObject extends DataObject
      */
     public static function point_exists($lng, $lat)
     {
-        return GoogleMapLocationsObject::get()->filter(array(
-            "Longitude" => floatval($lng),
-            "Latitude" => floatval($lat)
-        ))->First();
+        return DataObject::get_one(
+            'GoogleMapLocationsObject',
+            array(
+                "Longitude" => floatval($lng),
+                "Latitude" => floatval($lat)
+            )
+        );
     }
 
     public function CMSEditLink()

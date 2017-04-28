@@ -73,9 +73,10 @@ class GetLatLngFromGoogleUsingAddress extends Object
         if ($q) {
             //check if we have searched for this before ...
             $result = null;
-            $searchRecord = GetLatLngFromGoogleUsingAddressSearchRecord::get()
-                ->filter(array("SearchPhrase" => Convert::raw2sql($q)))
-                ->First();
+            $searchRecord = DataObject::get_one(
+                'GetLatLngFromGoogleUsingAddressSearchRecord',
+                array("SearchPhrase" => Convert::raw2sql($q))
+            );
             if ($searchRecord && $searchRecord->ResultArray) {
                 if ($debug) {
                     debug::show("Results from GetLatLngFromGoogleUsingAddressSearchRecord");
