@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<class xmlns="http://xml.phpdox.net/src" full="BatchGeoAddressConverter" namespace="" name="BatchGeoAddressConverter" abstract="false" final="false" start="9" end="41">
-  <file path="/var/www/_modules/googlemap/trunk/docs/en/phpdox/../../../code/converters" file="BatchGeoAddressConverter.php" realpath="/var/www/_modules/googlemap/trunk/code/converters/BatchGeoAddressConverter.php" size="1363" time="2015-03-14T10:22:53+13:00" unixtime="1426281773" sha1="fa054c8bd8e9a6a1f2d9cd5dc38bb7787b8223b4" relative="code/converters/BatchGeoAddressConverter.php"/>
-  <docblock>
-    <description compact="here is some old code that maybe of use."/>
-  </docblock>
-  <extends full="Object" namespace="" name="Object"/>
-</class>
