@@ -219,7 +219,7 @@ class GoogleMapDataResponse extends Controller
         elseif (!$this->owner) {
             $this->owner = DataObject::get_one(
                 'SiteTree',
-                array("Title" => Convert::raw2sql($this->request->param("Title"))
+                array("Title" => Convert::raw2sql($this->request->param("Title")))
             );
         }
         if ($this->owner || in_array($this->request->param("Action"), self::$actions_without_owner)) {
