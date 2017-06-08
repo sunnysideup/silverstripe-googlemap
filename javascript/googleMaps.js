@@ -57,7 +57,7 @@ jQuery(document).ready(
                         console.debug(link);
                         GoogleMapConstructors[0].googleMap.addLayer(link, responseText.Title);
                     };
-                    GMO = GoogleMapConstructors[i].googleMap;
+                    var GMO = GoogleMapConstructors[i].googleMap;
                     var options = {
                         error: function() {
                             alert("Could not find address!");

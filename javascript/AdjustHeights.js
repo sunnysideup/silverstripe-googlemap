@@ -1,7 +1,4 @@
-
-
-
-AdjustHeightsForGoogleMap = {
+var AdjustHeightsForGoogleMap = {
 
     boxesSelector: "#GmapSideBarlist > li",
 
