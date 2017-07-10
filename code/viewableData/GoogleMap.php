@@ -27,7 +27,7 @@ class GoogleMap extends ViewableData
 
 
     /* BASIC MAP SETTINGS */
-    private static $api_version = '3.26';
+    private static $api_version = '3';
     private static $google_map_api_key = "";
     private static $default_latitude = 0.000000001; //MOVE TO SITECONFIG
     private static $default_longitude = 0.0000000001; //MOVE TO SITECONFIG
