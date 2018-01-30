@@ -158,8 +158,10 @@ class GoogleMapLocationsObject extends DataObject
         }
         $fields->addFieldToTab("Root.Main", $addressField = new TextField('Address', $labels["Address"]));
         $addressField->setRightTitle(
-            _t("GoogleMap.CMS_ADDRESS_EXPLANATION",
-            "(e.g. 123 Main Street, 90210, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed")
+            _t(
+                "GoogleMap.CMS_ADDRESS_EXPLANATION",
+                "(e.g. 123 Main Street, 90210, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed"
+            )
         );
         if ($this->Manual) {
             $fields->addFieldToTab("Root.Details", new TextField('Latitude', $labels["Latitude"]));

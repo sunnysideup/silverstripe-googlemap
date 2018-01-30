@@ -15,5 +15,5 @@ class GoogleMapModelAdmin extends ModelAdmin
 
     private static $menu_title = 'Google Maps';
 
-    private static $menu_icon = 'googlemap/images/icons/GoogleMapModelAdmin.png';    
+    private static $menu_icon = 'googlemap/images/icons/GoogleMapModelAdmin.png';
 }
