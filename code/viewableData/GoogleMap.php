@@ -98,7 +98,7 @@ class GoogleMap extends ViewableData
     private static $default_country_code = "nz"; // see https://developers.google.com/maps/documentation/geocoding/#RegionCodes
     private static $number_shown_in_around_me = 7; //MOVE TO SITECONFIG
     private static $max_radius_for_show_around_me = 20000;
-        
+
     /* DIRECTIONS SETTINGS */
     private static $style_sheet_url = "";
     private static $locale_for_results = "en_NZ";
@@ -197,6 +197,15 @@ class GoogleMap extends ViewableData
         return $this->noDataPointsMessage;
     }
 
+
+    /**
+     * used for static and non-static maps, hence defined only once.
+     * @return string
+     */
+    public function GoogleMapDivID()
+    {
+        return Config::inst()->get("GoogleMap", "main_div_id");
+    }
 
     /**
      * used for static and non-static maps, hence defined only once.
@@ -739,7 +748,7 @@ class GoogleMap extends ViewableData
             }
             GoogleMapConstructors.push(
                 {
-                    divID: "'.$this->config()->get("main_div_id").'",
+                    divID: "'.$this->GoogleMapDivID().'",
                     layers: [],
                     address: "",
                     options: {
