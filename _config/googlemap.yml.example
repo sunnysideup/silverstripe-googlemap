@@ -3,6 +3,9 @@
 #########################################
 
 
+GoogleMapDataResponse:
+  max_radius_for_show_around_me: 50
+
 GoogleMapLocationsDOD:
   page_classes_with_map:
     - HomePage
