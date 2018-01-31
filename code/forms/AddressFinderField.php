@@ -12,7 +12,7 @@ class AddressFinderField extends TextField
      * returns false if the address can not be found and TRUE
      * if the address can be found...
      * @param array $params params for the Google Server
-     * 
+     *
      * @return false|array
      */
     public function getAddressArray($params = [])

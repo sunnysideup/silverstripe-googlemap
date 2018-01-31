@@ -102,7 +102,7 @@ class GoogleMapLocationsObject extends DataObject
      * NOTE: 6378.137 is the radius of the earth in kilometers
      * @param Double $lng - longitude of location
      * @param Double $lat - latitude of location
-     * 
+     *
      * @return String
      */
     public static function radius_definition($lng, $lat)

@@ -642,7 +642,7 @@ class GoogleMap extends ViewableData
      */
     public function createDataPoints()
     {
-        if($this->dataPointsXML === '') {
+        if ($this->dataPointsXML === '') {
             $this->loadDefaults();
             $idArray = array();
             $bestZoom = $this->Config()->get("default_zoom");
@@ -702,7 +702,7 @@ class GoogleMap extends ViewableData
 
                 $this->processedDataPointsForTemplate = $this->orderItemsByLatitude($this->processedDataPointsForTemplate);
             }
-            if(! $pointsXml) {
+            if (! $pointsXml) {
                 $pointsXml = '<errormessage>'.$this->getNoDataPointsMessage().'</errormessage>';
             }
             if (!$averageLongitude) {

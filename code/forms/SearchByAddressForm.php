@@ -11,7 +11,6 @@
 
 class SearchByAddressForm extends Form
 {
-
     private static $type_of_result = '';
 
     /**
@@ -105,7 +104,7 @@ class SearchByAddressForm extends Form
             );
             $typeOfResult = $this->Config()->get('type_of_result');
             $setTypeLine = '';
-            if($typeOfResult) {
+            if ($typeOfResult) {
                 $setTypeLine = 'autocomplete.setTypes([\''.$typeOfResult.'\']);';
             }
             Requirements::customScript(

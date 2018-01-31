@@ -185,7 +185,7 @@ class GetLatLngFromGoogleUsingAddress extends Object
             $url .= "&key=".$api;
         }
         $params = $params + Config::inst()->get("GetLatLngFromGoogleUsingAddress", "additional_params");
-        foreach($params as $key => $value) {
+        foreach ($params as $key => $value) {
             $url .= $key.'='.urlencode($value);
         }
         if ($debug) {
