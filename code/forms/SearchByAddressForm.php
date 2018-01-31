@@ -96,9 +96,10 @@ class SearchByAddressForm extends Form
         );
         $addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your exact address or zip code here.")) ;
         if ($this->useAutocomplete) {
+            $apiVersion = Config::inst()->get("GoogleMap", "api_version");
             Requirements::javascript(
                 "//maps.googleapis.com/maps/api/js"
-                ."?v=".Config::inst()->get("GoogleMap", "api_version")
+                ."?v=".$apiVersion
                 ."&libraries=places"
                 ."&key=".Config::inst()->get('GoogleMap', 'google_map_api_key')
             );

@@ -26,7 +26,7 @@ jQuery(document).ready(
                 GoogleMapConstructors[i].googleMap = new GoogleMapConstructor(
                     obj.divID,                            //div ID
                     null,                                 //url for map... added via layers
-                       'GoogleMapConstructors['+i+'].googleMap.getMap()',   // object that holds constructor
+                    'GoogleMapConstructors['+i+'].googleMap.getMap()',   // object that holds constructor
                     obj.options                           //map options ...
                 );
                 GoogleMapConstructors[i].googleMap.init();
@@ -46,7 +46,7 @@ jQuery(document).ready(
                 if(i === 0 && jQuery('#SearchByAddressForm_SearchByAddressForm').length > 0) {
                     var formSuccess = function(responseText, statusText, xhr, $form)  {
                         if(typeof responseText['ErrorMessage'] !== 'undefined') {
-                            alert(responseText['ErrorMessage']);
+                            GMO.recordError(responseText['ErrorMessage']);
                         } else {
                             var base = jQuery("base").attr("href");
                             var link = base;
@@ -63,7 +63,7 @@ jQuery(document).ready(
                     var GMO = GoogleMapConstructors[i].googleMap;
                     var options = {
                         error: function() {
-                            alert("Could not find address!");
+                            GMO.recordError("Could not find address!");
                         },
                         success: formSuccess,
                         dataType:  'json'        // 'xml', 'script', or 'json' (expected server response type)
@@ -371,7 +371,11 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 google.maps.event.addListener(GMO.directions, "load",  function() {
                         GMO.directionsOnLoad();
                 });
-                google.maps.event.addListener(GMO.directions, "error", this.directionsHandleErrors);
+                google.maps.event.addListener(
+                    GMO.directions,
+                    "error",
+                    this.directionsHandleErrors
+                );
                 //start icon
                 G_START_ICON = "";
                 G_START_ICON.iconSize = new google.maps.Size(0, 0);
@@ -797,7 +801,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                 var maxZoomService = new google.maps.MaxZoomService();
                 maxZoomService.getMaxZoomAtLatLng(m.position, function(response) {
                     if (response.status != google.maps.MaxZoomStatus.OK) {
-                        alert(GMO._t.error_in_zoom);
+                        GMO.recordError(GMO._t.error_in_zoom);
                         return;
                     }
                     else {
@@ -1093,7 +1097,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
         processXml: function(docToRead) {
             this.bounds = new google.maps.LatLngBounds();
             if(typeof docToRead.getElementsByTagName('ErrorMessage').length > 0) {
-                alert(docToRead.getElementsByTagName('ErrorMessage')[0]);
+                GMO.recordError(docToRead.getElementsByTagName('ErrorMessage')[0]);
             } else if(docToRead.getElementsByTagName("pointcount").length > 0) {
                 var pointCount = docToRead.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue;
                 pointCount = parseInt(pointCount);
@@ -1194,7 +1198,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                                 p = this.createPolygon(points,color,width,opacity,fillcolor,fillopacity,pbounds, name, desc);
                             }
                             else {
-                                alert(GMO._t.error_in_loading);
+                                GMO.recordError(GMO._t.error_in_loading);
                             }
                         }
                         else {
@@ -1252,7 +1256,7 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                     if(items.length > 0) {
                         for(var i = 0; i < items.length; i++) {
                             var error = docToRead.getElementsByTagName("errormessage")[i].innerHTML;
-                            alert(error);
+                            GMO.recordError(error);
                         }
                     }
 
@@ -1367,14 +1371,14 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                             if(isManuallyAdded == -1) {
                                 html += '' +
                                         '<li class="forLayer'+layerName+' icon'+i+'">' +
-                                       ' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>' +
+                                       ' <a href="'+ this.currentPageURL + '#'+ GMO.mapDivName + '" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>' +
                                        ' <div class="infowindowDetails">'  + this.gmarkers[i].markerDesc + '</div>' +
                                        '</li>';
                             }
                             else {
                                 html += '' +
                                        '<li class="forLayer'+layerName+'">' + GMO._t.you_added + ':' +
-                                       ' <a href="'+ this.currentPageURL + '#GoogleMapDiv" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>' +
+                                       ' <a href="'+ this.currentPageURL + '#'+ GMO.mapDivName + '" onclick="'+GMO.variableName+'.showMarkerFromList(' + i + '); return false;">' + this.gmarkers[i].markerName + '</a>' +
                                        '</li>';
                             }
                         }
@@ -1501,45 +1505,72 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
 
         /**
          * updates status
-         * @todo test???
+         *
+         * @param string html
+         * @param bool add - add rather than replace ...
          */
         updateStatus: function(html, add) {
-            var hideAction = "";
-            var zoomLinkLabel = "";
-            //depreciated...
-            if(add == "help") {
-                if(html) {
-                    html += "<hr />";
-                }
-                html += "<hr />" + this.helpHtml() + "";
-            }
-            else {
-                //do nothing
-            }
-            if(document.getElementById(this.mapDivName)) {
-                if(this.mapIsZoomed) {
-                    zoomLinkLabel = 'reduce map size';
-                    hideAction = "";
-                }
-                else {
-                    zoomLinkLabel = 'full-screen';
-                    hideAction = '<span>|</span> <a href="#" onclick="'+GMO.variableName+'.hideStatus();">' + GMO._t.hide + '</a> ';
-                }
-            }
-            var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
-            // depreciated
-            fullHtml += ' '+
-            '<a href="#" onclick="'+GMO.variableName+'.updateStatus(\'\', \'help\'); return false;"> ' + GMO._t.show_help + ' </a> <span>|</span>' +
-                ' <a href="#" onclick="'+GMO.variableName+'.enlargeMap(); return false;" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> ' +
-             hideAction +
-                '</p>'+ html;
             if(this.opts.statusDivId) {
                 var el = document.getElementById(this.opts.statusDivId);
                 if(el !== null) {
+                    if(typeof add === 'undefined') {
+                        add = false;
+                    }
+                    if(typeof error === 'undefined') {
+                        error = false;
+                    }
+                    var hideAction = "";
+                    var zoomLinkLabel = "";
+                    //depreciated...
+                    if(add) {
+                        if(html) {
+                            html += "<hr />";
+                        }
+                        html += "<hr />" + this.helpHtml() + "";
+                    }
+                    else {
+                        //do nothing
+                    }
+                    if(document.getElementById(this.mapDivName)) {
+                        if(this.mapIsZoomed) {
+                            zoomLinkLabel = 'reduce map size';
+                            hideAction = "";
+                        }
+                        else {
+                            zoomLinkLabel = 'full-screen';
+                            hideAction = '<span>|</span> <a href="#" onclick="'+GMO.variableName+'.hideStatus();">' + GMO._t.hide + '</a> ';
+                        }
+                    }
+                    var fullHtml = '' + '<p class="helpLink" style="text-align: right; font-size: 10px; width: auto; float: right;">';
+                    // depreciated
+                    fullHtml += ' '+
+                    '<a href="#" onclick="'+GMO.variableName+'.updateStatus(\'\', \'help\'); return false;"> ' + GMO._t.show_help + ' </a> <span>|</span>' +
+                        ' <a href="#" onclick="'+GMO.variableName+'.enlargeMap(); return false;" id="mapZoomLinkLabel">' + zoomLinkLabel + '</a> ' +
+                     hideAction +
+                        '</p>'+ html;
                     el.innerHTML = fullHtml;
                     el.style.display = "block";
                 }
             }
+        },
+
+        recordError: function(message)
+        {
+            jQuery('#map-error-message').remove();
+            var html = '<p id="map-error-message" class="message bad warning">'+message+'</p>';
+            jQuery(html).insertBefore('#'+ GMO.mapDivName + '');
+            window.setTimeout(
+                function()
+                {
+                    jQuery('#map-error-message').fadeOut(
+                        function()
+                        {
+                            jQuery('#map-error-message').remove();
+                        }
+                    )
+                },
+                5000
+            )
         },
 
         /**
