@@ -39,6 +39,12 @@ class GoogleMapDataResponse extends Controller
     private static $session_var_prefix = "addCustomGoogleMap";
 
     /**
+     * set searches in show around me to a specific max radius
+     * @var int
+     */
+    private static $max_radius_for_show_around_me = 20000;
+
+    /**
      * Default URL handlers - (Action)/(ID)/(OtherID)
      */
     private static $url_handlers = array(
@@ -451,6 +457,10 @@ class GoogleMapDataResponse extends Controller
     {
         $lng = 0;
         $lat = 0;
+        $maxRadius = intval($this->Config()->get('max_radius_for_show_around_me')) - 0;
+        if (isset($_GET['maxradius'])) {
+            $maxRadius = intval($_GET['maxradius']);
+        }
         $excludeIDList = array();
         $stage = '';
         if (Versioned::current_stage() == "Live") {
@@ -482,7 +492,7 @@ class GoogleMapDataResponse extends Controller
         }
         if ($lng && $lat) {
             $orderByRadius = GoogleMapLocationsObject::radius_definition($lng, $lat);
-            $where = "(".$orderByRadius.") > 0 AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
+            $where = "(".$orderByRadius.") > 0 (".$orderByRadius.") < ".$maxRadius." AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
             if ($classNameForParent && !is_object($classNameForParent)) {
                 $where .= " AND \"SiteTree".$stage."\".\"ClassName\" = '".$classNameForParent."'";
             }
