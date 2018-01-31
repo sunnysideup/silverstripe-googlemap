@@ -37,6 +37,13 @@ class GetLatLngFromGoogleUsingAddress extends Object
     private static $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s";
 
     /**
+     * Additional data to send to the Google Server
+     *
+     * @var array
+     */
+    private static $additional_params = [];
+
+    /**
        * default user to first result that is returned.
        *
        * @var boolean
@@ -62,10 +69,12 @@ class GetLatLngFromGoogleUsingAddress extends Object
      * Get first placemark as flat array
      *
      * @param string $q
-     * @param Boolean $tryAnyway
-     * @return Array
+     * @param bool $tryAnyway
+     * @param array $params
+     *
+     * @return array
      */
-    public static function get_placemark_as_array($q, $tryAnyway = 0)
+    public static function get_placemark_as_array($q, $tryAnyway = false, $params = [])
     {
         //debug?
         $debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug");
@@ -97,7 +106,7 @@ class GetLatLngFromGoogleUsingAddress extends Object
                 $result = null;
             }
             if (!$result) {
-                $result = self::get_placemark($q, $tryAnyway);
+                $result = self::get_placemark($q, $tryAnyway, $params);
                 if ($debug) {
                     debug::show(print_r($result, 1));
                 }
@@ -126,14 +135,15 @@ class GetLatLngFromGoogleUsingAddress extends Object
     * Get first placemark from google, or return false.
     *
     * @param string $q
-    * @param Boolean $tryAnyway
+    * @param bool $tryAnyway
+    * @param array $params
     *
     * @return Object Single placemark | false
     */
-    protected static function get_placemark($q, $tryAnyway = false)
+    protected static function get_placemark($q, $tryAnyway = false, $params = [])
     {
         if (Config::inst()->get("GetLatLngFromGoogleUsingAddress", "server_side_available") || $tryAnyway) {
-            $responseObj = self::get_geocode_obj($q);
+            $responseObj = self::get_geocode_obj($q, $params);
             if (Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug")) {
                 debug::show(print_r($responseObj, 1));
             }
@@ -152,10 +162,13 @@ class GetLatLngFromGoogleUsingAddress extends Object
         * Get geocode from google.
         *
         * @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
+        *
         * @param string $q Place name (e.g. 'Portland' or '30th Avenue, New York")
+        * @param array $params any additional params for the cURL request.
+        *
         * @return Object Multiple Placemarks and status code
         */
-    protected static function get_geocode_obj($q)
+    protected static function get_geocode_obj($q, $params = [])
     {
         $debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug");
         $q = trim($q);
@@ -171,7 +184,11 @@ class GetLatLngFromGoogleUsingAddress extends Object
         } elseif ($api = Config::inst()->get("GoogleMap", "google_map_api_key")) {
             $url .= "&key=".$api;
         }
-        if (Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug")) {
+        $params = $params + Config::inst()->get("GetLatLngFromGoogleUsingAddress", "additional_params");
+        foreach($params as $key => $value) {
+            $url .= $key.'='.urlencode($value);
+        }
+        if ($debug) {
             debug::show(print_r($url, 1));
         }
         $ch = curl_init($url);
@@ -189,6 +206,7 @@ class GetLatLngFromGoogleUsingAddress extends Object
         if ($debug) {
             debug::show(print_r($responseString, 1));
         }
+
         return self::json_decoder($responseString);
     }
 

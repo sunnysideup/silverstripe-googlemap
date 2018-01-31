@@ -271,12 +271,13 @@ class GoogleMapLocationsDOD_Controller extends Extension
      *
      * @param String $address
      * @param Boolean $addShowAroundAdress
-     * @param String $filter - usuall a SiteTree ClassName (e.g. ProductPage)
+     * @param String $filter - usually a SiteTree ClassName (e.g. ProductPage)
+     * @param array $params - params for the Google Server
      */
-    public function addAddress($address, $addShowAroundAdress = false, $filter = "")
+    public function addAddress($address, $addShowAroundAdress = false, $filter = "", $params = [])
     {
         if ($addShowAroundAdress) {
-            $pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
+            $pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address, false, $params);
             if ($pointArray) {
                 $title = $pointArray["FullAddress"];
                 $lng = $pointArray["Longitude"];

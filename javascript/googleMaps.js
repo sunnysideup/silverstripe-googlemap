@@ -45,17 +45,20 @@ jQuery(document).ready(
                 }
                 if(i === 0 && jQuery('#SearchByAddressForm_SearchByAddressForm').length > 0) {
                     var formSuccess = function(responseText, statusText, xhr, $form)  {
-                        var base = jQuery("base").attr("href");
-                        var link = base;
-                        link += "\/googlemap\/";
-                        link += ""+responseText.Action+"\/";
-                        link += ""+responseText.ParentID+"\/";
-                        link += ""+responseText.Title+"\/";
-                        link += ""+responseText.Lng+"\/";
-                        link += ""+responseText.Lat+"\/";
-                        link += ""+responseText.ClassNames+"\/";
-                        console.debug(link);
-                        GoogleMapConstructors[0].googleMap.addLayer(link, responseText.Title);
+                        if(typeof responseText['ErrorMessage'] !== 'undefined') {
+                            alert(responseText['ErrorMessage']);
+                        } else {
+                            var base = jQuery("base").attr("href");
+                            var link = base;
+                            link += "\/googlemap\/";
+                            link += ""+responseText.Action+"\/";
+                            link += ""+responseText.ParentID+"\/";
+                            link += ""+responseText.Title+"\/";
+                            link += ""+responseText.Lng+"\/";
+                            link += ""+responseText.Lat+"\/";
+                            link += ""+responseText.ClassNames+"\/";
+                            GoogleMapConstructors[0].googleMap.addLayer(link, responseText.Title);
+                        }
                     };
                     var GMO = GoogleMapConstructors[i].googleMap;
                     var options = {
@@ -1089,7 +1092,9 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
          */
         processXml: function(docToRead) {
             this.bounds = new google.maps.LatLngBounds();
-            if(docToRead.getElementsByTagName("pointcount").length > 0) {
+            if(typeof docToRead.getElementsByTagName('ErrorMessage').length > 0) {
+                alert(docToRead.getElementsByTagName('ErrorMessage')[0]);
+            } else if(docToRead.getElementsByTagName("pointcount").length > 0) {
                 var pointCount = docToRead.getElementsByTagName("pointcount")[0].childNodes[0].nodeValue;
                 pointCount = parseInt(pointCount);
                 this.tooManyPointsWarning(pointCount + 1);
@@ -1240,9 +1245,17 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         );
                         this.updateStatus(GMO._t.one_location_loaded);
                     }
-                }
-                else {
-                    var title =  doc.getElementsByTagName("title")[0];
+                } else {
+                    //no pins found!!!
+                    var title = docToRead.getElementsByTagName("title")[0];
+                    var items = docToRead.getElementsByTagName("errormessage");
+                    if(items.length > 0) {
+                        for(var i = 0; i < items.length; i++) {
+                            var error = docToRead.getElementsByTagName("errormessage")[i].innerHTML;
+                            alert(error);
+                        }
+                    }
+
                     if(this.opts.titleId) {
                         el = document.getElementById(this.opts.titleId);
                         if(typeof el !== null) {
@@ -1253,6 +1266,8 @@ function GoogleMapConstructor(mapDivName, url, variableName, opts) {
                         document.title = title;
                     }
                 }
+            } else {
+                //error in data!
             }
         },
 

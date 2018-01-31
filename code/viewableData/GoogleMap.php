@@ -97,7 +97,8 @@ class GoogleMap extends ViewableData
     private static $add_address_finder = false; //MOVE TO SITECONFIG
     private static $default_country_code = "nz"; // see https://developers.google.com/maps/documentation/geocoding/#RegionCodes
     private static $number_shown_in_around_me = 7; //MOVE TO SITECONFIG
-
+    private static $max_radius_for_show_around_me = 20000;
+        
     /* DIRECTIONS SETTINGS */
     private static $style_sheet_url = "";
     private static $locale_for_results = "en_NZ";
@@ -160,9 +161,10 @@ class GoogleMap extends ViewableData
 
     /**
      * title of map
-     * @var String
+     * @var string
      */
     protected $titleOfMap = "";
+
     public function setTitleOfMap($s)
     {
         $this->titleOfMap = $s;
@@ -174,6 +176,25 @@ class GoogleMap extends ViewableData
     public function getTitleOfMap()
     {
         return $this->titleOfMap;
+    }
+
+    /**
+     * title of map
+     * @var string
+     */
+    protected $noDataPointsMessage = "";
+
+    public function setNoDataPointsMessage($s)
+    {
+        $this->noDataPointsMessage = $s;
+    }
+    public function NoDataPointsMessage()
+    {
+        return $this->getNoDataPointsMessage();
+    }
+    public function getNoDataPointsMessage()
+    {
+        return $this->noDataPointsMessage;
     }
 
 
@@ -290,9 +311,9 @@ class GoogleMap extends ViewableData
     }
 
     /**
-     * @var String
+     * @var string
      */
-    protected $dataPointsXML;
+    protected $dataPointsXML = '';
     protected function DataPointsXML()
     {
         return $this->getDataPointsXML();
@@ -621,63 +642,69 @@ class GoogleMap extends ViewableData
      */
     public function createDataPoints()
     {
-        $this->dataPointsXML = '';
-        $this->loadDefaults();
-        $idArray = array();
-        $bestZoom = $this->Config()->get("default_zoom");
-        $averageLatitude = 0;
-        $averageLongitude = 0;
-        //width
-        $totalCount = $this->getPointCount();
-        $filterFree = count($this->filteredClassNameArray) ? false : true;
-        $averageLongitudeArray = array();
-        $averageLatitudeArray = array();
-        if ($totalCount > 0  && $totalCount < 10000) {
-            $this->processedDataPointsForTemplate = new ArrayList();
+        if($this->dataPointsXML === '') {
+            $this->loadDefaults();
+            $idArray = array();
+            $bestZoom = $this->Config()->get("default_zoom");
+            $averageLatitude = 0;
+            $averageLongitude = 0;
             $count = 0;
             $pointsXml = '';
-            foreach ($this->getPoints() as $dataPoint) {
-                $dataPoint->addParentData();
-                if ($filterFree || in_array($dataPoint->ClassName, $this->filteredClassNameArray)) {
-                    if (!in_array($dataPoint->ID, $idArray)) {
-                        if ($dataPoint->Longitude && $dataPoint->Latitude) {
-                            $dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
-                            $link = '';
-                            if ($dataPoint->Link) {
-                                $link = $dataPoint->getAjaxInfoWindowLink();
+            //width
+            $totalCount = $this->getPointCount();
+            $filterFree = count($this->filteredClassNameArray) ? false : true;
+            $averageLongitudeArray = array();
+            $averageLatitudeArray = array();
+            if ($totalCount > 0  && $totalCount < 10000) {
+                $this->processedDataPointsForTemplate = new ArrayList();
+                foreach ($this->getPoints() as $dataPoint) {
+                    $dataPoint->addParentData();
+                    if ($filterFree || in_array($dataPoint->ClassName, $this->filteredClassNameArray)) {
+                        if (! in_array($dataPoint->ID, $idArray)) {
+                            if ($dataPoint->Longitude && $dataPoint->Latitude) {
+                                $dataLine = '<Point><coordinates>'.$dataPoint->Longitude.','.$dataPoint->Latitude.'</coordinates></Point>';
+                                $link = '';
+                                if ($dataPoint->Link) {
+                                    $link = $dataPoint->getAjaxInfoWindowLink();
+                                }
+                                $staticIcon = '';
+                                if ($dataPoint->staticIcon) {
+                                    $staticIcon = $dataPoint->staticIcon;
+                                } else {
+                                    $staticIcon = $this->Config()->get("static_icon");
+                                }
+                                $center = round($dataPoint->Latitude, 6).",".round($dataPoint->Longitude, 6);
+                                //get the center IF there is only one point...
+                                if (!$count) {
+                                    $defaultCenter = $center;
+                                }
+                                if (!$dataPoint->Name) {
+                                    $dataPoint->Name = "no name";
+                                }
+                                $pointsXml .=
+                                            '<Placemark>'.
+                                            '<id>'.$dataPoint->ID.'</id>'.
+                                            '<name>'.Convert::raw2xml($dataPoint->Name).'</name>'.
+                                            $dataLine.
+                                            '<description><![CDATA[ '.$dataPoint->getAjaxInfoWindowLink().']]></description>'.
+                                            '</Placemark>';
+                                $this->processedDataPointsForTemplate->push($dataPoint);
+                                $averageLatitudeArray[] = $dataPoint->Longitude;
+                                $averageLongitudeArray[] = $dataPoint->Latitude;
+                                $count++;
                             }
-                            $staticIcon = '';
-                            if ($dataPoint->staticIcon) {
-                                $staticIcon = $dataPoint->staticIcon;
-                            } else {
-                                $staticIcon = $this->Config()->get("static_icon");
-                            }
-                            $center = round($dataPoint->Latitude, 6).",".round($dataPoint->Longitude, 6);
-                            //get the center IF there is only one point...
-                            if (!$count) {
-                                $defaultCenter = $center;
-                            }
-                            if (!$dataPoint->Name) {
-                                $dataPoint->Name = "no name";
-                            }
-                            $pointsXml .=
-                                        '<Placemark>'.
-                                        '<id>'.$dataPoint->ID.'</id>'.
-                                        '<name>'.Convert::raw2xml($dataPoint->Name).'</name>'.
-                                        $dataLine.
-                                        '<description><![CDATA[ '.$dataPoint->getAjaxInfoWindowLink().']]></description>'.
-                                        '</Placemark>';
-                            $this->processedDataPointsForTemplate->push($dataPoint);
-                            $averageLatitudeArray[] = $dataPoint->Longitude;
-                            $averageLongitudeArray[] = $dataPoint->Latitude;
-                            $count++;
                         }
                     }
+                    $idArray[$dataPoint->ID] = $dataPoint->ID;
                 }
-                $idArray[$dataPoint->ID] = $dataPoint->ID;
+                $averageLongitude = array_sum($averageLongitudeArray) / count($averageLongitudeArray);
+                $averageLatitude = array_sum($averageLatitudeArray) / count($averageLatitudeArray);
+
+                $this->processedDataPointsForTemplate = $this->orderItemsByLatitude($this->processedDataPointsForTemplate);
             }
-            $averageLongitude = array_sum($averageLongitudeArray) / count($averageLongitudeArray);
-            $averageLatitude = array_sum($averageLatitudeArray) / count($averageLatitudeArray);
+            if(! $pointsXml) {
+                $pointsXml = '<errormessage>'.$this->getNoDataPointsMessage().'</errormessage>';
+            }
             if (!$averageLongitude) {
                 $averageLongitude = $this->config()->get("default_longitude");
             }
@@ -693,8 +720,8 @@ class GoogleMap extends ViewableData
                         .'<info>'.$this->getWhereStatementDescription().'</info>'
                         .'</mapinfo>'
                         .$pointsXml;
-            $this->processedDataPointsForTemplate = $this->orderItemsByLatitude($this->processedDataPointsForTemplate);
         }
+
         return true;
     }
 

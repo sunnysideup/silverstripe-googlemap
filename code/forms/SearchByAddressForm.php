@@ -12,6 +12,7 @@
 class SearchByAddressForm extends Form
 {
 
+    private static $type_of_result = '';
 
     /**
      *
@@ -94,20 +95,28 @@ class SearchByAddressForm extends Form
             new FieldList(new FormAction("findnearaddress", _t("GoogleMapLocationsDOD.SEARCH", "Search"))),
             new RequiredFields("FindNearAddress")
         );
-        $addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your address or zip code here.")) ;
+        $addressField->setAttribute('placeholder', _t('GoogleMapLocationsDOD.YOUR_ADDRESS', "Enter your exact address or zip code here.")) ;
         if ($this->useAutocomplete) {
             Requirements::javascript(
-            "//maps.googleapis.com/maps/api/js"
-            ."?v=".Config::inst()->get("GoogleMap", "api_version")
-            ."&libraries=places"
-            ."&key=".Config::inst()->get('GoogleMap', 'google_map_api_key')
+                "//maps.googleapis.com/maps/api/js"
+                ."?v=".Config::inst()->get("GoogleMap", "api_version")
+                ."&libraries=places"
+                ."&key=".Config::inst()->get('GoogleMap', 'google_map_api_key')
             );
+            $typeOfResult = $this->Config()->get('type_of_result');
+            $setTypeLine = '';
+            if($typeOfResult) {
+                $setTypeLine = 'autocomplete.setTypes([\''.$typeOfResult.'\']);';
+            }
             Requirements::customScript(
                 '
                 function init_search_by_address_form() {
                     var input = document.getElementById("'.$this->getName()."_".$this->getName().'_FindNearAddress");
-                    var options = {};
-                    new google.maps.places.Autocomplete(input, options);
+                    var options = {
+                        \'location_type\' : \'ROOFTOP\'
+                    };
+                    var autocomplete = new google.maps.places.Autocomplete(input, options);
+                    '.$setTypeLine.'
                 }
                 google.maps.event.addDomListener(window, "load", init_search_by_address_form);
                 ',
@@ -123,6 +132,7 @@ class SearchByAddressForm extends Form
         $address = Convert::raw2sql($data["FindNearAddress"]);
         $classNames = Convert::raw2sql($data["ClassNamesSearchedFor"]);
         $pointArray = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address);
+
         if (!$pointArray || !isset($pointArray["Longitude"]) || !isset($pointArray["Latitude"])) {
             GoogleMapSearchRecord::create_new(
                 Convert::raw2sql($address),

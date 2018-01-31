@@ -102,6 +102,7 @@ class GoogleMapLocationsObject extends DataObject
      * NOTE: 6378.137 is the radius of the earth in kilometers
      * @param Double $lng - longitude of location
      * @param Double $lat - latitude of location
+     * 
      * @return String
      */
     public static function radius_definition($lng, $lat)
@@ -336,15 +337,15 @@ class GoogleMapLocationsObject extends DataObject
     }
 
     /**
-     *
-     * @param Boolean $doNotWrite - do not write to Database
+     * @param array $params params for the Google Server
+     * @param bool $doNotWrite - do not write to Database
      */
-    protected function findGooglePoints($doNotWrite)
+    protected function findGooglePoints($doNotWrite, $params)
     {
         if ($this->Address && !$this->Manual) {
-            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
+            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address, false, $params);
         } elseif ($this->Latitude && $this->Longitude && $this->Manual) {
-            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude);
+            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude, false, $params);
         }
         if (isset($newData) && is_array($newData)) {
             $this->addDataFromArray($newData, $doNotWrite);
