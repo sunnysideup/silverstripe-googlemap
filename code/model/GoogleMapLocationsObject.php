@@ -102,6 +102,7 @@ class GoogleMapLocationsObject extends DataObject
      * NOTE: 6378.137 is the radius of the earth in kilometers
      * @param Double $lng - longitude of location
      * @param Double $lat - latitude of location
+     *
      * @return String
      */
     public static function radius_definition($lng, $lat)
@@ -160,7 +161,7 @@ class GoogleMapLocationsObject extends DataObject
         $addressField->setRightTitle(
             _t(
                 "GoogleMap.CMS_ADDRESS_EXPLANATION",
-            "(e.g. 123 Main Street, 90210, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed"
+                "(e.g. 123 Main Street, 90210, Newtown, Wellington, New Zealand ) - all other fields will be auto-completed"
             )
         );
         if ($this->Manual) {
@@ -323,12 +324,12 @@ class GoogleMapLocationsObject extends DataObject
     /**
      * test to see if address is found.  If address if found then
      * it will write the object, otherwise it returns null.
-     *
-     * @return this || null
+     * @params array $array (optional)
+     * @return this|null
      */
-    public function findGooglePointsAndWriteIfFound()
+    public function findGooglePointsAndWriteIfFound($params = [])
     {
-        $this->findGooglePoints(true);
+        $this->findGooglePoints(true, $params);
         if ($this->FullAddress && $this->Longitude && $this->Latitude) {
             $this->write();
             return $this;
@@ -336,15 +337,15 @@ class GoogleMapLocationsObject extends DataObject
     }
 
     /**
-     *
-     * @param Boolean $doNotWrite - do not write to Database
+     * @param array $params params for the Google Server
+     * @param bool $doNotWrite - do not write to Database
      */
-    protected function findGooglePoints($doNotWrite)
+    protected function findGooglePoints($doNotWrite, $params = [])
     {
         if ($this->Address && !$this->Manual) {
-            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address);
+            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address, false, $params);
         } elseif ($this->Latitude && $this->Longitude && $this->Manual) {
-            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude);
+            $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Latitude.",".$this->Longitude, false, $params);
         }
         if (isset($newData) && is_array($newData)) {
             $this->addDataFromArray($newData, $doNotWrite);

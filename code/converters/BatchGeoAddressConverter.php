@@ -9,14 +9,14 @@
 class BatchGeoAddressConverter extends Object
 {
     /*
-    static function convert($tableName, $fieldName, $idFieldName) {
+    static function convert($tableName, $fieldName, $idFieldName, $params) {
         $data = self::getDataFromTable($tableName, $fieldName, $idFieldName);
         foreach($data as $row) {
             print_r($row);
             $address = str_replace('?', " ", $row[$fieldName]);
             if($address) {
                 echo "checking ".$address."<hr />";
-                $newAddress = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address, true);
+                $newAddress = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($address, true, $params);
                 if($newAddress["1"] || $newAddress[0] || $newAddress["address"]) {
                     $sql = 'UPDATE \"'.$tableName.'\" SET \"'.$fieldName.'\" = "'.addslashes($newAddress["address"]).'" WHERE \"'.$idFieldName.'\" = "'.$row[$idFieldName].'" LIMIT 1;';
                     mysql_query($sql);

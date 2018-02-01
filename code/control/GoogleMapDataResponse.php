@@ -38,6 +38,7 @@ class GoogleMapDataResponse extends Controller
 {
     private static $session_var_prefix = "addCustomGoogleMap";
 
+
     /**
      * Default URL handlers - (Action)/(ID)/(OtherID)
      */
@@ -169,7 +170,7 @@ class GoogleMapDataResponse extends Controller
     protected $title = "";
 
     /**
-     * @var String
+     * @var Stringsql define a variable
      */
     protected $filterCode = "";
 
@@ -451,6 +452,10 @@ class GoogleMapDataResponse extends Controller
     {
         $lng = 0;
         $lat = 0;
+        $maxRadius = intval(Config::inst()->get('GoogleMap', 'max_radius_for_show_around_me')) - 0;
+        if (isset($_GET['maxradius'])) {
+            $maxRadius = intval($_GET['maxradius']);
+        }
         $excludeIDList = array();
         $stage = '';
         if (Versioned::current_stage() == "Live") {
@@ -482,7 +487,7 @@ class GoogleMapDataResponse extends Controller
         }
         if ($lng && $lat) {
             $orderByRadius = GoogleMapLocationsObject::radius_definition($lng, $lat);
-            $where = "(".$orderByRadius.") > 0 AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
+            $where = "(".$orderByRadius.") > 0 AND (".$orderByRadius.") < ".$maxRadius." AND \"GoogleMapLocationsObject\".\"Latitude\" <> 0 AND \"GoogleMapLocationsObject\".\"Longitude\" <> 0";
             if ($classNameForParent && !is_object($classNameForParent)) {
                 $where .= " AND \"SiteTree".$stage."\".\"ClassName\" = '".$classNameForParent."'";
             }
@@ -495,15 +500,27 @@ class GoogleMapDataResponse extends Controller
                 ->leftJoin("SiteTree".$stage."", "SiteTree".$stage.".ID = GoogleMapLocationsObject.ParentID")
                 ->limit(Config::inst()->get("GoogleMap", "number_shown_in_around_me"));
             if ($objects->count()) {
-                return $this->makeXMLData(
-                    null,
-                    $objects,
-                    $title,
-                    Config::inst()->get("GoogleMap", "number_shown_in_around_me") . " "._t("GoogleMap.CLOSEST_POINTS", "closest points")
-                );
+                $titlePrefix = Config::inst()->get("GoogleMap", "number_shown_in_around_me") . " "._t("GoogleMap.CLOSEST_POINTS", "closest points").' ';
+            } else {
+                $titlePrefix = _t('GoogleMap.NO_POINTS_SHOW_AROUND_ME', 'No locations found');
+                $objects = null;
             }
         }
-        return $this->showemptymap($request);
+        return $this->makeXMLData(
+            null,
+            $objects,
+            $titlePrefix.$title,
+            $titlePrefix,
+            $title = sprintf(
+                _t(
+                    'GoogleMap.NO_POINTS_SHOW_AROUND_ME',
+                    'When searching for:<br/> <strong>%s</strong><br/> No locations (in a radius of '.$maxRadius.'km) were found.<br/><br/>'
+                    .'<strong>Please try a more specific or different address.</strong>',
+                    'Title'
+                ),
+                $title
+            )
+        );
     }
 
     /**
@@ -612,10 +629,11 @@ class GoogleMapDataResponse extends Controller
     #################
 
     /**
-     * @param DataList $pages
-     * @param DataList $dataPoints
+     * @param ArrayList $pages
+     * @param ArrayList $dataPoints
      * @param string $title
      * @param string $selectionStatement
+     * @param string $noDataPointsMessage
      *
      * @return String (XML)
      */
@@ -623,14 +641,16 @@ class GoogleMapDataResponse extends Controller
         $pages = null,
         $dataPoints = null,
         $title = '',
-        $selectionStatement = ''
+        $selectionStatement = '',
+        $noDataPointsMessage = ''
     ) {
         $this->response->addHeader("Content-Type", "text/xml; charset=\"utf-8\"");
         return self::xml_sheet(
             $pages,
             $dataPoints,
             $title,
-            $selectionStatement = ''
+            $selectionStatement,
+            $noDataPointsMessage
         );
     }
 
@@ -639,16 +659,28 @@ class GoogleMapDataResponse extends Controller
     ################################
     # STATIC METHODS
     ################################
-
+    /**
+     *
+     * @param  ArrayList $pages you can also use the $dataPoints variable if you prefer
+     * @param  ArrayList $dataPoints you can also use the $pages variable if you prefer
+     * @param  string $title
+     * @param  string $selectionStatement
+     * @param  string $noDataPointsMessage message to show when there are no data points ...
+     * @return [type]
+     */
     public static function xml_sheet(
         $pages = null,
         $dataPoints = null,
         $title = '',
-        $selectionStatement = ''
+        $selectionStatement = '',
+        $noDataPointsMessage = ''
     ) {
-        $map = Injector::inst()->get("GoogleMap");
+
+        //create a new one every time ...!
+        $map = Injector::inst()->create("GoogleMap");
         $map->setTitleOfMap($title);
         $map->setWhereStatementDescription($selectionStatement ? $selectionStatement : $title);
+        $map->setNoDataPointsMessage($noDataPointsMessage);
         if ($pages) {
             $map->setPageDataObjectSet($pages);
         } elseif ($dataPoints) {

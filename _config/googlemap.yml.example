@@ -2,6 +2,10 @@
 # START GOOGLE MAPS
 #########################################
 
+SearchByAddressForm:
+  # see https://developers.google.com/places/supported_types#table3
+  type_of_result: 'address'
+
 
 GoogleMapLocationsDOD:
   page_classes_with_map:
@@ -212,6 +216,8 @@ GoogleMap:
   default_country_code: ""
 
   number_shown_in_around_me: 7
+
+  max_radius_for_show_around_me: 50
 
 
   #####################################

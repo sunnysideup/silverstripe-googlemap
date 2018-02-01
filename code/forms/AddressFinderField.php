@@ -11,12 +11,14 @@ class AddressFinderField extends TextField
     /**
      * returns false if the address can not be found and TRUE
      * if the address can be found...
-     * @return False | Array
+     * @param array $params params for the Google Server
+     *
+     * @return false|array
      */
-    public function getAddressArray()
+    public function getAddressArray($params = [])
     {
         if (!isset(self::$_address_array) && $this->value) {
-            self::$_address_array = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->value);
+            self::$_address_array = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->value, false, $params);
         }
         if (isset(self::$_address_array["Longitude"]) && isset(self::$_address_array["Latitude"])) {
             if (floatval(self::$_address_array["Longitude"]) && floatval(self::$_address_array["Latitude"])) {
