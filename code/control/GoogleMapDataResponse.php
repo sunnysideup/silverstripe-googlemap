@@ -514,10 +514,8 @@ class GoogleMapDataResponse extends Controller
             $title = sprintf(
                 _t(
                     'GoogleMap.NO_POINTS_SHOW_AROUND_ME',
-                    'When searching for: %s, no locations (in a radius of '.$maxRadius.'km.) were found.'
-                    .PHP_EOL
-                    .PHP_EOL
-                    .'Please try a more specific or different address.',
+                    'When searching for:<br/> <strong>%s</strong><br/> No locations (in a radius of '.$maxRadius.'km) were found.<br/><br/>'
+                    .'<strong>Please try a more specific or different address.</strong>',
                     'Title'
                 ),
                 $title
