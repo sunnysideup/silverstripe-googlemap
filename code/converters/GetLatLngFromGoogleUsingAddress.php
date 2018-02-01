@@ -36,11 +36,11 @@ class GetLatLngFromGoogleUsingAddress extends Object
      */
     private static $geocode_url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s";
 
-     /**
-        * default user to first result that is returned.
-        *
-        * @var boolean
-        */
+    /**
+       * default user to first result that is returned.
+       *
+       * @var boolean
+       */
     private static $default_to_first_result = true;
 
     /**
@@ -148,13 +148,13 @@ class GetLatLngFromGoogleUsingAddress extends Object
     }
 
 
- /**
-     * Get geocode from google.
-     *
-     * @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
-     * @param string $q Place name (e.g. 'Portland' or '30th Avenue, New York")
-     * @return Object Multiple Placemarks and status code
-     */
+    /**
+        * Get geocode from google.
+        *
+        * @see http://code.google.com/apis/maps/documentation/services.html#Geocoding_Direct
+        * @param string $q Place name (e.g. 'Portland' or '30th Avenue, New York")
+        * @return Object Multiple Placemarks and status code
+        */
     protected static function get_geocode_obj($q)
     {
         $debug = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "debug");

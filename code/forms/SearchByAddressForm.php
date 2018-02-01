@@ -102,7 +102,8 @@ class SearchByAddressForm extends Form
             ."&libraries=places"
             ."&key=".Config::inst()->get('GoogleMap', 'google_map_api_key')
             );
-            Requirements::customScript('
+            Requirements::customScript(
+                '
                 function init_search_by_address_form() {
                     var input = document.getElementById("'.$this->getName()."_".$this->getName().'_FindNearAddress");
                     var options = {};

@@ -333,16 +333,16 @@ class GoogleMap extends ViewableData
         return $this->extraLayers;
     }
 
-        /**
-         * @param String $title
-         * @param String $link
-         */
-        public function addExtraLayer($title, $link)
-        {
-            if (!$this->getExtraLayers()) {
-                $this->extraLayers = new ArrayList();
-            }
-            $this->extraLayers->push(
+    /**
+     * @param String $title
+     * @param String $link
+     */
+    public function addExtraLayer($title, $link)
+    {
+        if (!$this->getExtraLayers()) {
+            $this->extraLayers = new ArrayList();
+        }
+        $this->extraLayers->push(
                 new ArrayData(
                     array(
                         "Title" => $title,
@@ -351,16 +351,16 @@ class GoogleMap extends ViewableData
                     )
                 )
             );
-        }
+    }
 
-        /**
-         *
-         * @return ArrayList
-         */
-        public function AllExtraLayers()
-        {
-            return $this->getExtraLayers();
-        }
+    /**
+     *
+     * @return ArrayList
+     */
+    public function AllExtraLayers()
+    {
+        return $this->getExtraLayers();
+    }
 
     /**
      * @var Array
@@ -376,14 +376,14 @@ class GoogleMap extends ViewableData
         return $this->linksForData;
     }
 
-        /**
-         * @param string $linkForData
-         * @param string $title
-         */
-        public function addLayer($linkForData, $title)
-        {
-            $this->linksForData[$linkForData] = $title;
-        }
+    /**
+     * @param string $linkForData
+     * @param string $title
+     */
+    public function addLayer($linkForData, $title)
+    {
+        $this->linksForData[$linkForData] = $title;
+    }
 
 
 
@@ -409,25 +409,25 @@ class GoogleMap extends ViewableData
         return $this->address;
     }
 
-        /**
-         * sets the list of points through a list of parent pages
-         * affected variable is: points
-         * @param DataList | ArrayList $pageDataList
-         */
-        public function setPageDataObjectSet($pageDataList)
-        {
-            if ($pageDataList->count()) {
-                if ($pageDataList instanceof ArrayList) {
-                    $array = $pageDataList->map("ID", "ID");
-                } elseif ($pageDataList instanceof DataList) {
-                    $array = $pageDataList->map("ID", "ID")->toArray();
-                } else {
-                    user_error("Wrong format for pageDataList");
-                }
-                $this->points = GoogleMapLocationsObject::get()->filter(array("ParentID" => $array));
-                $pageDataList = null;
+    /**
+     * sets the list of points through a list of parent pages
+     * affected variable is: points
+     * @param DataList | ArrayList $pageDataList
+     */
+    public function setPageDataObjectSet($pageDataList)
+    {
+        if ($pageDataList->count()) {
+            if ($pageDataList instanceof ArrayList) {
+                $array = $pageDataList->map("ID", "ID");
+            } elseif ($pageDataList instanceof DataList) {
+                $array = $pageDataList->map("ID", "ID")->toArray();
+            } else {
+                user_error("Wrong format for pageDataList");
             }
+            $this->points = GoogleMapLocationsObject::get()->filter(array("ParentID" => $array));
+            $pageDataList = null;
         }
+    }
 
 
     /**
