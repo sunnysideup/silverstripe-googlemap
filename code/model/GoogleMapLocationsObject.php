@@ -324,12 +324,12 @@ class GoogleMapLocationsObject extends DataObject
     /**
      * test to see if address is found.  If address if found then
      * it will write the object, otherwise it returns null.
-     *
-     * @return this || null
+     * @params array $array (optional)
+     * @return this|null
      */
-    public function findGooglePointsAndWriteIfFound()
+    public function findGooglePointsAndWriteIfFound($params = [])
     {
-        $this->findGooglePoints(true);
+        $this->findGooglePoints(true, $params);
         if ($this->FullAddress && $this->Longitude && $this->Latitude) {
             $this->write();
             return $this;
@@ -340,7 +340,7 @@ class GoogleMapLocationsObject extends DataObject
      * @param array $params params for the Google Server
      * @param bool $doNotWrite - do not write to Database
      */
-    protected function findGooglePoints($doNotWrite, $params)
+    protected function findGooglePoints($doNotWrite, $params = [])
     {
         if ($this->Address && !$this->Manual) {
             $newData = GetLatLngFromGoogleUsingAddress::get_placemark_as_array($this->Address, false, $params);
