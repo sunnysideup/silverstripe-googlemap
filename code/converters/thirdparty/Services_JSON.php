@@ -773,7 +773,7 @@ class Services_JSON
 if (class_exists('PEAR_Error')) {
     class Services_JSON_Error extends PEAR_Error
     {
-        public function Services_JSON_Error(
+        public function __construct(
             $message = 'unknown error',
             $code = null,
                                      $mode = null,
@@ -790,7 +790,7 @@ if (class_exists('PEAR_Error')) {
      */
     class Services_JSON_Error
     {
-        public function Services_JSON_Error(
+        public function __construct(
             $message = 'unknown error',
             $code = null,
                                      $mode = null,
