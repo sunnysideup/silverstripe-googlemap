@@ -53,7 +53,7 @@ class GetLatLngFromGoogleUsingAddress extends Object
     /**
      *
      * tells you if CURL / file_get_contents is available
-     * set to true , unless it is not sure if CURL is available
+     * we recommend you set to true , unless it is not sure if CURL is available
      *
      * @var boolean
      */
@@ -64,6 +64,16 @@ class GetLatLngFromGoogleUsingAddress extends Object
      * @var string
      */
     private static $google_client_id = "";
+
+    /**
+     * alternative api key.
+     *
+     * This has been added so that you can set up IP restrictions and HTTP referrer
+     * restrictions within the Google API Console (you can not have both at the same time).
+     *
+     * @var string
+     */
+    private static $alternative_google_map_api_key = "";
 
     /**
      * Get first placemark as flat array
@@ -181,6 +191,8 @@ class GetLatLngFromGoogleUsingAddress extends Object
         $url = sprintf(Config::inst()->get("GetLatLngFromGoogleUsingAddress", "geocode_url"), urlencode($q));
         if ($clientID = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "google_client_id")) {
             $url .= "&client=".$clientID;
+        } elseif ($api = Config::inst()->get("GetLatLngFromGoogleUsingAddress", "alternative_google_map_api_key")) {
+            $url .= "&key=".$api;
         } elseif ($api = Config::inst()->get("GoogleMap", "google_map_api_key")) {
             $url .= "&key=".$api;
         }
