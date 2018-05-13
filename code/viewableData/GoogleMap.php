@@ -447,7 +447,7 @@ class GoogleMap extends ViewableData
     public function setPageDataObjectSet($pageDataList)
     {
         if ($pageDataList->count()) {
-            if ($pageDataList instanceof ArrayList) {
+            if ($pageDataList instanceof SS_List) {
                 $array = $pageDataList->map("ID", "ID");
             } elseif ($pageDataList instanceof DataList) {
                 $array = $pageDataList->map("ID", "ID")->toArray();
