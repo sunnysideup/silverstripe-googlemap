@@ -38,6 +38,8 @@ class GoogleMapDataResponse extends Controller
 {
     private static $session_var_prefix = "addCustomGoogleMap";
 
+    private static $increase_factor_if_nothing_found = 0;
+
 
     /**
      * Default URL handlers - (Action)/(ID)/(OtherID)
@@ -458,7 +460,7 @@ class GoogleMapDataResponse extends Controller
         }
         $excludeIDList = array();
         $stage = '';
-        if (Versioned::current_stage() == "Live") {
+        if (Versioned::current_stage() === "Live") {
             $stage = "_Live";
         }
         if ($this->lng && $this->lat) {
@@ -506,12 +508,19 @@ class GoogleMapDataResponse extends Controller
                 $objects = null;
             }
         }
-        return $this->makeXMLData(
-            null,
-            $objects,
-            $titlePrefix.$title,
-            $titlePrefix,
-            $title = sprintf(
+
+        if($objects && $objects->count()) {
+            $noObjectsMessage = '';
+            //
+        } else {
+            $increaseFactor = Config::inst()->get('GoogleMapDataResponse', 'increase_factor_if_nothing_found');
+            if($increaseFactor && $maxRadius < 20000) {
+                $limit = Config::inst()->get("GoogleMap", "number_shown_in_around_me");
+                Config::inst()->update('GoogleMap', 'max_radius_for_show_around_me', $maxRadius * $increaseFactor);
+                Config::inst()->update("GoogleMap", "number_shown_in_around_me", $limit * $increaseFactor);
+                return $this->showaroundmexml($request);
+            }
+            $noObjectsMessage = sprintf(
                 _t(
                     'GoogleMap.NO_POINTS_SHOW_AROUND_ME',
                     'When searching for:<br/> <strong>%s</strong><br/> No locations (in a radius of '.$maxRadius.'km) were found.<br/><br/>'
@@ -519,7 +528,15 @@ class GoogleMapDataResponse extends Controller
                     'Title'
                 ),
                 $title
-            )
+            );
+        }
+
+        return $this->makeXMLData(
+            null,
+            $objects,
+            $titlePrefix.$title,
+            $titlePrefix,
+            $noObjectsMessage
         );
     }
 
