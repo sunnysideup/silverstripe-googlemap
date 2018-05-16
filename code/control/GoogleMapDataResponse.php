@@ -509,12 +509,12 @@ class GoogleMapDataResponse extends Controller
             }
         }
 
-        if($objects && $objects->count()) {
+        if ($objects && $objects->count()) {
             $noObjectsMessage = '';
-            //
+        //
         } else {
             $increaseFactor = Config::inst()->get('GoogleMapDataResponse', 'increase_factor_if_nothing_found');
-            if($increaseFactor && $maxRadius < 20000) {
+            if ($increaseFactor && $maxRadius < 20000) {
                 $limit = Config::inst()->get("GoogleMap", "number_shown_in_around_me");
                 Config::inst()->update('GoogleMap', 'max_radius_for_show_around_me', $maxRadius * $increaseFactor);
                 Config::inst()->update("GoogleMap", "number_shown_in_around_me", $limit * $increaseFactor);
