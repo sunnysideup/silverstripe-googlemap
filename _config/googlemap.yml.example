@@ -16,6 +16,10 @@ GoogleMapLocationsDOD:
 GoogleMapLocationsDOD_Controller:
   form_prefix: "RandomString"
 
+GoogleMapDataResponse:
+  increase_factor_if_nothing_found: 5
+
+
 GoogleMap:
 
   #####################################
