@@ -511,7 +511,7 @@ class GoogleMapDataResponse extends Controller
 
         if ($objects && $objects->count()) {
             $noObjectsMessage = '';
-        //
+            //
         } else {
             $increaseFactor = Config::inst()->get('GoogleMapDataResponse', 'increase_factor_if_nothing_found');
             if ($increaseFactor && $maxRadius < 20000) {
