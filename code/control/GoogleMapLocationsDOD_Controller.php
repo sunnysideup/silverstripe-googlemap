@@ -110,6 +110,8 @@ class GoogleMapLocationsDOD_Controller extends Extension
         if (!$page) {
             $page = $this->owner->dataRecord;
         }
+
+        //todo: why not Convert::raw2js
         return urlencode($this->getLinkForData($page->ID, $action, $title, $lng, $lat, $filterCode));
     }
 
@@ -403,8 +405,9 @@ class GoogleMapLocationsDOD_Controller extends Extension
             $linkForData .= $lng."/".$lat."/";
         }
         if ($filterCode) {
-            $linkForData .= $filterCode."/";
+            $linkForData .= '?filtercode='.$filterCode;
         }
+
         return $linkForData;
     }
 }

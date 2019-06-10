@@ -237,8 +237,8 @@ class GoogleMapDataResponse extends Controller
         $this->title = urldecode($this->request->param("Title"));
         $this->lng = floatval($this->request->param("Longitude"));
         $this->lat = floatval($this->request->param("Latitude"));
-        $this->filterCode = urldecode($this->request->param("FilterCode"));
-        $this->secondFilterCode = urldecode($this->request->param("SecondFilterCode"));
+        $this->filterCode = urldecode($this->request->getVar("filtercode"));
+        $this->secondFilterCode = urldecode($this->request->getVar("secondfiltercode"));
         if (!$this->title && $this->owner) {
             $this->title = $this->owner->Title;
         }
@@ -391,12 +391,14 @@ class GoogleMapDataResponse extends Controller
      */
     public function showpointbyid($request)
     {
-        $id = $request->param("FilterCode");
-        $ids = explode(',', $id);
+        if(! $this->filterCode) {
+            $this->filterCode = $request->getVar("filtercode");
+        }
+        $ids = explode(',', $this->filterCode);
         foreach ($ids as $key => $id) {
             $ids[$key] = intval($id);
         }
-        $className = Convert::raw2sql($request->param("SecondFilterCode"));
+        $className = Convert::raw2sql($request->getVar("secondfiltercode"));
         $direct = false;
         if (! $className) {
             $direct = true;
